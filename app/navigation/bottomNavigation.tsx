@@ -14,6 +14,7 @@ export default function BottomNavigation() {
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
+                tabBarHideOnKeyboard :true,
                 tabBarStyle: {
                     borderColor: 'transparent',
                     backgroundColor: 'white',

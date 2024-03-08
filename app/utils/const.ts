@@ -1,0 +1,1 @@
+export const logoLogin = require('../icons/images/loginLogo.png')

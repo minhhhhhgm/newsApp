@@ -1,21 +1,20 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 
 const HomeScreen = (props: any) => {
     return (
+        <>
         <View style={{
-            backgroundColor: 'white',
-            flex: 1,
-            marginTop: 10
+            height: 50,
+            backgroundColor:'red'
         }}>
-            <TouchableOpacity
-                onPress={() => props.navigation.navigate('Login')}
-                style={{ backgroundColor: 'red' }}
-            >
-                <Text>Home Screeạdkasdajsn</Text>
-            </TouchableOpacity>
+            <Text>akjsdkasjdka</Text>
         </View>
+         <WebView source={{ uri: 'https://vnexpress.net/khach-nem-xu-cau-may-vao-dong-co-may-bay-trung-quoc-4719885.html' }} />
+        </>
+       
     )
 }
 export default HomeScreen
