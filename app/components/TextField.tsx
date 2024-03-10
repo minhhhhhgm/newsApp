@@ -41,7 +41,7 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
     /**
      * The helper text to display if not using `helperTx`.
      */
-    helper?: TextProps["text"]
+    helper?: string | any
     /**
      * Helper text which is looked up via i18n.
      */
@@ -162,6 +162,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
                     {...TextInputProps}
                     editable={!disabled}
                     style={$inputStyles}
+                    value={value}
                 />
                 {!!RightAccessory && (
                     <RightAccessory
@@ -190,6 +191,7 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
     flexDirection: "row",
     borderBottomWidth: 1,
+    borderColor:'#909090',
     overflow: "hidden",
 }
 
@@ -198,7 +200,7 @@ const $inputStyle: TextStyle = {
     paddingHorizontal: 0,
     minHeight: 50,
     fontSize: 14,
-    paddingTop: 25,
+    // paddingTop: 25,
     flex: 1,
     color: '#180E19'
 }
