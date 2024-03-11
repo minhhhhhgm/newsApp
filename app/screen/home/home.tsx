@@ -15,7 +15,9 @@ import { Todos } from '../../database';
 import { convertUrl } from '../../utils/validate';
 import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import { i18n } from '../../i18n/i18n';
-
+import { useSelector, useDispatch } from 'react-redux'
+import { decrement,increment } from '../../store/counterSlice';
+import { RootState } from '../../store/store';
 export interface Article {
     authors: any[];
     categories: any[];
@@ -54,8 +56,8 @@ const HomeScreen = (props: IScreen) => {
     const [dataRssAll, setDataRssAll] = React.useState<any>()
     const [domain, setDomain] = useState('vnexpress.net')
     const [newsName, setNewsName] = useState('VnExpress')
-
-    const [isVisible, setIsVisible] = useState(false)
+    const count = useSelector((state: RootState) => state.counter.value)
+    const dispatch = useDispatch()
 
     const modalRef = useRef({
         visible: false
@@ -187,8 +189,8 @@ const HomeScreen = (props: IScreen) => {
             });
     }
     useEffect(() => {
-        getDataInterest()
-        getData()
+        // getDataInterest()
+        // getData()
     }, [domain])
 
     const Header = () => {
@@ -213,7 +215,8 @@ const HomeScreen = (props: IScreen) => {
                         }}
                     />
                     <Text
-                        text={newsName}
+                        
+                        text={count.toString()}
                         style={{
                             fontWeight: '700',
                             fontSize: 15,
@@ -221,6 +224,7 @@ const HomeScreen = (props: IScreen) => {
                             marginLeft: 10
                         }}
                     />
+                    <TextRn>{count}</TextRn>
                 </View>
                 {/* <TouchableOpacity style={{
                     paddingRight: 16,

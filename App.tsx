@@ -25,6 +25,8 @@ import DetailScreen from './app/screen/detail-news/detail-news-screen';
 import BookMarkScreen from './app/screen/bookmark/book-mark-screen';
 import { Todos } from './app/database';
 import { useLanguage } from './app/i18n/i18n';
+import { store } from './app/store/store';
+import { Provider } from 'react-redux'
 LogBox.ignoreAllLogs();
 Todos.data()
 const AppNavigation =()=>{
@@ -58,14 +60,17 @@ function App(): React.JSX.Element {
     changeLanguage('vi')
   },[])
   return (
-    <>
-    <StatusBar 
-    barStyle={'dark-content'}
-    backgroundColor={'transparent'}
-    translucent
-    />
-     <AppNavigation/>
-    </>
+    <Provider store={store}>
+      <>
+        <StatusBar
+          barStyle={'dark-content'}
+          backgroundColor={'transparent'}
+          translucent
+        />
+        <AppNavigation />
+      </>
+    </Provider>
+    
    
   );
 }

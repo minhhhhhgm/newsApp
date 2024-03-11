@@ -1,7 +1,9 @@
 const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
 
 const defaultConfig = getDefaultConfig(__dirname);
-defaultConfig.resolver.assetExts.push('cjs')
+defaultConfig.resolver.sourceExts.push('cjs')
+// defaultConfig.resolver.sourceExts.push("js", "json", "ts", "tsx", "cjs");
+
 const { assetExts, sourceExts } = defaultConfig.resolver;
 
 /**
