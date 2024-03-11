@@ -9,7 +9,7 @@ import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './app/screen/home';
+import HomeScreen from './app/screen/home/home';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import { StatusBar } from 'react-native';
 import BottomNavigation from './app/navigation/bottomNavigation';
@@ -23,8 +23,10 @@ import InterestsScreen from './app/screen/interests/interests-screen';
 import SearchScreen from './app/screen/search/search-screen';
 import DetailScreen from './app/screen/detail-news/detail-news-screen';
 import BookMarkScreen from './app/screen/bookmark/book-mark-screen';
+import { Todos } from './app/database';
+import { useLanguage } from './app/i18n/i18n';
 LogBox.ignoreAllLogs();
-
+Todos.data()
 const AppNavigation =()=>{
   return(
     <NavigationContainer>
@@ -47,10 +49,14 @@ const AppNavigation =()=>{
 }
 
 function App(): React.JSX.Element {
-  const i18n = new I18n(translations)
-  i18n.locale = "ru"
-  i18n.enableFallback = true
-  i18n.defaultLocale = "en"
+  // const i18n = new I18n(translations)
+  // i18n.locale = "vi"
+  // i18n.enableFallback = true
+  // i18n.defaultLocale = "vi"
+  const {changeLanguage} = useLanguage()
+  useEffect(()=>{
+    changeLanguage('vi')
+  },[])
   return (
     <>
     <StatusBar 

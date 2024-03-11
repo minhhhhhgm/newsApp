@@ -13,7 +13,8 @@ import HomeSelectedIcon from '../../icons/svg-component/homeSelectedIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import ShareIcon from '../../icons/svg-component/ShareIcon';
 import Share from "react-native-share"
-import { Article } from '../home';
+import { Article } from './home';
+import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 
 const HomeNewsScreen = (props: any) => {
     const route = useRoute();
@@ -69,12 +70,126 @@ const styles = StyleSheet.create({
 });
 interface ISimpleMenu {
     item?: any,
-    saveBookMark?: () => void
+    saveBookMark?: () => void,
+    isRemoveBookmark?: boolean
 }
-export const SimpleMenu = (props: ISimpleMenu) => {
-    const { item, saveBookMark } = props
+
+export const SimplePopover = (props: ISimpleMenu) => {
+    const { item, saveBookMark, isRemoveBookmark } = props
     const shareImage = () => {
-        const urlNews: string = item.item.links[0].url
+        const urlNews: string = item.links[0].url
+        const options = {
+            url: urlNews,
+        }
+        Share.open(options)
+            .then((r) => {
+                console.log(r)
+            })
+            .catch((e) => {
+                e && console.log(e)
+            })
+    }
+    return (
+        <Popover
+            // mode={PopoverMode.TOOLTIP}
+            verticalOffset={-30}
+            popoverStyle={{
+                width: 129,
+                height: 88,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
+            backgroundStyle={{
+                backgroundColor: 'transparent'
+            }}
+            arrowSize={{
+                width: 0,
+                height: 0
+            }}
+            from={(
+                <TouchableOpacity>
+                    <Text style={{
+                        fontSize: 5,
+                        color: '#180E19',
+                        marginTop: 7
+                    }}>●●●</Text>
+                </TouchableOpacity>
+            )}>
+            <View
+                style={{
+                    backgroundColor: 'white',
+                    width: 121,
+                    height: 78,
+                    shadowColor: 'black',
+                    shadowOffset: { width: -2, height: 4 },
+                    shadowOpacity: 10,
+                    shadowRadius: 30,
+                    elevation: 5,
+                    borderRadius: 10
+                }}
+            >
+                <View>
+                    <TouchableOpacity
+                        onPress={shareImage}
+                        style={{
+                            flexDirection: 'row',
+                            paddingLeft: 10,
+                            marginTop: 15,
+                        }}>
+                        <ShareIcon />
+                        <Text
+                            style={{
+                                color: '#180E19',
+                                marginLeft: 10,
+                                fontSize: 12
+                            }}
+                        >Share</Text>
+                    </TouchableOpacity>
+                    <View style={{
+                        height: 1,
+                        backgroundColor: '#EEEEEE',
+                        width: 131,
+                        marginLeft: 5,
+                        marginTop: 7,
+                        marginBottom: isRemoveBookmark ? -5 : 0
+                    }}>
+                    </View>
+                    <View>
+                            <TouchableOpacity
+                                onPress={saveBookMark}
+                                style={{
+                                    flexDirection: 'row',
+                                    // justifyContent: 'center',
+                                    // alignItems: 'center',
+                                    // paddingLeft: 10,
+                                    // backgroundColor:'red',
+                                    // width: 101
+                                    marginTop : 10,
+                                    marginLeft : 8
+
+                                }}>
+                                <BookMarkIcon fill={isRemoveBookmark ? '#180E19' : 'none'} />
+                                <Text
+                                    style={{
+                                        color: '#180E19',
+                                        marginLeft: 5,
+                                        fontSize: 12
+                                    }}
+                                >{isRemoveBookmark ? 'Remove bookmark' : 'Bookmark'}</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                </View>
+            </View>
+        </Popover>
+    );
+};
+
+
+export const SimpleMenu = (props: ISimpleMenu) => {
+    const { item, saveBookMark, isRemoveBookmark } = props
+    const shareImage = () => {
+        const urlNews: string = item.links[0].url
         const options = {
             url: urlNews,
         }
@@ -107,6 +222,8 @@ export const SimpleMenu = (props: ISimpleMenu) => {
                     customStyles={{
                         triggerWrapper: {
                             width: 100,
+                            height: 20,
+                            justifyContent: 'center'
                         },
                         triggerOuterWrapper: {
                             marginLeft: 150
@@ -174,7 +291,8 @@ export const SimpleMenu = (props: ISimpleMenu) => {
                                     backgroundColor: '#EEEEEE',
                                     width: 131,
                                     marginLeft: 5,
-                                    marginTop: 13
+                                    marginTop: 7,
+                                    marginBottom: isRemoveBookmark ? -5 : 0
 
                                 }}>
 
@@ -194,14 +312,14 @@ export const SimpleMenu = (props: ISimpleMenu) => {
                                     width: 101
 
                                 }}>
-                                <BookMarkIcon />
+                                <BookMarkIcon fill={isRemoveBookmark ? '#180E19' : 'none'} />
                                 <Text
                                     style={{
                                         color: '#180E19',
                                         marginLeft: 10,
                                         fontSize: 12
                                     }}
-                                >Bookmark</Text>
+                                >{isRemoveBookmark ? 'Remove bookmark' : 'Bookmark'}</Text>
                             </TouchableOpacity>
 
                         </View>} />

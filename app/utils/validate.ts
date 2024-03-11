@@ -1,3 +1,5 @@
+import { Article } from "../screen/home/home"
+
 export function toASCII(chars: any) {
     let ascii = ""
     for (var i = 0, l = chars.length; i < l; i++) {
@@ -22,4 +24,14 @@ export function searchData(data: any, txt: any) {
         return i
     })
     return arr
+}
+
+export function convertUrl(item : Article){
+    const imgSrcRegex = /<img src="([^"]+)"/;
+        const imgSrcMatch = item.description.match(imgSrcRegex);
+        let imgSrc = '';
+        if (imgSrcMatch && imgSrcMatch[1]) {
+            imgSrc = imgSrcMatch[1];
+        }
+        return imgSrc
 }

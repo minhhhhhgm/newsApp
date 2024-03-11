@@ -57,6 +57,7 @@ const SignInScreen = (props : any) => {
     try {
       const responseSignIn = await signInWithEmailAndPassword(auth, watch('email'), watch('password'))
       if (responseSignIn) {
+        console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
         console.log(await getAccessToken());
 

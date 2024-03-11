@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
 
-import { logoLogin } from '../utils/const';
+import { logoLogin } from '../../utils/const';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text } from '../components/Text';
-import BellIcon from '../icons/svg-component/BellIcon';
-import { Button } from '../components/Button';
+import { Text } from '../../components/Text';
+import BellIcon from '../../icons/svg-component/BellIcon';
+import { Button } from '../../components/Button';
 //@ts-ignore
 import * as rssParser from 'react-native-rss-parser';
 import moment from 'moment';
-import { SimpleMenu } from './home/home-screen';
-import { getInterest } from '../utils/storage';
-import { Todos } from '../database';
+import { SimpleMenu, SimplePopover } from './home-screen';
+import { getInterest } from '../../utils/storage';
+import { Todos } from '../../database';
+import { convertUrl } from '../../utils/validate';
+import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
+import { i18n } from '../../i18n/i18n';
+
 export interface Article {
     authors: any[];
     categories: any[];
@@ -37,29 +41,134 @@ export interface Article {
     published: string;
     title: string;
 }
+export interface IScreen {
+    navigation: any
+}
 
-
-const HomeScreen = (props: any) => {
-    // const route = useRoute();
-    // // const { data } = route.params as any;
+const HomeScreen = (props: IScreen) => {
     const insets = useSafeAreaInsets();
     const [indexItem, setIndexItem] = useState(0)
     const [titleNews, setTitleNews] = useState('For You')
     const [dataInterests, setDataInterests] = React.useState<any[]>([])
     const [dataRss, setDataRss] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
+    const [domain, setDomain] = useState('vnexpress.net')
+    const [newsName, setNewsName] = useState('VnExpress')
+
+    const [isVisible, setIsVisible] = useState(false)
+
+    const modalRef = useRef({
+        visible: false
+    });
     const getDataInterest = async () => {
         const response = await getInterest();
         if (response) {
             setDataInterests(JSON.parse(response))
         }
     }
+    const PopoverBell = () => {
+        return (
+            <Popover
+                animationConfig={{ duration: 0 }}
+                // isVisible={modalRef.current.visible}
+                onRequestClose={() => modalRef.current.visible = false}
+                // mode={PopoverMode.TOOLTIP}
+                verticalOffset={-30}
+                popoverStyle={{
+                    width: 129,
+                    height: 88,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'white'
+                }}
+                backgroundStyle={{
+                    backgroundColor: 'transparent'
+                }}
+                arrowSize={{
+                    width: 10,
+                    height: 10
+                }}
+                from={(
+                    <TouchableOpacity
+                        onPress={() => () => modalRef.current.visible = true}
+                        style={{
+                            paddingRight: 16,
+                            justifyContent: 'center',
+                        }}>
+                        <BellIcon />
+
+                    </TouchableOpacity>
+                )}>
+                <View
+                    style={{
+                        backgroundColor: 'white',
+                        width: 121,
+                        height: 78,
+                        shadowColor: 'black',
+                        shadowOffset: { width: -2, height: 4 },
+                        shadowOpacity: 10,
+                        shadowRadius: 30,
+                        elevation: 5,
+                        borderRadius: 10
+                    }}
+                >
+                    <View>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setNewsName('VnExpress'); setDomain('vnexpress.net')
+                            }}
+                            style={{
+                                paddingLeft: 10,
+                                marginTop: 15,
+                            }}>
+                            <TextRn
+                                style={{
+                                    color: '#000000',
+                                    fontSize: 12
+                                }}
+                            >VnExpress</TextRn>
+                        </TouchableOpacity>
+                        <View style={{
+                            height: 1,
+                            backgroundColor: '#EEEEEE',
+                            width: 151,
+                            marginTop: 7,
+                            marginBottom: 0
+                        }}>
+                        </View>
+                        <View>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setNewsName('Tuổi Trẻ'); setDomain('tuoitre.vn')
+                                }}
+                                style={{
+                                    marginTop: 10,
+                                    marginLeft: 8
+                                }}>
+                                <TextRn
+                                    style={{
+                                        color: '#000000',
+                                        marginLeft: 5,
+                                        fontSize: 12
+                                    }}
+                                >Tuổi Trẻ </TextRn>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                </View>
+            </Popover>
+        )
+    }
     const getData = () => {
-        fetch('https://vnexpress.net/rss/kinh-doanh.rss')
+        setDataRss([])
+        fetch(`https://${domain}/rss/kinh-doanh.rss`)
             .then((response) => response.text())
             .then((responseData) => rssParser.parse(responseData))
             .then((rss) => {
                 if (rss) {
+                    console.log(rss);
+
                     setDataRss(rss.items)
                     setDataRssAll(rss)
                 }
@@ -67,7 +176,7 @@ const HomeScreen = (props: any) => {
     }
     const handleGetDataByTitle = (endpoint: string) => {
         setDataRss([])
-        fetch(`https://vnexpress.net/rss/${endpoint}.rss`)
+        fetch(`https://${domain}/rss/${endpoint}.rss`)
             .then((response) => response.text())
             .then((responseData) => rssParser.parse(responseData))
             .then((rss) => {
@@ -80,7 +189,7 @@ const HomeScreen = (props: any) => {
     useEffect(() => {
         getDataInterest()
         getData()
-    }, [])
+    }, [domain])
 
     const Header = () => {
         return (
@@ -104,7 +213,7 @@ const HomeScreen = (props: any) => {
                         }}
                     />
                     <Text
-                        text='new24'
+                        text={newsName}
                         style={{
                             fontWeight: '700',
                             fontSize: 15,
@@ -113,13 +222,14 @@ const HomeScreen = (props: any) => {
                         }}
                     />
                 </View>
-                <TouchableOpacity style={{
+                {/* <TouchableOpacity style={{
                     paddingRight: 16,
                     justifyContent: 'center',
                 }}>
                     <BellIcon />
 
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+                <PopoverBell />
             </View>
         )
     }
@@ -127,16 +237,28 @@ const HomeScreen = (props: any) => {
     function handleOrderMerchant() {
 
     }
-    const handleSaveBookMark = async () => {
-        
+    const handleSaveBookMark = async (item: Article, type: string) => {
+        const imageUrl = convertUrl(item)
         const params = {
-            type: 'Test4',
-            title: 'Test4',
-            author: 'Test4',
-            time: '0001'
+            type: type,
+            title: item.title,
+            author: dataRssAll.description,
+            time: item.published,
+            image: imageUrl
         }
-        await Todos.insert(params)
-        console.log('OK');
+        Todos.insert(params)
+        console.log('OK', item);
+
+    }
+    const handleNavigateDetailNews = (item: Article) => {
+        const link = item.links[0].url
+        const author = dataRssAll.description
+        const time = item.published
+        const imageUrl = convertUrl(item)
+        const type = titleNews
+        const title = item.title
+
+        props.navigation.navigate('Detail', { link: link, author, time, imageUrl, type, title })
     }
     const renderItem = ({ item, index }: { item: Article, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;
@@ -158,21 +280,27 @@ const HomeScreen = (props: any) => {
                         flexDirection: 'row'
                     }}
                 >
-                    <Image
-                        source={{
-                            uri: imgSrc == '' ? 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain' : imgSrc
-                        }}
-                        style={{
-                            width: 137,
-                            height: 140
-                        }}
-                    />
+                    <TouchableOpacity
+                        onPress={() => { handleNavigateDetailNews(item) }}
+                    >
+                        <Image
+                            source={{
+                                uri: imgSrc == '' ? 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain' : imgSrc
+                            }}
+                            style={{
+                                width: 137,
+                                height: 140
+                            }}
+                        />
+                    </TouchableOpacity>
+
                     <View
                         style={{
                             flex: 1,
                             marginLeft: 10
                         }}>
                         <TextRn
+                            onPress={() => { handleNavigateDetailNews(item) }}
                             numberOfLines={3}
                             style={{
                                 flex: 3,
@@ -188,7 +316,7 @@ const HomeScreen = (props: any) => {
                                     fontWeight: '500',
                                     fontFamily: 'SF Pro',
                                     color: '#909090'
-                                }}>{dataRssAll.description}</TextRn>
+                                }}>{newsName === 'Tuổi Trẻ' ? dataRssAll.copyright : dataRssAll.description}</TextRn>
                             )
                         }
                         <View
@@ -220,21 +348,7 @@ const HomeScreen = (props: any) => {
                                         flex: 0.7
                                     }}>{relativeTime}</TextRn>
                             </View>
-                            {/* <TextRn style={{
-                                fontSize: 5,
-                                alignSelf: 'center',
-                                color: '#180E19'
-                            }}>●●●</TextRn> */}
-                            <View style={{
-                                position: 'absolute',
-                                width: 200,
-                                height: 100,
-                                alignSelf: 'center',
-                                alignItems: 'center',
-                                zIndex: 10
-                            }}>
-                                <SimpleMenu item={item} saveBookMark={handleSaveBookMark} />
-                            </View>
+                            <SimplePopover item={item} saveBookMark={() => handleSaveBookMark(item, titleNews)} />
 
                         </View>
                     </View>
@@ -250,18 +364,8 @@ const HomeScreen = (props: any) => {
         )
     };
     return (
-        // <>
-        //     <View style={{
-        //         height: 50,
-        //         backgroundColor: 'red'
-        //     }}>
-        //         <Text>akjsdkasjdka</Text>
-        //     </View>
-        //     <WebView source={{ uri: 'https://vnexpress.net/khach-nem-xu-cau-may-vao-dong-co-may-bay-trung-quoc-4719885.html' }} />
-        // </>
         <View style={styles.body}>
             <Header />
-
             <FlatList
                 style={{ minHeight: 70 }}
                 horizontal
@@ -280,7 +384,11 @@ const HomeScreen = (props: any) => {
                             onPress={() => {
                                 setIndexItem(index);
                                 setTitleNews(item.text);
-                                handleGetDataByTitle(item.endpoint);
+                                if (index != 0) {
+                                    handleGetDataByTitle(item.endpoint);
+                                } else {
+                                    getData()
+                                }
 
                             }}
                             text={item.text}

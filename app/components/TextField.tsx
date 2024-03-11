@@ -10,6 +10,7 @@ import {
 } from "react-native"
 
 import { Text, TextProps } from "./Text"
+import { i18n } from "../i18n/i18n"
 
 export interface TextFieldAccessoryProps {
     style: StyleProp<any>
@@ -56,7 +57,7 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
     /**
      * The placeholder text to display if not using `placeholderTx`.
      */
-    placeholder?: TextProps["text"]
+    placeholder?: any
     /**
      * Placeholder text which is looked up via i18n.
      */
@@ -157,7 +158,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
                 <TextInput
                     ref={input}
                     underlineColorAndroid={'transparent'}
-                    placeholder={placeholderContent}
+                    placeholder={i18n.t(placeholderContent)}
                     placeholderTextColor={'gray'}
                     {...TextInputProps}
                     editable={!disabled}

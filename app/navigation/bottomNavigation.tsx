@@ -3,7 +3,7 @@ import BookMarkIcon from '../icons/svg-component/bookMarkIcon';
 import HomeSelectedIcon from '../icons/svg-component/homeSelectedIcon';
 import SearchIcons from '../icons/svg-component/searchIcon';
 import SettingIcon from '../icons/svg-component/settingIcon';
-import HomeScreen from '../screen/home';
+import HomeScreen from '../screen/home/home';
 import SignUpScreen from '../screen/sign-up/sign-up-screen';
 import HomeNewsScreen from '../screen/home/home-screen';
 import SearchScreen from '../screen/search/search-screen';
@@ -30,6 +30,7 @@ export default function BottomNavigation() {
                 name="Home"
                 component={HomeScreen}
                 options={{
+                    unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <HomeSelectedIcon fill={focused ? '#180E19' : 'none'} />
                     )
@@ -39,6 +40,7 @@ export default function BottomNavigation() {
                 name="Setting"
                 component={SearchScreen}
                 options={{
+                    unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <SearchIcons fill={focused ? '#180E19' : 'none'} />
                     )

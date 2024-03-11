@@ -10,11 +10,12 @@ import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
 import CancelIcon from '../../icons/svg-component/cancelcon';
 //@ts-ignore
 import * as rssParser from 'react-native-rss-parser';
-import { Article } from '../home';
+import { Article } from '../home/home';
 import { searchData } from '../../utils/validate';
 import { SimpleMenu } from '../home/home-screen';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { useLanguage } from '../../i18n/i18n';
 const SearchScreen = (props: any) => {
     const insets = useSafeAreaInsets();
     const [dataRss, setDataRss] = React.useState<Article[]>([])
@@ -82,25 +83,29 @@ const SearchScreen = (props: any) => {
                 paddingHorizontal: 16,
                 marginTop: 15
             }}>
-                <TouchableOpacity
-                    onPress={() => {
-                        const link = item.description
-                        props.navigation.navigate('Detail', { link: link })
-                    }}
+                <View
+
                     style={{
 
                         flexDirection: 'row'
                     }}
                 >
-                    <Image
-                        source={{
-                            uri: imgSrc == '' ? 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain' : imgSrc
-                        }}
-                        style={{
-                            width: 137,
-                            height: 140
-                        }}
-                    />
+                    <TouchableOpacity
+                        onPress={() => {
+                            const link = item.description
+                            props.navigation.navigate('Detail', { link: link })
+                        }}>
+                        <Image
+                            source={{
+                                uri: imgSrc == '' ? 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain' : imgSrc
+                            }}
+                            style={{
+                                width: 137,
+                                height: 140
+                            }}
+                        />
+                    </TouchableOpacity>
+
                     <View
                         style={{
                             flex: 1,
@@ -166,14 +171,14 @@ const SearchScreen = (props: any) => {
                                 height: 100,
                                 alignSelf: 'center',
                                 alignItems: 'center',
-                                zIndex: 10
+                                zIndex: 100
                             }}>
                                 <SimpleMenu item={item} />
                             </View>
 
                         </View>
                     </View>
-                </TouchableOpacity>
+                </View>
                 <View style={{
                     height: 1,
                     backgroundColor: '#EEEEEE',
@@ -184,6 +189,7 @@ const SearchScreen = (props: any) => {
 
         )
     };
+    const {changeLanguage} = useLanguage()
     return (
         <View style={[styles.body, { paddingTop: insets.top }]}>
             <Controller
@@ -201,19 +207,21 @@ const SearchScreen = (props: any) => {
                         helper={errors?.email?.message}
                         LeftAccessory={() => {
                             return (
-                                <View style={{
+                                <TouchableOpacity
+                                onPress={()=>changeLanguage('vi')}
+                                style={{
                                     justifyContent: 'center',
                                     marginLeft: 18,
                                     marginRight: 10
                                 }}>
                                     <SearchNewsIcons />
-                                </View>
+                                </TouchableOpacity>
                             )
                         }}
                         RightAccessory={() => {
                             return (
                                 <TouchableOpacity
-                                    onPress={() => { onChange(''); setValue('search', '') }}
+                                    onPress={() => { onChange(''); setValue('search', '');setDataRssFilter([]) }}
                                     style={{
                                         justifyContent: 'center',
                                         marginRight: 18

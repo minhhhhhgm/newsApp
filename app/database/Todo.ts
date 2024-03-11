@@ -6,6 +6,7 @@ export class TodoModel {
         type: "string",
         title: "string",
         author: "string",
-        time: "string"
+        time: "string",
+        image: "string"
     }
 }
