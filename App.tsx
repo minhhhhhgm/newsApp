@@ -25,8 +25,8 @@ import DetailScreen from './app/screen/detail-news/detail-news-screen';
 import BookMarkScreen from './app/screen/bookmark/book-mark-screen';
 import { Todos } from './app/database';
 import { useLanguage } from './app/i18n/i18n';
-import { store } from './app/store/store';
-import { Provider } from 'react-redux'
+import { RootState, store } from './app/store/store';
+import { Provider, useSelector } from 'react-redux'
 LogBox.ignoreAllLogs();
 Todos.data()
 const AppNavigation =()=>{
@@ -56,8 +56,12 @@ function App(): React.JSX.Element {
   // i18n.enableFallback = true
   // i18n.defaultLocale = "vi"
   const {changeLanguage} = useLanguage()
+  // const count = useSelector((state: any) => state.counter.value)
+  
   useEffect(()=>{
-    changeLanguage('vi')
+    changeLanguage('en')
+    // console.log('runnnn');
+    
   },[])
   return (
     <Provider store={store}>

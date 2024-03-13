@@ -30,17 +30,17 @@ export default function BottomNavigation() {
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    // unmountOnBlur: true,
+                    unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <HomeSelectedIcon fill={focused ? '#180E19' : 'none'} />
                     )
                 }}
             />
             <Tab.Screen
-                name="Setting"
+                name="Search"
                 component={SearchScreen}
                 options={{
-                    // unmountOnBlur: true,
+                    unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <SearchIcons fill={focused ? '#180E19' : 'none'} />
                     )

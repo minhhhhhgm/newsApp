@@ -189,8 +189,8 @@ const HomeScreen = (props: IScreen) => {
             });
     }
     useEffect(() => {
-        // getDataInterest()
-        // getData()
+        getDataInterest()
+        getData()
     }, [domain])
 
     const Header = () => {
@@ -215,8 +215,8 @@ const HomeScreen = (props: IScreen) => {
                         }}
                     />
                     <Text
-                        
-                        text={count.toString()}
+                        onPress={() => dispatch(increment())}
+                        text={newsName.toString()}
                         style={{
                             fontWeight: '700',
                             fontSize: 15,
