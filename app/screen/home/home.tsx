@@ -18,6 +18,8 @@ import { i18n } from '../../i18n/i18n';
 import { useSelector, useDispatch } from 'react-redux'
 import { decrement,increment } from '../../store/counterSlice';
 import { RootState } from '../../store/store';
+import Toast from 'react-native-simple-toast';
+
 export interface Article {
     authors: any[];
     categories: any[];
@@ -224,7 +226,7 @@ const HomeScreen = (props: IScreen) => {
                             marginLeft: 10
                         }}
                     />
-                    <TextRn>{count}</TextRn>
+                    {/* <TextRn>{count}</TextRn> */}
                 </View>
                 {/* <TouchableOpacity style={{
                     paddingRight: 16,
@@ -243,20 +245,26 @@ const HomeScreen = (props: IScreen) => {
     }
     const handleSaveBookMark = async (item: Article, type: string) => {
         const imageUrl = convertUrl(item)
+        const item1 = await Todos.get({ title: item.title });
+        if(item1){
+            Toast.show('The post has been saved', Toast.LONG);
+            return;
+        }
         const params = {
             type: type,
             title: item.title,
-            author: dataRssAll.description,
+            author: newsName === 'Tuổi Trẻ' ? dataRssAll.copyright : dataRssAll.description,
             time: item.published,
-            image: imageUrl
+            image: imageUrl,
+            url : item.links[0].url
         }
         Todos.insert(params)
-        console.log('OK', item);
+        Toast.show('Saved to bookmark', Toast.LONG);
 
     }
     const handleNavigateDetailNews = (item: Article) => {
         const link = item.links[0].url
-        const author = dataRssAll.description
+        const author = newsName === 'Tuổi Trẻ' ? dataRssAll.copyright : dataRssAll.description
         const time = item.published
         const imageUrl = convertUrl(item)
         const type = titleNews

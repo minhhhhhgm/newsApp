@@ -169,7 +169,12 @@ const BookMarkScreen = (props: any) => {
                                 alignItems: 'center',
                                 zIndex: 10
                             }}>
-                                <SimpleMenu isRemoveBookmark item={item} saveBookMark={() => { testDb(item.id, item.type) }} />
+                                <SimpleMenu
+                                isShareBookMark={true} 
+                                isRemoveBookmark 
+                                item={item} 
+                                saveBookMark={() => { testDb(item.id, item.type) }} 
+                                />
                             </View>
 
                         </View>

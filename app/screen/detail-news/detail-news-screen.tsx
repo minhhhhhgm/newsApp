@@ -34,7 +34,8 @@ const DetailScreen = (props: any) => {
             title: title,
             author: author,
             time: time,
-            image: imageUrl
+            image: imageUrl,
+            url : link
         }
         Todos.insert(params)
         console.log('Save DB OK',);

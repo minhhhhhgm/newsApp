@@ -71,7 +71,8 @@ const styles = StyleSheet.create({
 interface ISimpleMenu {
     item?: any,
     saveBookMark?: () => void,
-    isRemoveBookmark?: boolean
+    isRemoveBookmark?: boolean,
+    isShareBookMark ?: boolean
 }
 
 export const SimplePopover = (props: ISimpleMenu) => {
@@ -187,9 +188,18 @@ export const SimplePopover = (props: ISimpleMenu) => {
 
 
 export const SimpleMenu = (props: ISimpleMenu) => {
-    const { item, saveBookMark, isRemoveBookmark } = props
+    const { item, saveBookMark, isRemoveBookmark ,isShareBookMark} = props
     const shareImage = () => {
-        const urlNews: string = item.links[0].url
+        console.log('item' , item);
+        let urlNews
+        if(isShareBookMark){
+            urlNews  = item.url
+        }else{
+            urlNews  = item.links[0].url
+        }
+         
+        console.log('url', urlNews);
+        
         const options = {
             url: urlNews,
         }

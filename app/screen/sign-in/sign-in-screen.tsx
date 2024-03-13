@@ -20,6 +20,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
 import { getAccessToken, setAccessToken } from '../../utils/storage';
+import Toast from 'react-native-simple-toast';
 
 const SignInScreen = (props : any) => {
   const insets = useSafeAreaInsets();
@@ -34,7 +35,6 @@ const SignInScreen = (props : any) => {
   } = useForm({
     mode: 'all'
   })
-  const data = [1, 2,3,4,5,2,32,342423,42,4,0]
   const Righticon = () => {
     return (
       watch('password') &&
@@ -60,13 +60,16 @@ const SignInScreen = (props : any) => {
         console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
         console.log(await getAccessToken());
-
+        props.navigation.navigate('Interests')
+        
       }
       // console.log( await responseSignIn.user.getIdToken());
 
     } catch (err) {
       const error = JSON.stringify(err)
       console.log(error);
+      Toast.show('Email or Password incorrect !', Toast.LONG);
+
     }
 
   }
@@ -210,7 +213,7 @@ const SignInScreen = (props : any) => {
           {i18n.t('Don’t have an account?')}
           <Text
             // onPress={() => props.navigation.navigate('BottomNavigation', { screen: 'Home', params: { data: data } })}
-            onPress={() => props.navigation.navigate('Interests')}
+            onPress={() => props.navigation.navigate('SignUp')}
             text={`Register`}
             style={{
               fontWeight: '700',
