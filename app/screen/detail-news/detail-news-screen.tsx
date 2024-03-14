@@ -11,11 +11,12 @@ import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import ShareIcon from '../../icons/svg-component/ShareIcon';
 import Share from "react-native-share"
 import { Todos } from '../../database';
+import Toast from 'react-native-simple-toast';
 
 const DetailScreen = (props: any) => {
     const insets = useSafeAreaInsets();
     const route = useRoute();
-    const { link, author, time, imageUrl, type, title } = route.params as any;
+    const { link, author, time, imageUrl, type, title ,email} = route.params as any;
     const handleShareNews = () => {
         const options = {
             url: link,
@@ -28,16 +29,23 @@ const DetailScreen = (props: any) => {
                 e && console.log(e)
             })
     }
-    const handleSaveBookMark = () => {
+    const handleSaveBookMark = async() => {
+        const item1 = await Todos.get({ title: title });
+        if (item1) {
+            Toast.show('The post has been saved', Toast.LONG);
+            return;
+        }
         const params = {
             type: type,
             title: title,
             author: author,
             time: time,
             image: imageUrl,
-            url : link
+            url : link,
+            email
         }
         Todos.insert(params)
+        Toast.show('Saved to bookmark', Toast.LONG);
         console.log('Save DB OK',);
     }
     const Header = () => {

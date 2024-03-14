@@ -8,6 +8,7 @@ import SignUpScreen from '../screen/sign-up/sign-up-screen';
 import HomeNewsScreen from '../screen/home/home-screen';
 import SearchScreen from '../screen/search/search-screen';
 import BookMarkScreen from '../screen/bookmark/book-mark-screen';
+import SettingScreen from '../screen/setting/setting-screen';
 const Tab = createBottomTabNavigator();
 
 export default function BottomNavigation() {
@@ -59,7 +60,7 @@ export default function BottomNavigation() {
             />
             <Tab.Screen
                 name="About"
-                component={SignUpScreen}
+                component={SettingScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <SettingIcon fill={focused ? '#180E19' : 'none'} />

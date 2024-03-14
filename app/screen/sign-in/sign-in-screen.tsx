@@ -19,7 +19,7 @@ import { FirebaseAuth } from '../../firebase/config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
-import { getAccessToken, setAccessToken } from '../../utils/storage';
+import { getAccessToken, setAccessToken, setEmail } from '../../utils/storage';
 import Toast from 'react-native-simple-toast';
 
 const SignInScreen = (props : any) => {
@@ -59,8 +59,11 @@ const SignInScreen = (props : any) => {
       if (responseSignIn) {
         console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
+        await setEmail(watch('email'))
         console.log(await getAccessToken());
-        props.navigation.navigate('Interests')
+        const isBack = false
+        const isHome = true
+        props.navigation.replace('Interests', { isBack, isHome })
         
       }
       // console.log( await responseSignIn.user.getIdToken());

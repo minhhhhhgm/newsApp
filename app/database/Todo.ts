@@ -8,6 +8,7 @@ export class TodoModel {
         author: "string",
         time: "string",
         image: "string",
-        url : "string"
+        url : "string",
+        email:'string'
     }
 }

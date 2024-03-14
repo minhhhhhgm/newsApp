@@ -30,56 +30,63 @@ import { Provider, useSelector } from 'react-redux'
 import { getAccessToken, removeAccessToken } from './app/utils/storage';
 import { useAuth } from './app/i18n/i18n';
 import { Context } from './app/useAuth/authContext';
+import TestScreen from './app/screen/home/test';
+import { AuthProvider } from './app/useAuth/auth';
+import { Router } from './app/useAuth/router';
 LogBox.ignoreAllLogs();
 Todos.data()
 
 
-const AppNavigation = () => {
+export const AppNavigation = () => {
   // const token = useAuth()
   const value = useContext(Context)
   console.log('Test token ', value);
 
   return (
    
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='SignIn' screenOptions={{
-        headerShown: false
-      }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-        <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="Interests" component={InterestsScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
-        <Stack.Screen name="BookMark" component={BookMarkScreen} />
-
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator initialRouteName='SignIn' screenOptions={{
+      headerShown: false
+    }}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
+      <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="Interests" component={InterestsScreen} />
+      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="Detail" component={DetailScreen} />
+      <Stack.Screen name="BookMark" component={BookMarkScreen} />
+      <Stack.Screen name="TestScreen" component={TestScreen} />
+    </Stack.Navigator>
   )
 }
 
-const AppNavigationAuth = () => {
+export const AppNavigationAuth = () => {
   const value = useContext(Context)
   return (
-    value &&
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
-        headerShown: false
-      }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-        <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="Interests" component={InterestsScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
-        <Stack.Screen name="BookMark" component={BookMarkScreen} />
+    <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
+      headerShown: false
+    }}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
+      <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="Interests" component={InterestsScreen} />
+      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="Detail" component={DetailScreen} />
+      <Stack.Screen name="BookMark" component={BookMarkScreen} />
+      <Stack.Screen name="TestScreen" component={TestScreen} />
 
-      </Stack.Navigator>
-    </NavigationContainer>
+    </Stack.Navigator>
+  )
+}
+interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> { }
+const AppNavigator = (props: NavigationProps) => {
+  
+  return (
+    <AuthProvider>
+    </AuthProvider>
   )
 }
 function App(): React.JSX.Element {
@@ -105,19 +112,18 @@ function App(): React.JSX.Element {
   }, [])
   return (
     <Provider store={store}>
-      <Context.Provider value={auth}>
-        <>
-          <StatusBar
-            barStyle={'dark-content'}
-            backgroundColor={'transparent'}
-            translucent
-          />
-          {/* {
+      <>
+        <StatusBar
+          barStyle={'dark-content'}
+          backgroundColor={'transparent'}
+          translucent
+        />
+        {/* {
             auth ? <AppNavigationAuth /> : <AppNavigation />
           } */}
-          <AppNavigation />
-        </>
-      </Context.Provider>
+        {/* <AppNavigation /> */}
+        <AppNavigator />
+      </>
 
     </Provider>
 

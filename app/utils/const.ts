@@ -9,5 +9,9 @@ export const UserStatus = {
     PASSWORD: 'PASSWORD',
     IS_FIRST: 'IS_FIRST',
     CURRENT_LANG: 'CURRENT_LANG',
+    Interest:'Interest',
+    Email :'Email',
+    News: 'News'
+
 
 };

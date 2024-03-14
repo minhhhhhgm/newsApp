@@ -10,13 +10,13 @@ import { Button } from '../../components/Button';
 import * as rssParser from 'react-native-rss-parser';
 import moment from 'moment';
 import { SimpleMenu, SimplePopover } from './home-screen';
-import { getInterest } from '../../utils/storage';
+import { getEmail, getInterest, removeAccessToken, setNews } from '../../utils/storage';
 import { Todos } from '../../database';
 import { convertUrl } from '../../utils/validate';
 import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import { i18n } from '../../i18n/i18n';
 import { useSelector, useDispatch } from 'react-redux'
-import { decrement,increment } from '../../store/counterSlice';
+import { decrement, increment } from '../../store/counterSlice';
 import { RootState } from '../../store/store';
 import Toast from 'react-native-simple-toast';
 
@@ -54,6 +54,8 @@ const HomeScreen = (props: IScreen) => {
     const [indexItem, setIndexItem] = useState(0)
     const [titleNews, setTitleNews] = useState('For You')
     const [dataInterests, setDataInterests] = React.useState<any[]>([])
+    const [email, setEmail] = React.useState<string>('')
+
     const [dataRss, setDataRss] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
     const [domain, setDomain] = useState('vnexpress.net')
@@ -66,8 +68,10 @@ const HomeScreen = (props: IScreen) => {
     });
     const getDataInterest = async () => {
         const response = await getInterest();
-        if (response) {
+        const email = await getEmail()
+        if (response || email) {
             setDataInterests(JSON.parse(response))
+            setEmail(email)
         }
     }
     const PopoverBell = () => {
@@ -164,7 +168,11 @@ const HomeScreen = (props: IScreen) => {
             </Popover>
         )
     }
-    const getData = () => {
+    const setNewsApp = async () => {
+        await setNews('VnExpress')
+    }
+    const getData = async () => {
+        // await removeAccessToken()
         setDataRss([])
         fetch(`https://${domain}/rss/kinh-doanh.rss`)
             .then((response) => response.text())
@@ -246,7 +254,7 @@ const HomeScreen = (props: IScreen) => {
     const handleSaveBookMark = async (item: Article, type: string) => {
         const imageUrl = convertUrl(item)
         const item1 = await Todos.get({ title: item.title });
-        if(item1){
+        if (item1) {
             Toast.show('The post has been saved', Toast.LONG);
             return;
         }
@@ -256,7 +264,8 @@ const HomeScreen = (props: IScreen) => {
             author: newsName === 'Tuổi Trẻ' ? dataRssAll.copyright : dataRssAll.description,
             time: item.published,
             image: imageUrl,
-            url : item.links[0].url
+            url: item.links[0].url,
+            email: email
         }
         Todos.insert(params)
         Toast.show('Saved to bookmark', Toast.LONG);
@@ -270,7 +279,8 @@ const HomeScreen = (props: IScreen) => {
         const type = titleNews
         const title = item.title
 
-        props.navigation.navigate('Detail', { link: link, author, time, imageUrl, type, title })
+
+        props.navigation.navigate('Detail', { link: link, author, time, imageUrl, type, title, email })
     }
     const renderItem = ({ item, index }: { item: Article, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;

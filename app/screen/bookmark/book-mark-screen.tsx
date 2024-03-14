@@ -6,7 +6,7 @@ import Vasern from 'vasern';
 import { Todos } from '../../database';
 import { SimpleMenu } from '../home/home-screen';
 import moment from 'moment';
-import { getInterest } from '../../utils/storage';
+import { getEmail, getInterest } from '../../utils/storage';
 import { Button } from '../../components/Button';
 import { Text } from '../../components/Text';
 // export const TodoSchema = {
@@ -37,14 +37,22 @@ const BookMarkScreen = (props: any) => {
         }
     }
     const getdata = async () => {
-        let todos = await Todos.filter((item: any) => item.type === 'For You').data();
-        console.log('tode', todos);
-        setData(todos)
+        const email = await getEmail()
+        if(email){
+            let todos = await Todos.filter((item: any) => item.type === 'For You' && item.email === email).data();
+            console.log('tode', todos);
+            setData(todos)
+        }
+        
     }
     const getdataByType = async (type: string) => {
-        let todos = await Todos.filter((item: any) => item.type === type).data();
-        console.log('tode', todos);
-        setData(todos)
+        const email = await getEmail()
+        if (email) {
+            let todos = await Todos.filter((item: any) => item.type === type && item.email === email).data();
+            console.log('tode', todos);
+            setData(todos)
+        }
+      
     }
     function delayTime() {
         return new Promise<void>((resolve, reject) => {
