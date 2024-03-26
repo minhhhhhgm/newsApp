@@ -92,7 +92,7 @@ const SearchScreen = (props: any) => {
                 >
                     <TouchableOpacity
                         onPress={() => {
-                            const link = item.description
+                            const link = item.links[0].url
                             props.navigation.navigate('Detail', { link: link })
                         }}>
                         <Image
@@ -189,7 +189,7 @@ const SearchScreen = (props: any) => {
 
         )
     };
-    const {changeLanguage} = useLanguage()
+    const { changeLanguage } = useLanguage()
     return (
         <View style={[styles.body, { paddingTop: insets.top }]}>
             <Controller
@@ -208,12 +208,12 @@ const SearchScreen = (props: any) => {
                         LeftAccessory={() => {
                             return (
                                 <TouchableOpacity
-                                onPress={()=>changeLanguage('vi')}
-                                style={{
-                                    justifyContent: 'center',
-                                    marginLeft: 18,
-                                    marginRight: 10
-                                }}>
+                                    onPress={() => changeLanguage('vi')}
+                                    style={{
+                                        justifyContent: 'center',
+                                        marginLeft: 18,
+                                        marginRight: 10
+                                    }}>
                                     <SearchNewsIcons />
                                 </TouchableOpacity>
                             )
@@ -221,7 +221,7 @@ const SearchScreen = (props: any) => {
                         RightAccessory={() => {
                             return (
                                 <TouchableOpacity
-                                    onPress={() => { onChange(''); setValue('search', '');setDataRssFilter([]) }}
+                                    onPress={() => { onChange(''); setValue('search', ''); setDataRssFilter([]) }}
                                     style={{
                                         justifyContent: 'center',
                                         marginRight: 18

@@ -19,6 +19,7 @@ import { FirebaseAuth } from '../../firebase/config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
+import Toast from 'react-native-simple-toast';
 
 const SignUpScreen = () => {
   const insets = useSafeAreaInsets();
@@ -63,10 +64,12 @@ const SignUpScreen = () => {
       };
       if (responseSignUp){
         const responeUpadte = await updateProfile(responseSignUp.user, update);
+        Toast.show('Create account success', Toast.LONG);
         // navigation.navigate('HomeNews' as never)
       }
     } catch (err) {
       console.log(err);
+      Toast.show('Error !', Toast.LONG);
 
     }
 
