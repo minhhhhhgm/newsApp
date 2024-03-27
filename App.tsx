@@ -33,6 +33,8 @@ import { Context } from './app/useAuth/authContext';
 import TestScreen from './app/screen/home/test';
 import { AuthProvider } from './app/useAuth/auth';
 import { Router } from './app/useAuth/router';
+import './app/i18n/IMLocalize'
+
 LogBox.ignoreAllLogs();
 Todos.data()
 

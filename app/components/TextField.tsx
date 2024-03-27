@@ -11,6 +11,7 @@ import {
 
 import { Text, TextProps } from "./Text"
 import { i18n } from "../i18n/i18n"
+import { useTranslation } from "react-i18next"
 
 export interface TextFieldAccessoryProps {
     style: StyleProp<any>
@@ -90,6 +91,8 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
         value,
         ...TextInputProps
     } = props
+  const { t, i18n } = useTranslation();
+
     const input = useRef<TextInput>(null)
 
     const disabled = TextInputProps.editable === false || status === "disabled"
@@ -158,7 +161,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
                 <TextInput
                     ref={input}
                     underlineColorAndroid={'transparent'}
-                    placeholder={i18n.t(placeholderContent)}
+                    placeholder={t(placeholderContent)}
                     placeholderTextColor={'gray'}
                     {...TextInputProps}
                     editable={!disabled}

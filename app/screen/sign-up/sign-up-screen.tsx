@@ -20,6 +20,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
 import Toast from 'react-native-simple-toast';
+import { useTranslation } from 'react-i18next';
 
 const SignUpScreen = () => {
   const insets = useSafeAreaInsets();
@@ -27,6 +28,8 @@ const SignUpScreen = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const auth = FirebaseAuth
   const navigation = useNavigation()
+  const { t, i18n } = useTranslation();
+
   const {
     control,
     handleSubmit,
@@ -237,7 +240,7 @@ const SignUpScreen = () => {
           textAlign: 'center',
           color: '#000000'
         }}>
-          {i18n.t('By signing up to News24 you are accepting our')}
+          {t('By signing up to News24 you are accepting our')}
           <Text text={`Terms & Conditions`} style={{
             fontWeight: '700',
             color: '#000000'

@@ -21,12 +21,15 @@ import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
 import { getAccessToken, setAccessToken, setEmail } from '../../utils/storage';
 import Toast from 'react-native-simple-toast';
+import { useTranslation } from 'react-i18next';
 
 const SignInScreen = (props : any) => {
   const insets = useSafeAreaInsets();
   const [isShowPassword, setIsShowPassword] = useState(false);
   const auth = FirebaseAuth
   const navigation = useNavigation()
+  const { t } = useTranslation();
+
   const {
     control,
     handleSubmit,
@@ -213,7 +216,7 @@ const SignInScreen = (props : any) => {
           textAlign: 'center',
           color: '#000000'
         }}>
-          {i18n.t('Don’t have an account?')}
+          {t('Don’t have an account?')}
           <Text
             // onPress={() => props.navigation.navigate('BottomNavigation', { screen: 'Home', params: { data: data } })}
             onPress={() => props.navigation.navigate('SignUp')}
