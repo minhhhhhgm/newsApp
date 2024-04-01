@@ -1,84 +1,31 @@
 import React from 'react';
-import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Popover from 'react-native-popover-view';
 import {
     Menu,
-    MenuProvider,
-    MenuOptions,
     MenuOption,
+    MenuOptions,
+    MenuProvider,
     MenuTrigger,
 } from "react-native-popup-menu";
-import { useRoute } from '@react-navigation/native';
-import HomeSelectedIcon from '../../icons/svg-component/homeSelectedIcon';
-import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
-import ShareIcon from '../../icons/svg-component/ShareIcon';
-import Share from "react-native-share"
-import { Article } from './home';
-import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
-
-const HomeNewsScreen = (props: any) => {
-    const route = useRoute();
-    // const { data } = route?.params as any
-
-    // console.log(data);
-
-    const data2 = [
-        1, 2, 3, 4, 5
-    ]
-    const open = () => {
-
-    }
-    const renderItem = ({ item, index }: { item: any, index: any }) => {
-        return (
-            <View style={{ height: 200, marginVertical: 10, justifyContent: 'flex-end', backgroundColor: 'pink' }} key={index}>
-                <Text style={{ color: 'white' }}>{item}</Text>
-                <TouchableOpacity style={{ backgroundColor: "white" }}>
-                    <Text>a....</Text>
-                </TouchableOpacity>
-                <SimpleMenu />
-            </View>
-        )
-    }
+import Share from "react-native-share";
+import ShareIcon from '../../../icons/svg-component/ShareIcon';
+import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 
 
 
-    return (
-        <>
-            <View style={{
-
-            }}>
-                <FlatList
-                    data={data2}
-                    renderItem={renderItem}
-
-                />
-            </View>
-        </>
-
-    )
-}
-export default HomeNewsScreen
-
-const styles = StyleSheet.create({
-    container: {
-        // maxWidth: 20,
-        // maxHeight: 20,
-        alignSelf: 'center',
-        justifyContent: 'center'
-        // left:10
-    },
-});
 interface ISimpleMenu {
     item?: any,
     saveBookMark?: () => void,
     isRemoveBookmark?: boolean,
-    isShareBookMark ?: boolean
+    isShareBookMark ?: boolean,
+    link? : string 
 }
 
 export const SimplePopover = (props: ISimpleMenu) => {
-    const { item, saveBookMark, isRemoveBookmark } = props
+    const { item, saveBookMark, isRemoveBookmark , link } = props
     const shareImage = () => {
-        const urlNews: string = item.links[0].url
+        const urlNews: string = link as string
         const options = {
             url: urlNews,
         }
@@ -338,3 +285,13 @@ export const SimpleMenu = (props: ISimpleMenu) => {
         </MenuProvider>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        // maxWidth: 20,
+        // maxHeight: 20,
+        alignSelf: 'center',
+        justifyContent: 'center'
+        // left:10
+    },
+});

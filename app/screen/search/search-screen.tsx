@@ -10,18 +10,27 @@ import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
 import CancelIcon from '../../icons/svg-component/cancelcon';
 //@ts-ignore
 import * as rssParser from 'react-native-rss-parser';
-import { Article } from '../home/home';
-import { searchData } from '../../utils/validate';
-import { SimpleMenu } from '../home/home-screen';
+import { Article } from '../../type/NewsType';
+import { extractContentInsideBrackets, extractContentInsideSecondBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
+import { SimpleMenu } from '../home/component/popover';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import { useLanguage } from '../../i18n/i18n';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import axios from 'axios';
+
 const SearchScreen = (props: any) => {
     const insets = useSafeAreaInsets();
     const [dataRss, setDataRss] = React.useState<Article[]>([])
     const [dataRssFilter, setDataRssFilter] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
     const navigation = useNavigation()
+    const data = useSelector((state: RootState) => state.newsReducer.data)
+    // console.log('data', data);
+    // console.log('naksdnasss', extractContentInsideBrackets('<![CDATA[https://tuoitre.vn/chay-no-lon-kho-dan-o-ngoai-o-thu-do-indonesia-20240330224612123.htm]]>'));
+    
+    
     const {
         control,
         handleSubmit,
@@ -31,40 +40,71 @@ const SearchScreen = (props: any) => {
     } = useForm({
         mode: 'all'
     })
+
+    const fetchRSSFeed = async () => {
+        try {
+             const res = await axios.get('https://tuoitre.vn/rss/the-gioi.rss')
+        //   const response = await fetch('https://vnexpress.net/rss/the-gioi.rss');
+        //   const text = await response.text();
+          const items = res.data.match(/<item>(.*?)<\/item>/gs);
+          const parsedItems = items?.map((item: string) => ({
+            title: extractString(item, '<title>', '</title>'),
+            link: extractString(item, '<link>', '</link>'),
+            description: extractString(item, '<description>', '</description>'),
+            pubDate: extractString(item, '<pubDate>', '</pubDate>'),
+            imageUrl: extractImageUrl(item),
+          }));
+          console.log('data - ', extractContentInsideBrackets(parsedItems[0].title));
+          
+        //   setFeedItems(parsedItems);
+        } catch (error) {
+          console.error('Error fetching RSS feed:', error);
+        }
+      };
+    
+      
+    
     const getData = async () => {
-        await fetch('https://vnexpress.net/rss/tin-moi-nhat.rss')
-            .then((response) => response.text())
-            .then((responseData) => rssParser.parse(responseData))
-            .then((rss) => {
-                if (rss) {
-                    setDataRss(rss.items)
-                    setDataRssAll(rss)
+        // const res = await axios.get('https://vnexpress.net/rss/the-gioi.rss')
+        // console.log('ress', res.data.channel);
+        
 
-                }
-            });
-        await fetch('https://vnexpress.net/rss/kinh-doanh.rss')
-            .then((response) => response.text())
-            .then((responseData) => rssParser.parse(responseData))
-            .then((rss) => {
-                if (rss) {
-                    console.log(rss);
 
-                    setDataRss(prev => [...prev, ...rss.items])
-                    setDataRssAll((prev: any) => ({
-                        ...prev,
-                        ...rss
-                    }));
-                }
-            });
+        // await fetch('https://vnexpress.net/rss/tin-moi-nhat.rss')
+        //     .then((response) => response.text())
+        //     .then((responseData) => console.log(responseData)
+        //     )
+        //     // .then((rss) => {
+        //     //     if (rss) {
+        //     //         setDataRss(rss.items)
+        //     //         setDataRssAll(rss)
+
+        //     //     }
+        //     // });
+        // await fetch('https://vnexpress.net/rss/kinh-doanh.rss')
+        //     .then((response) => response.text())
+        //     .then((responseData) => rssParser.parse(responseData))
+        //     .then((rss) => {
+        //         if (rss) {
+        //             // console.log(rss.items);
+
+        //             setDataRss(prev => [...prev, ...rss.items])
+        //             setDataRssAll((prev: any) => ({
+        //                 ...prev,
+        //                 ...rss
+        //             }));
+        //         }
+        //     });
     }
     useEffect(() => {
         getData()
+        fetchRSSFeed()
     }, [])
 
     const _onChangeText = (text: string) => {
-        console.log(dataRss);
+        // console.log(dataRss);
 
-        const arrFilter = searchData(dataRss, text)
+        const arrFilter = searchData(data[0], text)
         text !== "" ? setDataRssFilter(arrFilter) : setDataRssFilter([])
         console.log(arrFilter);
 

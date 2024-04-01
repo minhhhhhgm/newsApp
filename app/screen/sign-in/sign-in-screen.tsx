@@ -16,7 +16,7 @@ import FbIcon from '../../icons/svg-component/fbIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
 import AppleIcon from '../../icons/svg-component/appleIcon';
 import { FirebaseAuth } from '../../firebase/config';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from '@firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { Controller, useForm } from "react-hook-form"
 import { getAccessToken, setAccessToken, setEmail } from '../../utils/storage';

@@ -5,7 +5,6 @@ import SearchIcons from '../icons/svg-component/searchIcon';
 import SettingIcon from '../icons/svg-component/settingIcon';
 import HomeScreen from '../screen/home/home';
 import SignUpScreen from '../screen/sign-up/sign-up-screen';
-import HomeNewsScreen from '../screen/home/home-screen';
 import SearchScreen from '../screen/search/search-screen';
 import BookMarkScreen from '../screen/bookmark/book-mark-screen';
 import SettingScreen from '../screen/setting/setting-screen';

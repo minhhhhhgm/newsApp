@@ -92,11 +92,6 @@ const SignUpScreen = () => {
           }}
           text='new24'
         />
-
-        {/* <TouchableOpacity
-          onPress={() => changeLanguage('vi')}>
-          <Text text='clouds' />
-        </TouchableOpacity> */}
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}

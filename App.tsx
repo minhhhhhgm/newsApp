@@ -15,7 +15,6 @@ import { StatusBar } from 'react-native';
 import BottomNavigation from './app/navigation/bottomNavigation';
 import { I18n } from 'i18n-js'
 import { translations } from './app/i18n/trans'
-import HomeNewsScreen from './app/screen/home/home-screen';
 const Stack = createNativeStackNavigator()
 import { LogBox } from "react-native"
 import SignInScreen from './app/screen/sign-in/sign-in-screen';
@@ -30,7 +29,6 @@ import { Provider, useSelector } from 'react-redux'
 import { getAccessToken, removeAccessToken } from './app/utils/storage';
 import { useAuth } from './app/i18n/i18n';
 import { Context } from './app/useAuth/authContext';
-import TestScreen from './app/screen/home/test';
 import { AuthProvider } from './app/useAuth/auth';
 import { Router } from './app/useAuth/router';
 import './app/i18n/IMLocalize'
@@ -52,13 +50,11 @@ export const AppNavigation = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-      <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="Interests" component={InterestsScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
-      <Stack.Screen name="TestScreen" component={TestScreen} />
     </Stack.Navigator>
   )
 }
@@ -72,13 +68,11 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-      <Stack.Screen name="HomeNews" component={HomeNewsScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="Interests" component={InterestsScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
-      <Stack.Screen name="TestScreen" component={TestScreen} />
 
     </Stack.Navigator>
   )

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headBlackColor } from '../../utils/color';
 import Vasern from 'vasern';
 import { Todos } from '../../database';
-import { SimpleMenu } from '../home/home-screen';
+import { SimpleMenu } from '../home/component/popover';
 import moment from 'moment';
 import { getEmail, getInterest } from '../../utils/storage';
 import { Button } from '../../components/Button';

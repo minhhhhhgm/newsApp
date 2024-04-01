@@ -1,7 +1,6 @@
 import React from "react";
-import { Text as RNText, TextProps as RNTextProps, StyleProp, TextStyle } from "react-native";
-import { i18n } from "../i18n/i18n";
 import { useTranslation } from "react-i18next";
+import { Text as RNText, TextProps as RNTextProps, StyleProp, TextStyle } from "react-native";
 
 
 export interface TextProps extends RNTextProps {
@@ -12,7 +11,7 @@ export interface TextProps extends RNTextProps {
 }
 
 export function Text(props: TextProps) { 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const {  size, text, children, style: $styleOverride, ...rest } = props
   const content = text 
