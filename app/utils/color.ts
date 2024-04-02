@@ -1,0 +1,1 @@
+export const headBlackColor ='#180E19'
