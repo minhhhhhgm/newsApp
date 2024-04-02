@@ -30,7 +30,7 @@ const SettingScreen = (props: IScreen) => {
         {
             index: 1,
             name: 'Account',
-            onPress: () => { },
+            onPress: () => { props.navigation.navigate('Account')},
             icon: ProfileIcon
         },
         {

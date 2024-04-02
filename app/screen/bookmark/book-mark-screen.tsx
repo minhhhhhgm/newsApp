@@ -67,6 +67,10 @@ const BookMarkScreen = (props: any) => {
 
 
     }
+    const handleNavigate =(title : string, link : string)=>{
+        props.navigation.navigate('Detail', { link ,title })
+    }
+
     useEffect(() => {
         getdata()
         getDataInterest()
@@ -82,7 +86,10 @@ const BookMarkScreen = (props: any) => {
 
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         return (
-            <View style={styles.viewItem} key={index}>
+            <TouchableOpacity
+            activeOpacity={1}
+            onPress={()=>handleNavigate(item.title , item.url)}
+            style={styles.viewItem} key={index}>
                 <View
                     style={{ flexDirection: 'row' }}>
                     <Image
@@ -123,7 +130,7 @@ const BookMarkScreen = (props: any) => {
                     marginTop: 30,
                     marginBottom: 20
                 }}></View>
-            </View>
+            </TouchableOpacity>
 
         )
     };

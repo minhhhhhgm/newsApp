@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/Text';
@@ -16,7 +16,8 @@ import Toast from 'react-native-simple-toast';
 const DetailScreen = (props: any) => {
     const insets = useSafeAreaInsets();
     const route = useRoute();
-    const { link, author, time, imageUrl, type, title ,email} = route.params as any;
+    const [isSaveBookMark, setIsSaveBookMark] = useState(false)
+    const { link, author, time, imageUrl, type, title, email } = route.params as any;
     const handleShareNews = () => {
         const options = {
             url: link,
@@ -29,7 +30,20 @@ const DetailScreen = (props: any) => {
                 e && console.log(e)
             })
     }
-    const handleSaveBookMark = async() => {
+    useEffect(() => {
+        handleCheckIsSave()
+    }, [])
+
+    const handleCheckIsSave = async () => {
+        const item1 = await Todos.get({ title: title });
+        if (item1) {
+            setIsSaveBookMark(!isSaveBookMark)
+            return item1;
+        } else {
+            return null
+        }
+    }
+    const handleSaveBookMark = async () => {
         const item1 = await Todos.get({ title: title });
         if (item1) {
             Toast.show('The post has been saved', Toast.LONG);
@@ -41,7 +55,7 @@ const DetailScreen = (props: any) => {
             author: author,
             time: time,
             image: imageUrl,
-            url : link,
+            url: link,
             email
         }
         Todos.insert(params)
@@ -70,7 +84,7 @@ const DetailScreen = (props: any) => {
                         style={{
                             marginRight: 15
                         }}>
-                        <BookMarkIcon />
+                        <BookMarkIcon fill={isSaveBookMark ? '#180E19' : 'none'} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleShareNews}>
                         <ShareIcon width={24} height={24} />

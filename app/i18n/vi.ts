@@ -43,6 +43,9 @@ export const vi =  {
     'Dark Mode': 'Chế độ tối',
     'About': 'Giới thiệu',
     'Log Out': 'Đăng xuất',
-    'Change Language': 'Thay đổi ngôn ngữ'
+    'Change Language': 'Thay đổi ngôn ngữ',
+    'Current password':'Mật khẩu hiện tại',
+    'New password':'Mật khẩu mới',
+    'Confirm new password':'Xác nhận mật khẩu mới'
 
   }

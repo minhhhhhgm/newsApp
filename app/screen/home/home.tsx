@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../components/Button';
 import { defaultImage } from '../../utils/const';
 import axios from 'axios';
@@ -20,6 +20,8 @@ export interface IScreen {
 
 const HomeScreen = (props: IScreen) => {
     const [indexItem, setIndexItem] = useState(0)
+    const [id, setId] = useState(0)
+    const [isVisible, setIsVisible] = useState(false)
     const [titleNews, setTitleNews] = useState('For You')
     const [dataInterests, setDataInterests] = React.useState<any[]>([])
     const [email, setEmail] = React.useState<string>('')
@@ -33,6 +35,16 @@ const HomeScreen = (props: IScreen) => {
         getData()
     }, [domain])
 
+    const handleToggleVisible = (id: number) => {
+        setIsVisible(prev => !prev)
+        setId(id)
+    }
+    const handlecloseVisible = () => {
+        setIsVisible(prev => !prev)
+        setId(-1)
+        // setId(id)
+    }
+
     const getDataInterest = async () => {
         const response = await getInterest();
         const email = await getEmail()
@@ -41,7 +53,7 @@ const HomeScreen = (props: IScreen) => {
             setEmail(email)
         }
     }
-   
+
     const getData = async () => {
         setFeedItems([])
         try {
@@ -77,8 +89,8 @@ const HomeScreen = (props: IScreen) => {
             console.error('Error fetching RSS feed:', error);
         }
     }
-   
-    function handleRefresh() {}
+
+    function handleRefresh() { }
 
     const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
         const item1 = await Todos.get({ title: title });
@@ -151,7 +163,7 @@ const HomeScreen = (props: IScreen) => {
                             numberOfLines={3}
                             style={styles.textTitle}
                         >{title}</TextRn>
-                        <TextRn style={styles.textAuthor}>{author}</TextRn>
+                        <TextRn onPress={() => handleToggleVisible(index)} style={styles.textAuthor}>{author}</TextRn>
                         <View
                             style={styles.rowContent}>
                             <View
@@ -168,6 +180,17 @@ const HomeScreen = (props: IScreen) => {
 
                         </View>
                     </View>
+                    {
+                        isVisible && index === id &&
+                        <View style={{
+                            width: 100,
+                            height: 100,
+                            backgroundColor: 'red',
+                            position: 'absolute'
+                        }}>
+                            <TextRn>akjsdka</TextRn>
+                        </View>
+                    }
                 </View>
                 <View style={styles.lineHorizotal}></View>
             </View>
@@ -175,7 +198,7 @@ const HomeScreen = (props: IScreen) => {
         )
     };
     return (
-        <View style={styles.body}>
+        <Pressable style={styles.body} onPress={handlecloseVisible}>
             <Header
                 newsName={newsName}
                 onChangeVnE={handleChangeVnE}
@@ -225,7 +248,7 @@ const HomeScreen = (props: IScreen) => {
                     )
                 }}
             />
-        </View>
+        </Pressable>
 
     )
 }

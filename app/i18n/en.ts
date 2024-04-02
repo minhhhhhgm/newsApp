@@ -42,5 +42,8 @@ export const en =  {
     "Dark Mode":'Dark Mode',
     "About":"About",
     "Log Out":"Log Out",
-    "Change Language":'Change Language'
+    "Change Language":'Change Language',
+    'Current password':'Current password',
+    'New password':'New password',
+    'Confirm new password':'Confirm new password'
   }

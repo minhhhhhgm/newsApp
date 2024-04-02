@@ -23,8 +23,10 @@ import SignInScreen from './app/screen/sign-in/sign-in-screen';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import { store } from './app/store/store';
 import { AuthProvider } from './app/useAuth/auth';
+import AccountScreen from './app/screen/account/account-screen';
+import { FirebaseAuth } from './app/firebase/config';
 const Stack = createNativeStackNavigator()
-
+export const auth = FirebaseAuth
 LogBox.ignoreAllLogs();
 Todos.data()
 
@@ -60,6 +62,7 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
+      <Stack.Screen name="Account" component={AccountScreen} />
 
     </Stack.Navigator>
   )
