@@ -1,36 +1,31 @@
-import React, { useCallback, useEffect } from 'react';
-import { ScrollView, StyleSheet, Switch, TextInput, TouchableOpacity, View, Text as TextRn, FlatList, RefreshControl, Image } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from '../../components/Button';
-import { Text } from '../../components/Text';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextField } from '../../components/TextField';
-import SearchIcons from '../../icons/svg-component/searchIcon';
 import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
 import CancelIcon from '../../icons/svg-component/cancelcon';
-//@ts-ignore
-import * as rssParser from 'react-native-rss-parser';
-import { Article } from '../../type/NewsType';
-import { extractContentInsideBrackets, extractContentInsideSecondBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
-import { SimpleMenu } from '../home/component/popover';
 import { useNavigation } from '@react-navigation/native';
-import moment from 'moment';
-import { useLanguage } from '../../i18n/i18n';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 import axios from 'axios';
+import moment from 'moment';
+import { Article } from '../../type/NewsType';
+import { extractContentInsideBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
+import { SimpleMenu } from '../home/component/popover';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ParamsList } from '../../../App';
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'Search'>
 
-const SearchScreen = (props: any) => {
+const SearchScreen = () => {
     const insets = useSafeAreaInsets();
+    const navigation = useNavigation<NavigationProps>()
     const [dataRss, setDataRss] = React.useState<Article[]>([])
     const [dataRssFilter, setDataRssFilter] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
-    const navigation = useNavigation()
-    const data = useSelector((state: RootState) => state.newsReducer.data)
+    // const data = useSelector((state: RootState) => state.newsReducer.data)
     // console.log('data', data);
     // console.log('naksdnasss', extractContentInsideBrackets('<![CDATA[https://tuoitre.vn/chay-no-lon-kho-dan-o-ngoai-o-thu-do-indonesia-20240330224612123.htm]]>'));
-    
-    
+
+    const data = [1,2,4,5,6,7,78,64,45,22,55,662,243,4343,124,234,53,54,345,3453,65,2]
     const {
         control,
         handleSubmit,
@@ -43,31 +38,31 @@ const SearchScreen = (props: any) => {
 
     const fetchRSSFeed = async () => {
         try {
-             const res = await axios.get('https://tuoitre.vn/rss/the-gioi.rss')
-        //   const response = await fetch('https://vnexpress.net/rss/the-gioi.rss');
-        //   const text = await response.text();
-          const items = res.data.match(/<item>(.*?)<\/item>/gs);
-          const parsedItems = items?.map((item: string) => ({
-            title: extractString(item, '<title>', '</title>'),
-            link: extractString(item, '<link>', '</link>'),
-            description: extractString(item, '<description>', '</description>'),
-            pubDate: extractString(item, '<pubDate>', '</pubDate>'),
-            imageUrl: extractImageUrl(item),
-          }));
-          console.log('data - ', extractContentInsideBrackets(parsedItems[0].title));
-          
-        //   setFeedItems(parsedItems);
+            const res = await axios.get('https://tuoitre.vn/rss/the-gioi.rss')
+            //   const response = await fetch('https://vnexpress.net/rss/the-gioi.rss');
+            //   const text = await response.text();
+            const items = res.data.match(/<item>(.*?)<\/item>/gs);
+            const parsedItems = items?.map((item: string) => ({
+                title: extractString(item, '<title>', '</title>'),
+                link: extractString(item, '<link>', '</link>'),
+                description: extractString(item, '<description>', '</description>'),
+                pubDate: extractString(item, '<pubDate>', '</pubDate>'),
+                imageUrl: extractImageUrl(item),
+            }));
+            console.log('data - ', extractContentInsideBrackets(parsedItems[0].title));
+
+            //   setFeedItems(parsedItems);
         } catch (error) {
-          console.error('Error fetching RSS feed:', error);
+            console.error('Error fetching RSS feed:', error);
         }
-      };
-    
-      
-    
+    };
+
+
+
     const getData = async () => {
         // const res = await axios.get('https://vnexpress.net/rss/the-gioi.rss')
         // console.log('ress', res.data.channel);
-        
+
 
 
         // await fetch('https://vnexpress.net/rss/tin-moi-nhat.rss')
@@ -124,16 +119,13 @@ const SearchScreen = (props: any) => {
                 marginTop: 15
             }}>
                 <View
-
                     style={{
-
                         flexDirection: 'row'
-                    }}
-                >
+                    }}>
                     <TouchableOpacity
                         onPress={() => {
                             const link = item.links[0].url
-                            props.navigation.navigate('Detail', { link: link })
+                            navigation.navigate('Detail', { link: link })
                         }}>
                         <Image
                             source={{
@@ -179,10 +171,8 @@ const SearchScreen = (props: any) => {
                                 style={{
                                     flex: 1,
                                     flexDirection: 'row',
-                                }}
-                            >
+                                }}>
                                 <TextRn style={{
-
                                     fontWeight: '700',
                                     fontFamily: 'SF Pro',
                                     color: '#69BDFD'
@@ -229,7 +219,6 @@ const SearchScreen = (props: any) => {
 
         )
     };
-    const { changeLanguage } = useLanguage()
     return (
         <View style={[styles.body, { paddingTop: insets.top }]}>
             <Controller
@@ -248,7 +237,6 @@ const SearchScreen = (props: any) => {
                         LeftAccessory={() => {
                             return (
                                 <TouchableOpacity
-                                    onPress={() => changeLanguage('vi')}
                                     style={{
                                         justifyContent: 'center',
                                         marginLeft: 18,

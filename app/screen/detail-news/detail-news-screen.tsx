@@ -1,23 +1,31 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text } from '../../components/Text';
-import { headBlackColor } from '../../utils/color';
-import { logoLogin } from '../../utils/const';
+import Share from "react-native-share";
+import Toast from 'react-native-simple-toast';
 import WebView from 'react-native-webview';
-import { useRoute } from '@react-navigation/native';
+import { ParamsList } from '../../../App';
+import { Todos } from '../../database';
+import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
-import ShareIcon from '../../icons/svg-component/ShareIcon';
-import Share from "react-native-share"
-import { Todos } from '../../database';
-import Toast from 'react-native-simple-toast';
+import { COLOR } from '../../utils/color';
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'Detail'>
 
-const DetailScreen = (props: any) => {
+const DetailScreen = () => {
     const insets = useSafeAreaInsets();
+    const navigation = useNavigation<NavigationProps>()
     const route = useRoute();
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
     const { link, author, time, imageUrl, type, title, email } = route.params as any;
+
+    useEffect(() => {
+        handleCheckIsSave()
+    }, [])
+
+
     const handleShareNews = () => {
         const options = {
             url: link,
@@ -30,10 +38,6 @@ const DetailScreen = (props: any) => {
                 e && console.log(e)
             })
     }
-    useEffect(() => {
-        handleCheckIsSave()
-    }, [])
-
     const handleCheckIsSave = async () => {
         const item1 = await Todos.get({ title: title });
         if (item1) {
@@ -46,6 +50,7 @@ const DetailScreen = (props: any) => {
     const handleSaveBookMark = async () => {
         const item1 = await Todos.get({ title: title });
         if (item1) {
+            setIsSaveBookMark(true)
             Toast.show('The post has been saved', Toast.LONG);
             return;
         }
@@ -61,6 +66,7 @@ const DetailScreen = (props: any) => {
         Todos.insert(params)
         Toast.show('Saved to bookmark', Toast.LONG);
         console.log('Save DB OK',);
+        setIsSaveBookMark(true)
     }
     const Header = () => {
         return (
@@ -72,7 +78,7 @@ const DetailScreen = (props: any) => {
                 marginBottom: 10,
             }}>
                 <TouchableOpacity
-                    onPress={() => props.navigation.goBack()}>
+                    onPress={() => navigation.goBack()}>
                     <BackIcon />
                 </TouchableOpacity>
                 <View style={{
@@ -80,13 +86,16 @@ const DetailScreen = (props: any) => {
                     alignItems: 'center'
                 }}>
                     <TouchableOpacity
+                        activeOpacity={1}
                         onPress={handleSaveBookMark}
                         style={{
                             marginRight: 15
                         }}>
-                        <BookMarkIcon fill={isSaveBookMark ? '#180E19' : 'none'} />
+                        <BookMarkIcon fill={isSaveBookMark ? COLOR.focusColor : 'none'} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleShareNews}>
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={handleShareNews}>
                         <ShareIcon width={24} height={24} />
                     </TouchableOpacity>
 

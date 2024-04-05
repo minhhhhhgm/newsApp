@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { headBlackColor } from '../../utils/color';
-import Vasern from 'vasern';
-import { Todos } from '../../database';
-import { SimpleMenu } from '../home/component/popover';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import { getEmail, getInterest } from '../../utils/storage';
-import { Button } from '../../components/Button';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
+import { Todos } from '../../database';
+import { COLOR } from '../../utils/color';
+import { getEmail, getInterest } from '../../utils/storage';
+import { SimpleMenu } from '../home/component/popover';
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
+const BookMarkScreen = () => {
 
-const BookMarkScreen = (props: any) => {
     const insets = useSafeAreaInsets();
+    const navigation = useNavigation<NavigationProps>()
     const [data, setData] = useState([])
     const [countDelete, setCountDelete] = useState(0)
     const [dataInterests, setDataInterests] = React.useState<any[]>([])
@@ -29,7 +32,6 @@ const BookMarkScreen = (props: any) => {
             console.log('tode', todos);
             setData(todos)
         }
-
     }
     const getdataByType = async (type: string) => {
         const email = await getEmail()
@@ -38,7 +40,6 @@ const BookMarkScreen = (props: any) => {
             console.log('tode', todos);
             setData(todos)
         }
-
     }
     function delayTime() {
         return new Promise<void>((resolve, reject) => {
@@ -48,7 +49,6 @@ const BookMarkScreen = (props: any) => {
         });
     }
     const testDb = async (id: string, type: string) => {
-        setCountDelete(countDelete + 1)
         const item1 = await Todos.get({ id: id });
         await Todos.remove(item1)
         const todos = await Todos.data();
@@ -59,16 +59,12 @@ const BookMarkScreen = (props: any) => {
             } else {
                 getdataByType(type)
             }
-
         }).catch((error) => {
             console.error("Đã xảy ra lỗi:", error);
         });
-        console.log('nhay day');
-
-
     }
-    const handleNavigate =(title : string, link : string)=>{
-        props.navigation.navigate('Detail', { link ,title })
+    const handleNavigate = (title: string, link: string) => {
+        navigation.navigate('Detail', { link, title })
     }
 
     useEffect(() => {
@@ -76,20 +72,16 @@ const BookMarkScreen = (props: any) => {
         getDataInterest()
         // testDb()
     }, [])
-    useEffect(() => {
-    }, [countDelete])
-
-
-
+    // useEffect(() => {
+    // }, [countDelete])
 
     const renderItem = ({ item, index }: { item: any, index: number }) => {
-
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         return (
             <TouchableOpacity
-            activeOpacity={1}
-            onPress={()=>handleNavigate(item.title , item.url)}
-            style={styles.viewItem} key={index}>
+                activeOpacity={1}
+                onPress={() => handleNavigate(item.title, item.url)}
+                style={styles.viewItem} key={index}>
                 <View
                     style={{ flexDirection: 'row' }}>
                     <Image
@@ -111,7 +103,6 @@ const BookMarkScreen = (props: any) => {
                                         flex: 0.7
                                     }}>{relativeTime}</TextRn>
                             </View>
-
                             <View style={styles.viewPopover}>
                                 <SimpleMenu
                                     isShareBookMark={true}
@@ -120,18 +111,16 @@ const BookMarkScreen = (props: any) => {
                                     saveBookMark={() => { testDb(item.id, item.type) }}
                                 />
                             </View>
-
                         </View>
                     </View>
                 </View>
                 <View style={{
                     height: 1,
-                    backgroundColor: '#EEEEEE',
+                    backgroundColor: COLOR.buttonColorInactive,
                     marginTop: 30,
                     marginBottom: 20
                 }}></View>
             </TouchableOpacity>
-
         )
     };
     return (
@@ -142,7 +131,6 @@ const BookMarkScreen = (props: any) => {
                     style={styles.headerText}
                 />
             </View>
-            
             {
                 data && <FlatList
                     showsVerticalScrollIndicator={false}
@@ -155,7 +143,8 @@ const BookMarkScreen = (props: any) => {
                                 {
                                     dataInterests.map((item: any, index) => {
                                         return (
-                                            <Button
+                                            <TouchableOpacity
+                                                activeOpacity={1}
                                                 key={index}
                                                 onPress={() => {
                                                     setIndexItem(index);
@@ -165,15 +154,18 @@ const BookMarkScreen = (props: any) => {
                                                         getdataByType(item.text)
                                                     }
                                                 }}
-                                                text={item.text}
-                                                textStyle={{
-                                                    color: index == indexItem ? '#FFFFFF' : '#909090'
-                                                }}
                                                 style={[styles.buttonCategory, {
-                                                    backgroundColor: index == indexItem ? '#180E19' : '#EEEEEE',
+                                                    backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
                                                     marginLeft: index === 0 ? 16 : 0,
                                                 }]}
-                                            />
+                                            >
+                                                <Text
+                                                    text={item.text}
+                                                    style={{
+                                                        color: index == indexItem ? COLOR.white : COLOR.authorColor
+                                                    }}
+                                                />
+                                            </TouchableOpacity>
                                         )
                                     })
                                 }
@@ -189,7 +181,6 @@ const BookMarkScreen = (props: any) => {
                     }}
                 />
             }
-
         </View>
     );
 };
@@ -197,11 +188,11 @@ const BookMarkScreen = (props: any) => {
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: COLOR.backgroundColor,
     },
     headerText: {
         fontWeight: '700',
-        color: '#000000',
+        color: COLOR.darkBlack,
         fontSize: 15,
         marginTop: 55,
         marginLeft: 16
@@ -232,13 +223,13 @@ const styles = StyleSheet.create({
         flex: 3,
         fontWeight: '700',
         fontFamily: 'SF Pro',
-        color: '#180E19'
+        color: COLOR.buttonColorActive
     },
     textAuthor: {
         flex: 2,
         fontWeight: '500',
         fontFamily: 'SF Pro',
-        color: '#909090'
+        color: COLOR.authorColor
     },
     viewRightContent: {
         flexDirection: 'row',
@@ -251,11 +242,11 @@ const styles = StyleSheet.create({
     textType: {
         fontWeight: '700',
         fontFamily: 'SF Pro',
-        color: '#69BDFD'
+        color: COLOR.textTypeColor
     },
     bigDot: {
         fontSize: 10,
-        color: '#909090',
+        color: COLOR.authorColor,
         alignSelf: 'flex-start',
         marginTop: 3,
         marginHorizontal: 10

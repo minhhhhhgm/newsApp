@@ -2,18 +2,23 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
 import { Text } from '../../components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from '../../components/Button';
 import { setInterest } from '../../utils/storage';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import BackIcon from '../../icons/svg-component/backIcon';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ParamsList } from '../../../App';
 export interface DataInterests {
     text: string,
     isCheck?: boolean,
     endpoint: string
 }
-const InterestsScreen = (props: any) => {
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'Interests'>
+
+const InterestsScreen = () => {
     const route = useRoute();
-    const { isBack  , isHome} = route.params as any;
+    const navigation = useNavigation<NavigationProps>()
+
+    const { isBack, isHome } = route.params as any;
     const [all, setAll] = React.useState(true);
     const [worldNew, setWorldNew] = React.useState(true);
     const [politics, setPolitics] = React.useState(true);
@@ -141,12 +146,9 @@ const InterestsScreen = (props: any) => {
                 text: 'For You',
                 endpoint: 'tin-moi-nhat'
             })
-        }        
+        }
         await setInterest(JSON.stringify(checkedItems))
-        console.log("isback", isBack);
-        
-        props.navigation.replace('BottomNavigation', { screen: 'Home', params: { data: checkedItems } })
-
+        navigation.replace('BottomNavigation')
     }
 
     async function goBack() {
@@ -174,27 +176,23 @@ const InterestsScreen = (props: any) => {
             })
         }
         await setInterest(JSON.stringify(checkedItems))
-        console.log("isback", isBack);
-
-        props.navigation.goBack()
-
+        navigation.goBack()
     }
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
-            <View style={{flexDirection:'row'}}>
+            <View style={{ flexDirection: 'row' }}>
                 {
                     isBack && <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }}
                         onPress={goBack}>
                         <BackIcon />
                     </TouchableOpacity>
                 }
-               
                 <Text
                     text='Interests'
                     style={styles.headerText}
                 />
             </View>
-           
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
             >
@@ -236,13 +234,10 @@ const InterestsScreen = (props: any) => {
                 })}
             </ScrollView>
             {
-                !isBack && 
-                <Button
+                !isBack &&
+                <TouchableOpacity
+                    activeOpacity={1}
                     onPress={getCheckedItems}
-                    text='Start'
-                    textStyle={{
-                        color: '#FFFFFF'
-                    }}
                     style={{
                         marginTop: 60,
                         marginBottom: 20,
@@ -251,10 +246,16 @@ const InterestsScreen = (props: any) => {
                         paddingHorizontal: 50,
                         backgroundColor: '#180E19',
                         borderRadius: 30
-                    }}
-                />
+                    }}>
+                    <Text
+                        text='Start'
+                        style={{
+                            color: '#FFFFFF'
+                        }} />
+                </TouchableOpacity>
+
             }
-            
+
         </View>
     )
 }

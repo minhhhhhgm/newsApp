@@ -24,7 +24,7 @@ const AuthProvider = () => {
   async function loadStorageData(): Promise<void> {
     try {
       const accessToken = await getAccessToken()
-      console.log("accessToken", accessToken)
+      // console.log("accessToken", accessToken)
       if (accessToken) {
         setRedirect(1)
       } else {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dimensions, Modal, ScrollView, StyleSheet, Switch, View, Text as TextRN, TouchableOpacity } from 'react-native';
 import { Text } from '../../components/Text';
-import { IScreen } from '../home/home';
 import ProfileIcon from '../../icons/svg-component/profile';
 import RightChvron from '../../icons/svg-component/RightChvron';
 import InterRestIcon from '../../icons/svg-component/interser';
@@ -9,28 +8,37 @@ import Noti from '../../icons/svg-component/noti';
 import DarkModeicon from '../../icons/svg-component/darkmodeicon';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import LogOutIcon from '../../icons/svg-component/logout';
-import { useLanguage } from '../../i18n/i18n';
 import { removeAccessToken } from '../../utils/storage';
 import { useTranslation } from 'react-i18next';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ParamsListBottomNav } from '../../navigation/bottomNavigation';
+import { useNavigation } from '@react-navigation/native';
+import { ParamsList } from '../../../App';
 const { width, height } = Dimensions.get('screen');
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
-const SettingScreen = (props: IScreen) => {
+const SettingScreen = () => {
     const [darkmode, setDarkMode] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
-    const { changeLanguage } = useLanguage()
     const { t, i18n } = useTranslation();
+    const navigation = useNavigation<NavigationProps>()
+
 
     const data = [
         {
             index: 0,
             name: 'Profile',
-            onPress: () => { },
+            onPress: () => {
+                navigation.navigate('Account')
+            },
             icon: ProfileIcon
         },
         {
             index: 1,
             name: 'Account',
-            onPress: () => { props.navigation.navigate('Account')},
+            onPress: () => {
+                navigation.navigate('Account')
+            },
             icon: ProfileIcon
         },
         {
@@ -41,7 +49,8 @@ const SettingScreen = (props: IScreen) => {
                 const isHome = false
                 console.log("loggg");
 
-                props.navigation.navigate('Interests', { isBack, isHome })
+
+                // navigation.navigate('Interests', { isBack, isHome })
             },
             icon: ProfileIcon
         },
@@ -74,7 +83,7 @@ const SettingScreen = (props: IScreen) => {
             name: 'Log Out',
             onPress: async () => {
                 await removeAccessToken()
-                props.navigation.replace('SignIn')
+                navigation.replace('SignIn')
             },
             icon: ProfileIcon
         },
@@ -176,10 +185,10 @@ const SettingScreen = (props: IScreen) => {
                                         marginBottom: 10
                                     }}>Choose Language</TextRN>
                                     <TouchableOpacity
-                                        onPress={() => { changeLanguage('vi');
-                                         setIsChoosLanguage(!isChoosLanguage) 
-                                         i18n.changeLanguage('vi')
-                                         }}>
+                                        onPress={() => {
+                                            setIsChoosLanguage(!isChoosLanguage)
+                                            i18n.changeLanguage('vi')
+                                        }}>
                                         <TextRN style={{
                                             fontWeight: '700',
                                             color: '#000000',
@@ -196,11 +205,10 @@ const SettingScreen = (props: IScreen) => {
                                     }}>
 
                                     </View>
-                                    <TouchableOpacity onPress={() => { 
-                                        changeLanguage('en'); 
+                                    <TouchableOpacity onPress={() => {
                                         setIsChoosLanguage(!isChoosLanguage);
                                         i18n.changeLanguage('en')
-                                        }}>
+                                    }}>
                                         <TextRN style={{
                                             fontWeight: '700',
                                             color: '#000000',
@@ -290,8 +298,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignSelf: 'center'
     },
-    
-    
+
+
 });
 
 export default SettingScreen;

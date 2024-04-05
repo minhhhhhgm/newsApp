@@ -1,89 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
-import { Button } from '../../components/Button';
-import { defaultImage } from '../../utils/const';
-import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import Toast from 'react-native-simple-toast';
-import { useDispatch } from 'react-redux';
-import { Todos } from '../../database';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { ParamsList, auth } from '../../../App';
+import { Text } from '../../components/Text';
+import ShareIcon from '../../icons/svg-component/ShareIcon';
+import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import { NewsType } from '../../type/NewsType';
-import { getEmail, getInterest } from '../../utils/storage';
-import { extractContentInsideBrackets, extractImageUrl, extractString } from '../../utils/validate';
+import { COLOR } from '../../utils/color';
+import { dataInterest, getDataRss, getDataRssByTitle, handleSaveBookMark, shareImage } from '../../utils/homeAction';
+import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
-import { SimplePopover } from './component/popover';
-
-
-export interface IScreen {
-    navigation: any
-}
-
-const HomeScreen = (props: IScreen) => {
+import { ItemNews } from './component/item-news';
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
+const HomeScreen = () => {
+    const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
-    const [id, setId] = useState(0)
-    const [isVisible, setIsVisible] = useState(false)
+    const [position, setPosition] = useState({ x: 0, y: 0 })
+    const [isVisible, setIsVisible] = useState({
+        id: 0,
+        visible: false
+    })
     const [titleNews, setTitleNews] = useState('For You')
-    const [dataInterests, setDataInterests] = React.useState<any[]>([])
-    const [email, setEmail] = React.useState<string>('')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
     const [domain, setDomain] = useState('vnexpress.net')
     const [newsName, setNewsName] = useState('VnExpress')
-    const dispatch = useDispatch()
-
+    const email = auth.currentUser?.email as string
     useEffect(() => {
-        getDataInterest()
         getData()
     }, [domain])
 
-    const handleToggleVisible = (id: number) => {
-        setIsVisible(prev => !prev)
-        setId(id)
-    }
+    const handleToggleVisible = useCallback((id: number) => {
+        setIsVisible({
+            id: id,
+            visible: true
+        })
+    }, [])
+
     const handlecloseVisible = () => {
-        setIsVisible(prev => !prev)
-        setId(-1)
-        // setId(id)
+        setIsVisible({
+            id: -1,
+            visible: false
+        })
+        // handleSetPosition(0, 0)
     }
 
-    const getDataInterest = async () => {
-        const response = await getInterest();
-        const email = await getEmail()
-        if (response || email) {
-            setDataInterests(JSON.parse(response))
-            setEmail(email)
-        }
-    }
 
     const getData = async () => {
         setFeedItems([])
         try {
-            const res = await axios.get(`https://${domain}/rss/the-gioi.rss`)
-            const items = res.data.match(/<item>(.*?)<\/item>/gs);
-            const parsedItems = items?.map((item: string) => ({
-                title: extractString(item, '<title>', '</title>'),
-                link: extractString(item, '<link>', '</link>'),
-                description: extractString(item, '<description>', '</description>'),
-                pubDate: extractString(item, '<pubDate>', '</pubDate>'),
-                imageUrl: extractImageUrl(item),
-            }));
+            const parsedItems = await getDataRss(domain)
             setFeedItems(parsedItems);
         } catch (error) {
             console.error('Error fetching RSS feed:', error);
         }
-
     }
     const handleGetDataByTitle = async (endpoint: string) => {
         setFeedItems([])
         try {
-            const res = await axios.get(`https://${domain}/rss/${endpoint}.rss`)
-            const items = res.data.match(/<item>(.*?)<\/item>/gs);
-            const parsedItems = items?.map((item: string) => ({
-                title: extractString(item, '<title>', '</title>'),
-                link: extractString(item, '<link>', '</link>'),
-                description: extractString(item, '<description>', '</description>'),
-                pubDate: extractString(item, '<pubDate>', '</pubDate>'),
-                imageUrl: extractImageUrl(item),
-            }));
+            const parsedItems = await getDataRssByTitle(domain, endpoint)
             setFeedItems(parsedItems);
         } catch (error) {
             console.error('Error fetching RSS feed:', error);
@@ -92,28 +68,9 @@ const HomeScreen = (props: IScreen) => {
 
     function handleRefresh() { }
 
-    const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
-        const item1 = await Todos.get({ title: title });
-        if (item1) {
-            Toast.show('The post has been saved', Toast.LONG);
-            return;
-        }
-        const params = {
-            type: type,
-            title: title,
-            author: author,
-            time: time,
-            image: image,
-            url: url,
-            email: email
-        }
-        Todos.insert(params)
-        Toast.show('Saved to bookmark', Toast.LONG);
-
-    }
-    const handleNavigateDetailNews = (type: string, title: string, author: string, time: string, url: string, image: string) => {
-        props.navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email })
-    }
+    const handleNavigateDetailNews = useCallback((type: string, title: string, author: string, time: string, url: string, image: string) => {
+        navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email })
+    }, [])
     const handleChangeVnE = () => {
         setNewsName('VnExpress');
         setDomain('vnexpress.net')
@@ -127,6 +84,10 @@ const HomeScreen = (props: IScreen) => {
         setIndexItem(0)
         setTitleNews('For You')
 
+    }
+    const handleSetPosition = (x: number, y: number) => {
+        console.log(x, y);
+        setPosition({ x: x, y: y })
     }
 
 
@@ -143,58 +104,73 @@ const HomeScreen = (props: IScreen) => {
         const title = newsName === 'VnExpress' ? item.title : extractContentInsideBrackets(item.title)
         const link = newsName === 'VnExpress' ? item.link : extractContentInsideBrackets(item.link)
         const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
+        const visible = isVisible.visible && index === isVisible.id
         return (
-            <View
-                key={index}
-                style={styles.viewItem}>
-                <View
-                    style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity
-                        onPress={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}>
-                        <Image
-                            source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
-                            style={styles.imageItem}
-                        />
-                    </TouchableOpacity>
+            <>
+                <ItemNews
+                    index={index}
+                    handleNavigateDetailNews={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}
+                    imgSrc={imgSrc}
+                    title={title}
+                    relativeTime={relativeTime}
+                    link={link}
+                    titleNews={titleNews}
+                    visible={visible}
+                    author={author}
+                    handleToggleVisible={() => handleToggleVisible(index)}
+                    saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
+                    shareImage={() => shareImage(link)}
+                    setPosition={handleSetPosition}
+                />
+                {
+                    visible &&
                     <View
-                        style={styles.viewContent}>
-                        <TextRn
-                            onPress={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}
-                            numberOfLines={3}
-                            style={styles.textTitle}
-                        >{title}</TextRn>
-                        <TextRn onPress={() => handleToggleVisible(index)} style={styles.textAuthor}>{author}</TextRn>
-                        <View
-                            style={styles.rowContent}>
-                            <View
-                                style={styles.viewRowContent}
-                            >
-                                <TextRn style={styles.titleNews}>{titleNews}</TextRn>
-                                <TextRn style={styles.bigDot}>⬤</TextRn>
-                                <TextRn numberOfLines={1}
+                        style={[styles.viewPopOver, { bottom: 0, }]}>
+                        <View style={{
+                            justifyContent: 'center'
+                        }}>
+                            <TouchableOpacity
+                                // activeOpacity={1}
+                                onPress={() => shareImage(link)}
+                                style={{
+                                    flexDirection: 'row',
+                                    paddingLeft: 10,
+                                    marginTop: 15,
+                                }}>
+                                <ShareIcon />
+                                <TextRn
                                     style={{
-                                        flex: 0.7
-                                    }}>{relativeTime}</TextRn>
+                                        color: COLOR.focusColor,
+                                        marginLeft: 10,
+                                        fontSize: 12
+                                    }}
+                                >Share</TextRn>
+                            </TouchableOpacity>
+                            <View style={styles.popOverLine}>
                             </View>
-                            <SimplePopover link={link} item={item} saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc)} />
-
+                            <View>
+                                <TouchableOpacity
+                                    // activeOpacity={1}
+                                    onPress={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
+                                    style={{
+                                        flexDirection: 'row',
+                                        marginTop: 10,
+                                        marginLeft: 8
+                                    }}>
+                                    <BookMarkIcon fill={'none'} />
+                                    <TextRn
+                                        style={{
+                                            color: COLOR.focusColor,
+                                            marginLeft: 5,
+                                            fontSize: 12
+                                        }}
+                                    >{'Bookmark'}</TextRn>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                    {
-                        isVisible && index === id &&
-                        <View style={{
-                            width: 100,
-                            height: 100,
-                            backgroundColor: 'red',
-                            position: 'absolute'
-                        }}>
-                            <TextRn>akjsdka</TextRn>
-                        </View>
-                    }
-                </View>
-                <View style={styles.lineHorizotal}></View>
-            </View>
-
+                }
+            </>
         )
     };
     return (
@@ -208,10 +184,11 @@ const HomeScreen = (props: IScreen) => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
-                data={dataInterests}
+                data={dataInterest}
                 renderItem={({ item, index }) => {
                     return (
-                        <Button
+                        <TouchableOpacity
+                            activeOpacity={1}
                             key={index}
                             onPress={() => {
                                 setIndexItem(index);
@@ -221,17 +198,18 @@ const HomeScreen = (props: IScreen) => {
                                 } else {
                                     getData()
                                 }
-
-                            }}
-                            text={item.text}
-                            textStyle={{
-                                color: index == indexItem ? '#FFFFFF' : '#909090'
                             }}
                             style={[styles.button, {
-                                backgroundColor: index == indexItem ? '#180E19' : '#EEEEEE',
+                                backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
                                 marginLeft: index === 0 ? 16 : 0,
-                            }]}
-                        />
+                            }]}>
+                            <Text
+                                text={item.text}
+                                style={{
+                                    color: index == indexItem ? COLOR.white : COLOR.authorColor
+                                }} />
+                        </TouchableOpacity>
+
                     )
                 }}
             />
@@ -247,7 +225,63 @@ const HomeScreen = (props: IScreen) => {
                         </View>
                     )
                 }}
+                ItemSeparatorComponent={() => <View style={{
+                    height: 1,
+                    backgroundColor: COLOR.buttonColorInactive,
+                    marginTop: 30,
+                    marginBottom: 20,
+                    marginHorizontal: 16
+                }} />}
             />
+            {/* {
+                isVisible && position.x != 0 &&
+                <View
+                    style={[styles.viewPopOver, { top: position.y }]}>
+                    <View style={{
+                        justifyContent: 'center'
+                    }}>
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            //  onPress={shareImage}
+                            style={{
+                                flexDirection: 'row',
+                                paddingLeft: 10,
+                                marginTop: 15,
+                            }}>
+                            <ShareIcon />
+                            <TextRn
+                                style={{
+                                    color: COLOR.focusColor,
+                                    marginLeft: 10,
+                                    fontSize: 12
+                                }}
+                            >Share</TextRn>
+                        </TouchableOpacity>
+                        <View style={styles.popOverLine}>
+                        </View>
+                        <View>
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                //  onPress={saveBookMark}
+                                style={{
+                                    flexDirection: 'row',
+                                    marginTop: 10,
+                                    marginLeft: 8
+                                }}>
+                                <BookMarkIcon fill={'none'} />
+                                <TextRn
+                                    style={{
+                                        color: COLOR.focusColor,
+                                        marginLeft: 5,
+                                        fontSize: 12
+                                    }}
+                                >{'Bookmark'}</TextRn>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                </View>
+            } */}
         </Pressable>
 
     )
@@ -256,13 +290,13 @@ export default HomeScreen
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: COLOR.backgroundColor,
     },
     headerText: {
         fontWeight: '700',
         fontSize: 18,
         marginTop: 20,
-        color: '#000000',
+        color: COLOR.darkBlack,
         marginLeft: 16,
         marginBottom: 41
     },
@@ -277,7 +311,8 @@ const styles = StyleSheet.create({
     },
     viewItem: {
         paddingHorizontal: 16,
-        marginTop: 15
+        marginTop: 15,
+        zIndex: -100
     },
     imageItem: {
         width: 137,
@@ -285,19 +320,20 @@ const styles = StyleSheet.create({
     },
     viewContent: {
         flex: 1,
-        marginLeft: 10
+        marginLeft: 10,
+        zIndex: -100
     },
     textTitle: {
         flex: 3,
         fontWeight: '700',
         fontFamily: 'SF Pro',
-        color: '#180E19'
+        color: COLOR.focusColor
     },
     textAuthor: {
         flex: 2,
         fontWeight: '500',
         fontFamily: 'SF Pro',
-        color: '#909090'
+        color: COLOR.authorColor
     },
     rowContent: {
         flexDirection: 'row',
@@ -310,7 +346,7 @@ const styles = StyleSheet.create({
     titleNews: {
         fontWeight: '700',
         fontFamily: 'SF Pro',
-        color: '#69BDFD'
+        color: COLOR.textTypeColor
     },
     bigDot: {
         fontSize: 10,
@@ -321,8 +357,30 @@ const styles = StyleSheet.create({
     },
     lineHorizotal: {
         height: 1,
-        backgroundColor: '#EEEEEE',
+        backgroundColor: COLOR.buttonColorInactive,
         marginTop: 30,
         marginBottom: 20
+    },
+    viewPopOver: {
+        backgroundColor: COLOR.backgroundColor,
+        width: 121,
+        height: 78,
+        shadowColor: COLOR.black,
+        shadowOffset: { width: -2, height: 4 },
+        shadowOpacity: 10,
+        shadowRadius: 30,
+        elevation: 5,
+        borderRadius: 10,
+        position: 'absolute',
+        // bottom: -25,
+        // top:245.09091186523438,
+        zIndex: 10,
+        right: 15,
+    },
+    popOverLine: {
+        height: 1,
+        backgroundColor: COLOR.buttonColorInactive,
+        marginLeft: 10,
+        marginTop: 7,
     }
 });

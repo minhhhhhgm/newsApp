@@ -1,13 +1,6 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
 import 'react-native-gesture-handler';
-// import './app/i18n/i18n'
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import React from 'react';
 import { LogBox, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
@@ -25,7 +18,33 @@ import { store } from './app/store/store';
 import { AuthProvider } from './app/useAuth/auth';
 import AccountScreen from './app/screen/account/account-screen';
 import { FirebaseAuth } from './app/firebase/config';
-const Stack = createNativeStackNavigator()
+import ForgotPasswordScreen from './app/screen/forgot-password/forgot-password-screen';
+import ProfileScreen from './app/screen/profile/profile-screen';
+
+export type ParamsList = {
+  Detail: {
+    link: string,
+    title?: string,
+    author?: string,
+    time?: string,
+    imageUrl?: string,
+    type?: string,
+    email?: string
+  },
+  BookMark: undefined,
+  BottomNavigation: undefined,
+  Search: undefined,
+  Interests: undefined,
+  SignIn: undefined,
+  SignUp: undefined,
+  Home: undefined,
+  Account: undefined,
+  ForgotPassword: undefined,
+  Profile: undefined
+
+}
+
+const Stack = createNativeStackNavigator<ParamsList>()
 export const auth = FirebaseAuth
 LogBox.ignoreAllLogs();
 Todos.data()
@@ -33,7 +52,6 @@ Todos.data()
 
 export const AppNavigation = () => {
   return (
-   
     <Stack.Navigator initialRouteName='SignIn' screenOptions={{
       headerShown: false
     }}>
@@ -45,6 +63,9 @@ export const AppNavigation = () => {
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
+      <Stack.Screen name="Account" component={AccountScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   )
 }
@@ -63,13 +84,13 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
       <Stack.Screen name="Account" component={AccountScreen} />
-
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   )
 }
 interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> { }
 const AppNavigator = (props: NavigationProps) => {
-  
   return (
     <AuthProvider>
     </AuthProvider>
@@ -84,16 +105,9 @@ function App(): React.JSX.Element {
           backgroundColor={'transparent'}
           translucent
         />
-        {/* {
-            auth ? <AppNavigationAuth /> : <AppNavigation />
-          } */}
-        {/* <AppNavigation /> */}
         <AppNavigator />
       </>
-
     </Provider>
-
-
   );
 }
 export default App;

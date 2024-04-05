@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Image, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import Popover from 'react-native-popover-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { logoLogin } from '../../../utils/const';
 import { Text } from '../../../components/Text';
-import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import BellIcon from '../../../icons/svg-component/BellIcon';
+import { COLOR } from '../../../utils/color';
+import { logoLogin } from '../../../utils/const';
 
 interface IHeader {
     newsName: string
@@ -38,11 +39,11 @@ export const Header = (props: IHeader) => {
                     }}
                 />
                 <Text
-                    text={newsName.toString()}
+                    text={newsName}
                     style={{
                         fontWeight: '700',
                         fontSize: 15,
-                        color: '#180E19',
+                        color: COLOR.focusColor,
                         marginLeft: 10
                     }}
                 />

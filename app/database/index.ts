@@ -6,7 +6,7 @@ import VasernDB from './db';
 /**
  * Destructuring the necessary DB Schema to be used in the Application
  */
-const { Todos } = VasernDB as any;
+const { Todos , Users, News} = VasernDB as any;
 
 /**
  * Exporting VasernDB as default instance.
@@ -16,5 +16,7 @@ const { Todos } = VasernDB as any;
  */
 export default VasernDB;
 export {
-    Todos
+    Todos,
+    Users,
+    News
 }

@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef, Ref, useImperativeHandle, useRef } from "react"
+import React, { ComponentType, useRef } from "react"
 import {
     StyleProp,
     TextInput,
@@ -9,31 +9,19 @@ import {
     ViewStyle,
 } from "react-native"
 
-import { Text, TextProps } from "./Text"
-import { i18n } from "../i18n/i18n"
 import { useTranslation } from "react-i18next"
+import { Text, TextProps } from "./Text"
 
 export interface TextFieldAccessoryProps {
     style: StyleProp<any>
-    status: TextFieldProps["status"]
-    multiline: boolean
-    editable: boolean
 }
 
-export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
-   
-    status?: "error" | "disabled"
-    
-    label?: TextProps["text"]
-    
+export interface TextFieldProps extends TextInputProps {
+    label?: string
     LabelTextProps?: TextProps
-   
     helper?: string | any
-    
     HelperTextProps?: TextProps
-    
     placeholder?: any
-    
     style?: StyleProp<TextStyle>
     containerStyle?: StyleProp<ViewStyle>
     inputWrapperStyle?: StyleProp<ViewStyle>
@@ -41,118 +29,69 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
     LeftAccessory?: ComponentType<TextFieldAccessoryProps>
 }
 
-export const TextField = forwardRef(function TextField(props: TextFieldProps, ref: Ref<TextInput>) {
+export const TextField = (props: TextFieldProps) => {
     const {
-
         label,
         placeholder,
         helper,
-        status,
         RightAccessory,
         LeftAccessory,
-        HelperTextProps,
-        LabelTextProps,
         style: $inputStyleOverride,
         containerStyle: $containerStyleOverride,
         inputWrapperStyle: $inputWrapperStyleOverride,
         value,
         ...TextInputProps
     } = props
-  const { t, i18n } = useTranslation();
-
+    const { t } = useTranslation();
     const input = useRef<TextInput>(null)
-
-    const disabled = TextInputProps.editable === false || status === "disabled"
-
-    const placeholderContent = placeholder
-
-    const $containerStyles = [$containerStyleOverride]
-
-    const $labelStyles = [$labelStyle, LabelTextProps?.style]
-
-    const $inputWrapperStyles = [
-        $inputWrapperStyle,
-        status === "error" && { borderColor: 'red' },
-        TextInputProps.multiline && { minHeight: 112 },
-        LeftAccessory && { paddingStart: 0 },
-        RightAccessory && { paddingEnd: 0 },
-        $inputWrapperStyleOverride,
-    ]
-
-    const $inputStyles: StyleProp<TextStyle> = [
-        $inputStyle,
-        disabled && { color: 'red' },
-        TextInputProps.multiline && { height: "auto" },
-        $inputStyleOverride,
-    ]
-
-    const $helperStyles = [
-        $helperStyle,
-        status === "error" && { color: 'red' },
-        HelperTextProps?.style,
-    ]
-
-    /**
-     *
-     */
     function focusInput() {
-        if (disabled) return
-
         input.current?.focus()
     }
 
-    useImperativeHandle(ref, () => input.current as TextInput)
 
     return (
         <TouchableOpacity
             activeOpacity={1}
-            style={$containerStyles}
-            onPress={focusInput}
-            accessibilityState={{ disabled }}
-        >
-            {!!(label && value) && (
+            style={$containerStyleOverride}
+            onPress={focusInput}>
+            {(label && value) && (
                 <Text
                     text={label}
-                    style={$labelStyles}
+                    style={$labelStyle}
                 />
             )}
-            <View style={$inputWrapperStyles}>
-                {!!LeftAccessory && (
-                    <LeftAccessory
-                        style={$leftAccessoryStyle}
-                        status={status}
-                        editable={!disabled}
-                        multiline={TextInputProps.multiline ?? false}
-                    />
+            <View style={[
+                $inputWrapperStyle,
+                $inputWrapperStyleOverride,
+            ]}>
+                {LeftAccessory && (
+                    <LeftAccessory style={$leftAccessoryStyle} />
                 )}
                 <TextInput
                     ref={input}
                     underlineColorAndroid={'transparent'}
-                    placeholder={t(placeholderContent)}
+                    placeholder={t(placeholder)}
                     placeholderTextColor={'gray'}
-                    {...TextInputProps}
-                    editable={!disabled}
-                    style={$inputStyles}
+                    style={[
+                        $inputStyle,
+                        $inputStyleOverride,
+                    ]}
                     value={value}
+                    {...TextInputProps}
                 />
-                {!!RightAccessory && (
-                    <RightAccessory
-                        style={$rightAccessoryStyle}
-                        status={status}
-                        editable={!disabled}
-                        multiline={TextInputProps.multiline ?? false}
-                    />
+                {RightAccessory && (
+                    <RightAccessory style={$rightAccessoryStyle} />
                 )}
             </View>
-            {!!(helper) && (
+            {(helper) && (
                 <Text
                     text={helper}
-                    style={$helperStyles}
+                    style={$helperStyle}
                 />
             )}
         </TouchableOpacity>
     )
-})
+}
 
 const $labelStyle: TextStyle = {
     position: 'absolute',
@@ -162,7 +101,7 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderColor:'#909090',
+    borderColor: '#909090',
     overflow: "hidden",
 }
 
