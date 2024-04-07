@@ -30,7 +30,7 @@ const CancelIcon = (props : any) => (
             <Path
                 id="Vector_3"
                 d="M7.5 7.5L12.5 12.5"
-                stroke="#919191"
+                stroke={props.stroke}
                 strokeWidth={1.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -155,7 +155,8 @@ const SignUpScreen = () => {
         <View style={styles.lineView}>
           <LineIcon />
           <Text text='or sign in with' style={{
-            marginHorizontal: 10
+            marginHorizontal: 10,
+            color:COLOR.black
           }} />
           <LineIcon />
         </View>

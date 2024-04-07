@@ -12,16 +12,15 @@ export interface TextProps extends RNTextProps {
 export function Text(props: TextProps) {
   const { t } = useTranslation();
   const { text, style: $styleOverride } = props
-  const content = text
   const $styles: StyleProp<TextStyle> = [
     $styleOverride,
     {
-      fontFamily: 'SF Pro'
+      fontFamily: 'SFPRODISPLAYMEDIUM'
     }
   ]
   return (
     <RNText style={$styles}>
-      {t(`${content}`)}
+      {t(`${text}`)}
     </RNText>
   )
 }

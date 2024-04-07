@@ -1,46 +1,23 @@
-import React, { useState } from 'react';
-import { Controller, useForm } from "react-hook-form";
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { User, updateProfile } from 'firebase/auth';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import React from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import LockIcon from '../../icons/svg-component/LockIcon';
-import RightChvron from '../../icons/svg-component/RightChvron';
-import BackIcon from '../../icons/svg-component/backIcon';
-import Toast from 'react-native-simple-toast';
-import { auth } from '../../../App';
-import { TextField } from '../../components/TextField';
-import EyeIcon from '../../icons/svg-component/eyeIcon';
-import EyeOffIcon from '../../icons/svg-component/eyeOffIcon';
-import { EmailAuthProvider, User, reauthenticateWithCredential, updatePassword, updateProfile } from 'firebase/auth';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { storage } from '../../firebase/config';
-import firebase from 'firebase/compat/app';
+import BackIcon from '../../icons/svg-component/backIcon';
+import { COLOR } from '../../utils/color';
+type NavigationProps = NativeStackNavigationProp<ParamsList, 'Profile'>
 
 
-const ProfileScreen = (props: any) => {
-
-    // console.log('user', auth.currentUser);
-    const [isChangePass, setIsChangPass] = useState(false)
-    const [isShowPassword, setIsShowPassword] = useState(false);
-    const [isShowNewPassword, setIsShownewPassword] = useState(false);
-    const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
-
+const ProfileScreen = () => {
+    const navigation = useNavigation<NavigationProps>()
     const insets = useSafeAreaInsets();
-    const {
-        control,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors, isValid, isDirty },
-    } = useForm({
-        mode: 'all'
-    })
-
-    console.log(auth.currentUser?.photoURL);
+    console.log(auth.currentUser);
     
-
-
-
     const handleChangePass = async () => {
         console.log('asjdi');
         const metadata = {
@@ -55,7 +32,6 @@ const ProfileScreen = (props: any) => {
             uploadTask.on('state_changed',
                 (snapshot) => {
                     console.log(snapshot);
-
                 },
                 (error) => {
                     console.log(error);
@@ -74,67 +50,15 @@ const ProfileScreen = (props: any) => {
         } catch (error) {
             console.error('Error uploading image:', error);
         }
-
-        // const upload = storageRef.storage
-        // await upload.put(blob);
-        // await upload.getDownloadURL().then((url) => {
-        //     URL = url;
-        // });
-
-        // const credential = EmailAuthProvider.credential(
-        //     auth.currentUser?.email as string,
-        //     watch('password')
-        // );
-        // reauthenticateWithCredential(auth.currentUser as User, credential)
-        //     .then((result) => {
-        //         updatePassword(auth.currentUser as User, watch('renewpassword'))
-        //             .then((value) => {
-        //                 console.log(value);
-        //                 Toast.show('Change password successfully !', Toast.LONG);
-        //                 setValue('password','')
-        //                 setValue('newpassword','')
-        //                 setValue('renewpassword','')
-
-        //                 setIsChangPass(!isChangePass)
-
-        //             }
-        //             )
-        //             .catch((error) => {
-        //                 console.log(error);
-        //             })
-        //     })
-        //     .catch((error) => {
-        //         Toast.show('Incorrect current password !', Toast.LONG);
-        //         console.log(error)
-        //     });
-
     }
 
 
-    const Righticon = (isShow: boolean, setIsShow: any, value: string) => {
-        return (
-            value &&
-            <TouchableOpacity
-                onPress={() => {
-                    setIsShow(!isShow)
-                }}
-                style={{
-                    justifyContent: 'center',
-                    paddingTop: 25,
-                    paddingRight: 16
-                }}>
-                {
-                    !isShow ? <EyeIcon /> : <EyeOffIcon />
-                }
-            </TouchableOpacity>
-        )
-    }
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                 <View style={{ flexDirection: 'row', }}>
                     <TouchableOpacity style={{ marginLeft: 10 }}
-                        onPress={() => { props.navigation.goBack() }}>
+                        onPress={() => { navigation.goBack() }}>
                         <BackIcon />
                     </TouchableOpacity>
                     <Text
@@ -142,62 +66,33 @@ const ProfileScreen = (props: any) => {
                         style={styles.headerText}
                     />
                 </View>
-                <Text
-                    onPress={isValid && isDirty ? handleChangePass : () => {
-                        console.log('Log');
-                    }}
-                    text={'Save'.toLocaleUpperCase()}
-                    style={[styles.textSave, { color: isValid && isDirty ? '#180E19' : '#EEEEEE' }]}
-                />
+                <TouchableOpacity
+                    onPress={handleChangePass}
+                    activeOpacity={1}>
+                    <Text
+
+                        text={'SAVE'}
+                        style={[styles.textSave, { color: COLOR.buttonColorActive }]}
+                    />
+                </TouchableOpacity>
             </View>
-            {
-
-
-                <View style={styles.content}>
-                    <View style={{ flexDirection: 'row' }}>
-
-                        <Text
-                            text='Email'
-                            style={styles.mailText}
-                        />
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, value, onBlur } }) => (
-                                <TextInput
-                                    value={auth.currentUser?.email?.toString()}
-                                    style={{
-                                        borderBottomWidth: 1,
-                                        flex: 1,
-                                        borderBottomColor: '#EEEEEE',
-                                        marginLeft: 20,
-                                    }}
-                                />
-                            )}
-                            defaultValue={""}
-                            name="password"
-                        />
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => setIsChangPass(!isChangePass)}
-                        activeOpacity={0.7}
-                        style={styles.viewChangePass}>
-                        <View style={{
-                            flexDirection: 'row'
-                        }}>
-                            <LockIcon />
-                            <Text
-                                style={styles.textChangePass}
-                                text='Change Password'
-                            />
-                        </View>
-                        <RightChvron />
-                    </TouchableOpacity>
+            <View style={styles.content}>
+                <View style={{ flexDirection: 'row' }}>
+                    <Text
+                        text='Email'
+                        style={styles.mailText}
+                    />
+                    <TextInput
+                        value={auth.currentUser?.email}
+                        style={{
+                            borderBottomWidth: 1,
+                            flex: 1,
+                            borderBottomColor: '#EEEEEE',
+                            marginLeft: 20,
+                        }}
+                    />
                 </View>
-
-            }
-
-
-
+            </View>
         </View>
     )
 }

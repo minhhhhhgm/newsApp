@@ -1,7 +1,10 @@
-import React, { memo, useRef } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { Image, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
 import { defaultImage } from '../../../utils/const';
 import { COLOR } from '../../../utils/color';
+import ShareIcon from '../../../icons/svg-component/ShareIcon';
+import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
+import { handleSaveBookMark } from '../../../utils/homeAction';
 
 interface IItemNews {
     index: number,
@@ -11,19 +14,22 @@ interface IItemNews {
     relativeTime: any,
     link: string,
     titleNews: string,
-    visible: boolean,
+    visible?: boolean,
     author: string,
-    handleToggleVisible: () => void,
-    shareImage: () => void,
-    saveBookMark: () => void,
-    setPosition: (x: number, y: number) => void
+    handleToggleVisible?: () => void,
+    shareImage?: () => void,
+    saveBookMark?: () => void,
+    setPosition?: (x: number, y: number) => void
 }
 
 export const ItemNews = memo((props: IItemNews) => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const newRef = useRef<TouchableOpacity>(null);
     console.log('render');
-
+    const [isVisible, setIsVisible] = useState({
+        id: 0,
+        visible: false
+    })
     const {
         index,
         handleNavigateDetailNews,
@@ -32,19 +38,38 @@ export const ItemNews = memo((props: IItemNews) => {
         relativeTime,
         link,
         titleNews,
-        visible,
-        handleToggleVisible,
+        // visible,
+        // handleToggleVisible,
         author,
         shareImage,
         saveBookMark,
         setPosition
     } = props
-    const onButtonPress = () => {
+
+    
+    const handleToggleVisible = (id: number) => {
+        setIsVisible({
+            id: id,
+            visible: true
+        })
+    }
+
+    const handlecloseVisible = () => {
+        setIsVisible({
+            id: -1,
+            visible: false
+        })
+        // handleSetPosition(0, 0)
+    }
+    const visible = isVisible.visible && index === isVisible.id
+
+   
+    const onButtonPress = (index: number) => {
         console.log('Press');
-        newRef.current?.measureInWindow((fx, fy, width, height) => {
-            setPosition(fx, fy)
-        });
-        handleToggleVisible();
+        // newRef.current?.measureInWindow((fx, fy, width, height) => {
+        //     setPosition(fx, fy)
+        // });
+        handleToggleVisible(index);
     };
 
     return (
@@ -55,7 +80,7 @@ export const ItemNews = memo((props: IItemNews) => {
                 style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={visible ? handleToggleVisible : handleNavigateDetailNews}>
+                    onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}>
                     <Image
                         source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
                         style={styles.imageItem}
@@ -79,6 +104,7 @@ export const ItemNews = memo((props: IItemNews) => {
                             <TextRn numberOfLines={1}
                                 style={{
                                     flex: 1,
+                                    color: COLOR.authorColor
                                 }}>{relativeTime}</TextRn>
                         </View>
                         <TouchableOpacity
@@ -86,7 +112,7 @@ export const ItemNews = memo((props: IItemNews) => {
                             style={{ paddingHorizontal: 5, }}
                             // activeOpacity={1}
                             // onPress={handleToggleVisible}
-                            onPress={onButtonPress}
+                            onPress={() => onButtonPress(index)}
                         >
                             <TextRn
                                 style={{
@@ -100,7 +126,7 @@ export const ItemNews = memo((props: IItemNews) => {
                 </View>
             </View>
             {/* <View style={styles.lineHorizotal}></View> */}
-            {/* {
+            {
                 visible ? (
                     <View
                         style={[styles.viewPopOver, { bottom: 0 }]}>
@@ -129,7 +155,7 @@ export const ItemNews = memo((props: IItemNews) => {
                             <View>
                                 <TouchableOpacity
                                     activeOpacity={1}
-                                    onPress={saveBookMark}
+                                    onPress={() => handleSaveBookMark(titleNews, title, author,  relativeTime, link, imgSrc, "test@gmail.com")}
                                     style={{
                                         flexDirection: 'row',
                                         marginTop: 10,
@@ -150,7 +176,7 @@ export const ItemNews = memo((props: IItemNews) => {
 
                     </View>
                 ) : null
-            } */}
+            }
         </View>
     )
 

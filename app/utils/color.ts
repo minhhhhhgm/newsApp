@@ -10,6 +10,8 @@ export const COLOR = {
     focusColor :'#180E19',
     authorColor :'#909090',
     textTypeColor:'#69BDFD',
-    black:'black'
+    black:'black',
+    colorSwitchOn:'#180E19',
+    colorSwitchOff:'#767577'
 
 }

@@ -11,6 +11,7 @@ import {
 
 import { useTranslation } from "react-i18next"
 import { Text, TextProps } from "./Text"
+import { COLOR } from "../utils/color"
 
 export interface TextFieldAccessoryProps {
     style: StyleProp<any>
@@ -95,7 +96,8 @@ export const TextField = (props: TextFieldProps) => {
 
 const $labelStyle: TextStyle = {
     position: 'absolute',
-    zIndex: 1
+    zIndex: 1,
+    color:COLOR.black
 }
 
 const $inputWrapperStyle: ViewStyle = {

@@ -10,6 +10,7 @@ import { Todos } from '../../database';
 import { COLOR } from '../../utils/color';
 import { getEmail, getInterest } from '../../utils/storage';
 import { SimpleMenu } from '../home/component/popover';
+import { dataInterest } from '../../utils/homeAction';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 const BookMarkScreen = () => {
 
@@ -17,12 +18,12 @@ const BookMarkScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const [data, setData] = useState([])
     const [countDelete, setCountDelete] = useState(0)
-    const [dataInterests, setDataInterests] = React.useState<any[]>([])
+    // const [dataInterests, setDataInterests] = React.useState<any[]>([])
     const [indexItem, setIndexItem] = useState(0)
     const getDataInterest = async () => {
         const response = await getInterest();
         if (response) {
-            setDataInterests(JSON.parse(response))
+            // setDataInterests(JSON.parse(response))
         }
     }
     const getdata = async () => {
@@ -141,7 +142,7 @@ const BookMarkScreen = () => {
                         return (
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                 {
-                                    dataInterests.map((item: any, index) => {
+                                    dataInterest.map((item: any, index) => {
                                         return (
                                             <TouchableOpacity
                                                 activeOpacity={1}

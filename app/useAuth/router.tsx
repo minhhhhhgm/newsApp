@@ -1,8 +1,8 @@
-import React from "react"
-import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
-import { useAuth } from "./auth";
+import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
 import { AppNavigation, AppNavigationAuth } from "../../App";
 import Loading from "../components/loading";
+import { useAuth } from "./auth";
 
 
 interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> { }

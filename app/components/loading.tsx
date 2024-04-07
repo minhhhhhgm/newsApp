@@ -1,6 +1,5 @@
 import * as React from "react"
-import { ActivityIndicator, TextStyle, View, ViewStyle , Modal, StyleSheet} from "react-native"
-// import Modal from "react-native-modal"
+import { ActivityIndicator, View, ViewStyle } from "react-native"
 
 const CONTAINER: ViewStyle = {
   // justifyContent: "center",

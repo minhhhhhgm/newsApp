@@ -5,14 +5,15 @@ import { getStorage } from "firebase/storage";
 import 'firebase/storage'; 
 import * as firebaseAuth from 'firebase/auth';
 const firebaseConfig = {
-    apiKey: "AIzaSyBtgAZoG9IbrL1GeLqVUzVLvCP-Nt89T98",
-    authDomain: "newsapp-e1932.firebaseapp.com",
-    projectId: "newsapp-e1932",
-    storageBucket: "newsapp-e1932.appspot.com",
-    messagingSenderId: "1073524380669",
-    appId: "1:1073524380669:web:9db37590825f5a64a97f94",
-    measurementId: "G-9QXGWQY6VR"
+    apiKey: process.env.apiKey,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId,
+    measurementId: process.env.measurementId
 };
+
 const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence;
 export const FirebaseApp = initializeApp(firebaseConfig);
 

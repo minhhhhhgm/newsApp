@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { extractContentInsideBrackets, extractImageUrl, extractString, searchDat
 import { SimpleMenu } from '../home/component/popover';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamsList } from '../../../App';
+
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Search'>
 
 const SearchScreen = () => {
@@ -21,20 +22,14 @@ const SearchScreen = () => {
     const [dataRss, setDataRss] = React.useState<Article[]>([])
     const [dataRssFilter, setDataRssFilter] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
+    const [search, setSearch] = useState('')
     // const data = useSelector((state: RootState) => state.newsReducer.data)
     // console.log('data', data);
     // console.log('naksdnasss', extractContentInsideBrackets('<![CDATA[https://tuoitre.vn/chay-no-lon-kho-dan-o-ngoai-o-thu-do-indonesia-20240330224612123.htm]]>'));
 
-    const data = [1,2,4,5,6,7,78,64,45,22,55,662,243,4343,124,234,53,54,345,3453,65,2]
-    const {
-        control,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors, isValid },
-    } = useForm({
-        mode: 'all'
-    })
+    const data = [1, 2, 4, 5, 6, 7, 78, 64, 45, 22, 55, 662, 243, 4343, 124, 234, 53, 54, 345, 3453, 65, 2]
+    // const APP_NAME = process.env.APP_NAME;
+    console.log(process.env.apiKey);
 
     const fetchRSSFeed = async () => {
         try {
@@ -221,48 +216,44 @@ const SearchScreen = () => {
     };
     return (
         <View style={[styles.body, { paddingTop: insets.top }]}>
-            <Controller
-                control={control}
-                render={({ field: { onChange, value, onBlur } }) => (
-                    <TextField
-                        inputWrapperStyle={{
-                            borderBottomWidth: 0,
-                        }}
-                        value={value}
-                        onChangeText={(text) => { onChange(text); _onChangeText(text) }}
-                        containerStyle={styles.textField}
-                        label=''
-                        placeholder='Search'
-                        helper={errors?.email?.message}
-                        LeftAccessory={() => {
-                            return (
-                                <TouchableOpacity
-                                    style={{
-                                        justifyContent: 'center',
-                                        marginLeft: 18,
-                                        marginRight: 10
-                                    }}>
-                                    <SearchNewsIcons />
-                                </TouchableOpacity>
-                            )
-                        }}
-                        RightAccessory={() => {
-                            return (
-                                <TouchableOpacity
-                                    onPress={() => { onChange(''); setValue('search', ''); setDataRssFilter([]) }}
-                                    style={{
-                                        justifyContent: 'center',
-                                        marginRight: 18
-                                    }}>
-                                    <CancelIcon stroke={watch('search') ? '#180E19' : '#919191'} />
-                                </TouchableOpacity>
+            <TextField
+                inputWrapperStyle={{
+                    borderBottomWidth: 0,
+                }}
+                value={search}
+                onChangeText={(text) => { setSearch(text); }}
+                containerStyle={styles.textField}
+                label=''
+                placeholder='Search'
+                helper={""}
+                LeftAccessory={() => {
+                    return (
+                        <TouchableOpacity
+                            style={{
+                                justifyContent: 'center',
+                                marginLeft: 18,
+                                marginRight: 10
+                            }}>
+                            <SearchNewsIcons />
+                        </TouchableOpacity>
+                    )
+                }}
+                RightAccessory={() => {
+                    return (
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSearch('');
+                                setDataRssFilter([])
+                            }}
+                            style={{
+                                justifyContent: 'center',
+                                marginRight: 18
+                            }}>
+                            <CancelIcon stroke={search ? '#180E19' : '#919191'} />
+                        </TouchableOpacity>
 
-                            )
-                        }}
-                    />
-                )}
-                defaultValue={""}
-                name="search"
+                    )
+                }}
             />
             {
                 dataRss && <FlatList

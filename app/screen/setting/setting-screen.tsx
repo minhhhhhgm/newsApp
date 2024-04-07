@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamsListBottomNav } from '../../navigation/bottomNavigation';
 import { useNavigation } from '@react-navigation/native';
 import { ParamsList } from '../../../App';
+import { COLOR } from '../../utils/color';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
@@ -29,7 +30,7 @@ const SettingScreen = () => {
             index: 0,
             name: 'Profile',
             onPress: () => {
-                navigation.navigate('Account')
+                navigation.navigate('Profile')
             },
             icon: ProfileIcon
         },
@@ -111,7 +112,7 @@ const SettingScreen = () => {
                             <Text text={item.name} style={{
                                 fontSize: 14,
                                 fontWeight: '500',
-                                color: '#000000',
+                                color: COLOR.darkBlack,
                                 marginLeft: 10
                             }} />
                         </TouchableOpacity>
@@ -123,8 +124,8 @@ const SettingScreen = () => {
                                 marginBottom: -10
                             }}>
                                 <Switch
-                                    trackColor={{ false: "#767577", true: "#180E19" }}
-                                    thumbColor={darkmode ? "white" : "#ddd"}
+                                    trackColor={{ false: COLOR.colorSwitchOff, true: COLOR.colorSwitchOn }}
+                                    thumbColor={darkmode ? COLOR.backgroundColor : "#ddd"}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={() => { setDarkMode(!darkmode) }}
                                     value={darkmode}
@@ -138,7 +139,7 @@ const SettingScreen = () => {
                 </View>
                 <View style={{
                     height: 1,
-                    backgroundColor: '#EEEEEE',
+                    backgroundColor: COLOR.buttonColorInactive,
                     marginLeft: 32,
                     marginVertical: 20
                 }}></View>
@@ -154,7 +155,7 @@ const SettingScreen = () => {
                     marginTop: 60,
                     fontSize: 15,
                     fontWeight: '700',
-                    color: '#000000',
+                    color: COLOR.buttonColorActive,
                     marginLeft: 16
                 }}
             />
@@ -177,7 +178,7 @@ const SettingScreen = () => {
                                     <TextRN style={styles.modalText} />
                                     <TextRN style={{
                                         fontWeight: '700',
-                                        color: '#000000',
+                                        color: COLOR.darkBlack,
                                         fontSize: 20,
                                         fontFamily: '',
                                         alignSelf: 'center',
@@ -191,7 +192,7 @@ const SettingScreen = () => {
                                         }}>
                                         <TextRN style={{
                                             fontWeight: '700',
-                                            color: '#000000',
+                                            color: COLOR.darkBlack,
                                             fontSize: 15,
                                             fontFamily: '',
                                             marginLeft: 15
@@ -200,7 +201,7 @@ const SettingScreen = () => {
 
                                     <View style={{
                                         height: 1,
-                                        backgroundColor: '#EEEEEE',
+                                        backgroundColor: COLOR.buttonColorInactive,
                                         marginVertical: 20
                                     }}>
 
@@ -211,7 +212,7 @@ const SettingScreen = () => {
                                     }}>
                                         <TextRN style={{
                                             fontWeight: '700',
-                                            color: '#000000',
+                                            color: COLOR.darkBlack,
                                             fontSize: 15,
                                             fontFamily: '',
                                             marginLeft: 15,
@@ -233,7 +234,7 @@ const SettingScreen = () => {
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: COLOR.backgroundColor,
     },
     logo: {
         alignItems: 'center',

@@ -15,6 +15,8 @@ import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 const HomeScreen = () => {
+  
+    
     const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
     const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -31,12 +33,12 @@ const HomeScreen = () => {
         getData()
     }, [domain])
 
-    const handleToggleVisible = useCallback((id: number) => {
+    const handleToggleVisible = (id: number) => {
         setIsVisible({
             id: id,
             visible: true
         })
-    }, [])
+    }
 
     const handlecloseVisible = () => {
         setIsVisible({
@@ -68,9 +70,9 @@ const HomeScreen = () => {
 
     function handleRefresh() { }
 
-    const handleNavigateDetailNews = useCallback((type: string, title: string, author: string, time: string, url: string, image: string) => {
+    const handleNavigateDetailNews = (type: string, title: string, author: string, time: string, url: string, image: string) => {
         navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email })
-    }, [])
+    }
     const handleChangeVnE = () => {
         setNewsName('VnExpress');
         setDomain('vnexpress.net')
@@ -85,10 +87,10 @@ const HomeScreen = () => {
         setTitleNews('For You')
 
     }
-    const handleSetPosition = (x: number, y: number) => {
-        console.log(x, y);
-        setPosition({ x: x, y: y })
-    }
+    // const handleSetPosition = (x: number, y: number) => {
+    //     console.log(x, y);
+    //     setPosition({ x: x, y: y })
+    // }
 
 
 
@@ -104,7 +106,7 @@ const HomeScreen = () => {
         const title = newsName === 'VnExpress' ? item.title : extractContentInsideBrackets(item.title)
         const link = newsName === 'VnExpress' ? item.link : extractContentInsideBrackets(item.link)
         const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
-        const visible = isVisible.visible && index === isVisible.id
+        // const visible = isVisible.visible && index === isVisible.id
         return (
             <>
                 <ItemNews
@@ -115,14 +117,14 @@ const HomeScreen = () => {
                     relativeTime={relativeTime}
                     link={link}
                     titleNews={titleNews}
-                    visible={visible}
+                    // visible={visible}
                     author={author}
-                    handleToggleVisible={() => handleToggleVisible(index)}
-                    saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
-                    shareImage={() => shareImage(link)}
-                    setPosition={handleSetPosition}
+                    // handleToggleVisible={() => handleToggleVisible(index)}
+                    // saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
+                    // shareImage={() => shareImage(link)}
+                    // setPosition={handleSetPosition}
                 />
-                {
+                {/* {
                     visible &&
                     <View
                         style={[styles.viewPopOver, { bottom: 0, }]}>
@@ -169,7 +171,7 @@ const HomeScreen = () => {
                             </View>
                         </View>
                     </View>
-                }
+                } */}
             </>
         )
     };
