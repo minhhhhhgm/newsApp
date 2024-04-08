@@ -11,46 +11,31 @@ import { dataInterest, getDataRss, getDataRssByTitle } from '../../utils/homeAct
 import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
+import { useDispatch } from 'react-redux';
+import { addNews } from '../../store/newsSlice';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const HomeScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
-    const [position, setPosition] = useState({ x: 0, y: 0 })
-    const [isVisible, setIsVisible] = useState({
-        id: 0,
-        visible: false
-    })
-    const [titleNews, setTitleNews] = useState('For You')
+    const [titleNews, setTitleNews] = useState('forYou')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
     const [domain, setDomain] = useState('vnexpress.net')
     const [newsName, setNewsName] = useState('VnExpress')
     const email = auth.currentUser?.email as string
+    const dispatch = useDispatch()
+    // console.log('titleNews',titleNews);
+
     useEffect(() => {
         getData()
     }, [domain])
-
-    // const handleToggleVisible = (id: number) => {
-    //     setIsVisible({
-    //         id: id,
-    //         visible: true
-    //     })
-    // }
-
-    const handlecloseVisible = () => {
-        setIsVisible({
-            id: -1,
-            visible: false
-        })
-        // handleSetPosition(0, 0)
-    }
-
 
     const getData = async () => {
         setFeedItems([])
         try {
             const parsedItems = await getDataRss(domain)
-            setFeedItems(parsedItems);
+            setFeedItems(parsedItems);            
+            dispatch(addNews(parsedItems))
         } catch (error) {
             console.error('Error fetching RSS feed:', error);
         }
@@ -74,22 +59,15 @@ const HomeScreen = () => {
         setNewsName('VnExpress');
         setDomain('vnexpress.net')
         setIndexItem(0)
-        setTitleNews('For You')
+        setTitleNews('forYou')
     }
 
     const handleChangeTt = () => {
         setNewsName('Tuổi Trẻ');
         setDomain('tuoitre.vn')
         setIndexItem(0)
-        setTitleNews('For You')
-
+        setTitleNews('forYou')
     }
-    // const handleSetPosition = (x: number, y: number) => {
-    //     console.log(x, y);
-    //     setPosition({ x: x, y: y })
-    // }
-
-
 
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;
@@ -103,7 +81,6 @@ const HomeScreen = () => {
         const title = newsName === 'VnExpress' ? item.title : extractContentInsideBrackets(item.title)
         const link = newsName === 'VnExpress' ? item.link : extractContentInsideBrackets(item.link)
         const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
-        // const visible = isVisible.visible && index === isVisible.id
         return (
             <>
                 <ItemNews
@@ -115,18 +92,13 @@ const HomeScreen = () => {
                     link={link}
                     titleNews={titleNews}
                     time={time}
-                    // visible={visible}
                     author={author}
-                // handleToggleVisible={() => handleToggleVisible(index)}
-                // saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
-                // shareImage={() => shareImage(link)}
-                // setPosition={handleSetPosition}
                 />
             </>
         )
     };
     return (
-        <Pressable style={styles.body} onPress={handlecloseVisible}>
+        <View style={styles.body} >
             <Header
                 newsName={newsName}
                 onChangeVnE={handleChangeVnE}
@@ -178,56 +150,8 @@ const HomeScreen = () => {
                     )
                 }}
             />
-            {/* {
-                isVisible && position.x != 0 &&
-                <View
-                    style={[styles.viewPopOver, { top: position.y }]}>
-                    <View style={{
-                        justifyContent: 'center'
-                    }}>
-                        <TouchableOpacity
-                            activeOpacity={1}
-                            //  onPress={shareImage}
-                            style={{
-                                flexDirection: 'row',
-                                paddingLeft: 10,
-                                marginTop: 15,
-                            }}>
-                            <ShareIcon />
-                            <TextRn
-                                style={{
-                                    color: COLOR.focusColor,
-                                    marginLeft: 10,
-                                    fontSize: 12
-                                }}
-                            >Share</TextRn>
-                        </TouchableOpacity>
-                        <View style={styles.popOverLine}>
-                        </View>
-                        <View>
-                            <TouchableOpacity
-                                activeOpacity={1}
-                                //  onPress={saveBookMark}
-                                style={{
-                                    flexDirection: 'row',
-                                    marginTop: 10,
-                                    marginLeft: 8
-                                }}>
-                                <BookMarkIcon fill={'none'} />
-                                <TextRn
-                                    style={{
-                                        color: COLOR.focusColor,
-                                        marginLeft: 5,
-                                        fontSize: 12
-                                    }}
-                                >{'Bookmark'}</TextRn>
-                            </TouchableOpacity>
 
-                        </View>
-                    </View>
-                </View>
-            } */}
-        </Pressable>
+        </View>
 
     )
 }
@@ -257,7 +181,6 @@ const styles = StyleSheet.create({
     viewItem: {
         paddingHorizontal: 16,
         marginTop: 15,
-        zIndex: -100
     },
     imageItem: {
         width: 137,
@@ -266,7 +189,6 @@ const styles = StyleSheet.create({
     viewContent: {
         flex: 1,
         marginLeft: 10,
-        zIndex: -100
     },
     textTitle: {
         flex: 3,

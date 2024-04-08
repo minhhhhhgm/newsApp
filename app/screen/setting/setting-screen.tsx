@@ -20,7 +20,7 @@ type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 const SettingScreen = () => {
     const [darkmode, setDarkMode] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
-    const { t, i18n } = useTranslation();
+    const {  i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
 
 
@@ -130,7 +130,6 @@ const SettingScreen = () => {
                                     value={darkmode}
                                 />
                             </View>
-
                             :
                             <RightChvron />
 

@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { Article } from '../screen/home/home'
+import { NewsType } from '../type/NewsType'
 
 export interface CounterState {
-    data : any
+    data: null
 }
 
 const initialState: CounterState = {
-    data: [],
+    data: null,
 }
 
 export const newsSlice = createSlice({
@@ -15,10 +15,8 @@ export const newsSlice = createSlice({
     initialState,
     reducers: {
         addNews: (state, actions) => {
-            console.log('data');
-            
-            const data = actions.payload            
-            state.data.push(data)
+            const data = actions.payload
+            state.data = data
         },
     },
 })

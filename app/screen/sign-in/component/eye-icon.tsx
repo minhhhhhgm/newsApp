@@ -5,10 +5,12 @@ import EyeOffIcon from '../../../icons/svg-component/eyeOffIcon';
 interface IRighticon {
     password: string,
     handleShowPass: () => void,
-    isShowPassword : boolean
+    isShowPassword: boolean,
+    paddingRight?: number
+
 }
 export const Righticon = (props: IRighticon) => {
-    const { password, handleShowPass, isShowPassword } = props
+    const { password, handleShowPass, isShowPassword , paddingRight} = props
     return (
         password &&
         <TouchableOpacity
@@ -16,6 +18,7 @@ export const Righticon = (props: IRighticon) => {
             style={{
                 justifyContent: 'center',
                 paddingTop: 25,
+                paddingRight: paddingRight? paddingRight :0
             }}>
             {
                 !isShowPassword ? <EyeIcon /> : <EyeOffIcon />

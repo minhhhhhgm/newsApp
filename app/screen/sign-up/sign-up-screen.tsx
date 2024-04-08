@@ -18,6 +18,7 @@ import { COLOR, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from '../sign-in/component/eye-icon';
+import Loading from '../../components/loading';
 
 const SignUpScreen = () => {
   const insets = useSafeAreaInsets();
@@ -28,6 +29,7 @@ const SignUpScreen = () => {
   const [passwordError, setPasswordError] = useState('')
   const [userName, setUserName] = useState('')
   const [userNameError, setUserNameError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const auth = FirebaseAuth
   const navigation = useNavigation()
   const { t, i18n } = useTranslation();
@@ -67,6 +69,7 @@ const SignUpScreen = () => {
     return false;
   };
   const handleSignIn = async () => {
+    setIsLoading(true)
     try {
       const responseSignUp = await createUserWithEmailAndPassword(auth, email, password)
       console.log(responseSignUp);
@@ -77,14 +80,19 @@ const SignUpScreen = () => {
       if (responseSignUp) {
         const responeUpadte = await updateProfile(responseSignUp.user, update);
         Toast.show('Create account success', Toast.LONG);
+        setIsLoading(false)
+
       }
     } catch (err) {
       console.log(err);
       Toast.show('Error !', Toast.LONG);
+      setIsLoading(false)
+
     }
   }
   return (
     <View style={styles.body}>
+      <Loading isVisible={isLoading}/>
       <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
         <Image
           source={logoLogin}

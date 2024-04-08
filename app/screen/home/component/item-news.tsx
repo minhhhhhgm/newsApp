@@ -1,11 +1,13 @@
-import React, { memo, useRef, useState } from 'react';
-import { Image, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { auth } from '../../../../App';
+import { Text } from '../../../components/Text';
 import ShareIcon from '../../../icons/svg-component/ShareIcon';
 import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
+const { width, height } = Dimensions.get('screen');
 
 interface IItemNews {
     index: number,
@@ -22,12 +24,14 @@ interface IItemNews {
     saveBookMark?: () => void,
     setPosition?: (x: number, y: number) => void,
     time?: string,
+    style?: ViewStyle;
+    isRemoveBookMark?: boolean,
+    handleRemoveBookmark?: () => void
 }
 
-export const ItemNews = memo((props: IItemNews) => {
+export const ItemNews = (props: IItemNews) => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const newRef = useRef<TouchableOpacity>(null);
-    console.log('render');
     const [isVisible, setIsVisible] = useState({
         id: 0,
         visible: false
@@ -40,54 +44,45 @@ export const ItemNews = memo((props: IItemNews) => {
         relativeTime,
         link,
         titleNews,
-        // visible,
-        // handleToggleVisible,
         author,
-        // shareImage,
-        saveBookMark,
-        setPosition,
         time,
+        style,
+        isRemoveBookMark,
+        handleRemoveBookmark
     } = props
-
+    // console.log('render');
     const email = auth.currentUser?.email
+    const visible = isVisible.visible && index === isVisible.id
+
     const handleToggleVisible = (id: number) => {
+        newRef.current?.measureInWindow((x, y) => {
+            console.log(x, y);
+            if (y > 600) {
+                setOffset({ x, y: 540 });
+            }
+            setOffset({ x, y });
+        })
         setIsVisible({
             id: id,
             visible: true
         })
     }
-
-    const handlecloseVisible = () => {
-        setIsVisible({
-            id: -1,
-            visible: false
-        })
-        // handleSetPosition(0, 0)
-    }
-    const visible = isVisible.visible && index === isVisible.id
-
-
     return (
         <TouchableOpacity
             activeOpacity={1}
             key={index}
-            style={[styles.viewItem, { zIndex: 10, }]}
+            style={[styles.viewItem, style]}
             onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}
         >
             <View
                 style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                    activeOpacity={1}
-                >
-                    <Image
-                        source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
-                        style={styles.imageItem}
-                    />
-                </TouchableOpacity>
+                <Image
+                    source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
+                    style={styles.imageItem}
+                />
                 <View
                     style={styles.viewContent}>
                     <TextRn
-                        // onPress={handleNavigateDetailNews}
                         numberOfLines={3}
                         style={styles.textTitle}>
                         {title}
@@ -97,7 +92,7 @@ export const ItemNews = memo((props: IItemNews) => {
                     </TextRn>
                     <View style={styles.rowContent}>
                         <View style={styles.viewRowContent}>
-                            <TextRn style={styles.titleNews}>{titleNews}</TextRn>
+                            <Text text={titleNews} style={styles.titleNews} />
                             <TextRn style={styles.bigDot}>⬤</TextRn>
                             <TextRn numberOfLines={1}
                                 style={{
@@ -123,63 +118,82 @@ export const ItemNews = memo((props: IItemNews) => {
             </View>
             <View style={styles.lineHorizotal}></View>
             {
-                visible ? (
-                    <View
-                        style={[styles.viewPopOver, { bottom: 0 }]}>
-                        <View style={{
-                            justifyContent: 'center'
-                        }}>
-                            <TouchableOpacity
-                                activeOpacity={1}
-                                onPress={() => shareImage(link)}
-                                style={{
-                                    flexDirection: 'row',
-                                    paddingLeft: 10,
-                                    marginTop: 15,
-                                }}>
-                                <ShareIcon />
-                                <TextRn
-                                    style={{
-                                        color: COLOR.focusColor,
-                                        marginLeft: 10,
-                                        fontSize: 12
-                                    }}
-                                >Share</TextRn>
-                            </TouchableOpacity>
-                            <View style={styles.popOverLine}>
-                            </View>
-                            <View>
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    onPress={() => {
-                                        handleSaveBookMark(titleNews, title, author, time as string, link, imgSrc, email as string)
-                                    }}
-                                    style={{
-                                        flexDirection: 'row',
-                                        marginTop: 10,
-                                        marginLeft: 8
+                visible && (
+                    <Modal
+                        animationType='fade'
+                        onRequestClose={() => handleToggleVisible(-1)}
+                        transparent={true}
+                    >
+                        <TouchableOpacity style={styles.main}
+                            onPress={() => handleToggleVisible(-1)}
+                            activeOpacity={1}
+                        >
+                            <View style={[styles.content, {
+                                top: offset.y > 580 ? 580 : offset.y + 10,
+                                left: offset.x + 20
+                            }]}>
+                                <View
+                                    style={[styles.viewPopOver]}>
+                                    <View style={{
+                                        justifyContent: 'center'
                                     }}>
-                                    <BookMarkIcon fill={'none'} />
-                                    <TextRn
-                                        style={{
-                                            color: COLOR.focusColor,
-                                            marginLeft: 5,
-                                            fontSize: 12
-                                        }}
-                                    >{'Bookmark'}</TextRn>
-                                </TouchableOpacity>
-
+                                        <TouchableOpacity
+                                            // activeOpacity={1}
+                                            onPress={() => shareImage(link)}
+                                            style={{
+                                                flexDirection: 'row',
+                                                paddingLeft: 10,
+                                                marginTop: 15,
+                                            }}>
+                                            <ShareIcon />
+                                            <TextRn
+                                                style={{
+                                                    color: COLOR.focusColor,
+                                                    marginLeft: 10,
+                                                    fontSize: 12
+                                                }}
+                                            >Share</TextRn>
+                                        </TouchableOpacity>
+                                        <View style={styles.popOverLine}>
+                                        </View>
+                                        <View>
+                                            <TouchableOpacity
+                                                // activeOpacity={1}
+                                                onPress={
+                                                    isRemoveBookMark ? handleRemoveBookmark :
+                                                        () => { handleSaveBookMark(titleNews, title, author, time as string, link, imgSrc, email as string) }
+                                                }
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    marginTop: isRemoveBookMark ? 5 : 10,
+                                                    marginLeft: 8,
+                                                }}>
+                                                <View style={{ justifyContent: 'center' }}>
+                                                    <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />
+                                                </View>
+                                                <TextRn
+                                                    style={{
+                                                        flex: 1,
+                                                        color: COLOR.focusColor,
+                                                        marginLeft: 5,
+                                                        fontSize: 12,
+                                                        alignSelf: 'center',
+                                                        //    backgroundColor:'red'
+                                                        //    marginBottom: 15
+                                                    }}
+                                                >{isRemoveBookMark ? 'Remove bookmark' : 'Bookmark'}</TextRn>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-
-                    </View>
-                ) : null
+                        </TouchableOpacity>
+                    </Modal>
+                ) 
             }
         </TouchableOpacity>
     )
-
-
-});
+};
 
 
 const styles = StyleSheet.create({
@@ -252,7 +266,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         borderRadius: 10,
         position: 'absolute',
-        bottom: -55,
+        // bottom: -55,
         zIndex: 10,
         right: 15,
     },
@@ -261,5 +275,36 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.buttonColorInactive,
         marginLeft: 10,
         marginTop: 7,
-    }
+    },
+    main: {
+        backgroundColor: 'transparent',
+        width: width,
+        height: height,
+        flex: 1
+    },
+    content: {
+        position: 'absolute',
+        bottom: 22,
+        alignSelf: 'center',
+    },
+    background: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+    },
+    centeredView: {
+        width: width - 16,
+        alignSelf: 'center',
+        justifyContent: 'flex-end',
+    },
+    modalView: {
+        width: width - 32,
+        // height: 279,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        marginHorizontal: 16,
+    },
+
 });

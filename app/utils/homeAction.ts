@@ -1,10 +1,8 @@
-import { Bookmark, Todos } from "../database";
-import Toast from 'react-native-simple-toast';
-import Share from "react-native-share";
-import { useMemo } from "react";
 import axios from "axios";
+import Share from "react-native-share";
+import Toast from 'react-native-simple-toast';
+import { Bookmark } from "../database";
 import { extractImageUrl, extractString } from "./validate";
-import { enTrsl } from "../i18n/en";
 
 
 export const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
@@ -26,7 +24,6 @@ export const handleSaveBookMark = async (type: string, title: string, author: st
     }
     Bookmark.insert(params)
     Toast.show('Saved to bookmark', Toast.LONG);
-    // handlecloseVisible()
 }
 
 
@@ -42,11 +39,10 @@ export const shareImage = (link: string) => {
         .catch((e) => {
             e && console.log(e)
         })
-    // handlecloseVisible()
 }
 
 export const getDataRss = async (domain: string) => {
-    const res = await axios.get(`https://${domain}/rss/the-gioi.rss`)
+    const res = await axios.get(`https://${domain}/rss/tin-noi-bat.rss`)
     const items = res.data.match(/<item>(.*?)<\/item>/gs);
     const parsedItems = items?.map((item: string) => ({
         title: extractString(item, '<title>', '</title>'),

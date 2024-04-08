@@ -55,7 +55,7 @@ export const extractContentInsideBrackets = (inputString: string): string | null
   if (startIndex !== -1 && endIndex !== -1 && startIndex < endIndex) {
     const extractedString = inputString.substring(startIndex + 1, endIndex);
     if (extractedString.includes('CDATA[')) {
-      return extractedString.substring(6); // Loại bỏ "CDATA["
+      return extractedString.substring(6); 
     } else {
       return extractedString;
     }

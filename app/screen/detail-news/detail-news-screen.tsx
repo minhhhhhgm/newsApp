@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from "react-native-share";
 import Toast from 'react-native-simple-toast';
@@ -19,12 +19,12 @@ const DetailScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const route = useRoute();
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
+
     const { link, author, time, imageUrl, type, title, email } = route.params as any;
 
     useEffect(() => {
         handleCheckIsSave()
     }, [])
-
 
     const handleShareNews = () => {
         const options = {
@@ -77,6 +77,7 @@ const DetailScreen = () => {
                 marginTop: 55,
                 marginBottom: 10,
             }}>
+
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}>
                     <BackIcon />
@@ -109,7 +110,13 @@ const DetailScreen = () => {
             backgroundColor: 'white'
         }}>
             <Header />
-            <WebView source={{ uri: link }} />
+            <WebView
+                startInLoadingState={true}
+                renderLoading={() =>
+                    <ActivityIndicator
+                        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor:'rgba(0, 0, 0, 0.3)' }}
+                        size="large" color={COLOR.backgroundColor} />}
+                source={{ uri: link }} />
         </View>
     );
 };

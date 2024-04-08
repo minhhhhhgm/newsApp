@@ -17,9 +17,9 @@ type NavigationProps = NativeStackNavigationProp<ParamsList, 'Profile'>
 const ProfileScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const insets = useSafeAreaInsets();
-    console.log(auth.currentUser);
+    console.log(auth.currentUser?.photoURL);
 
-    const handleChangePass = async () => {
+    const handleChangeAvatar = async () => {
         console.log('asjdi');
         const metadata = {
             contentType: 'image/jpeg'
@@ -68,7 +68,7 @@ const ProfileScreen = () => {
                     />
                 </View>
                 <TouchableOpacity
-                    onPress={handleChangePass}
+                    onPress={handleChangeAvatar}
                     activeOpacity={1}>
                     <Text
 

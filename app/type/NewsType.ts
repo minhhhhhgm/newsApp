@@ -1,9 +1,10 @@
 export interface NewsType{
     title: string,
     link : string,
-    description : string,
-    pubDate : string,
-    imageUrl : string
+    author: string,
+    titleNews: string,
+    description: string,
+    pubDate: string,
 }
 
 
@@ -32,3 +33,4 @@ export interface Article {
     published: string;
     title: string;
 }
+

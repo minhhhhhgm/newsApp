@@ -12,7 +12,9 @@ import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
 import CancelIcon from '../../icons/svg-component/cancelcon';
 import { Article } from '../../type/NewsType';
 import { extractContentInsideBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
-import { SimpleMenu } from '../home/component/popover';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+// import { SimpleMenu } from '../home/component/popover';
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Search'>
 
@@ -23,11 +25,11 @@ const SearchScreen = () => {
     const [dataRssFilter, setDataRssFilter] = React.useState<Article[]>([])
     const [dataRssAll, setDataRssAll] = React.useState<any>()
     const [search, setSearch] = useState('')
-    // const data = useSelector((state: RootState) => state.newsReducer.data)
-    // console.log('data', data);
+    const data = useSelector((state: RootState) => state.newsReducer.data)
+    console.log('data', data);
     // console.log('naksdnasss', extractContentInsideBrackets('<![CDATA[https://tuoitre.vn/chay-no-lon-kho-dan-o-ngoai-o-thu-do-indonesia-20240330224612123.htm]]>'));
 
-    const data = [1, 2, 4, 5, 6, 7, 78, 64, 45, 22, 55, 662, 243, 4343, 124, 234, 53, 54, 345, 3453, 65, 2]
+    // const data = [1, 2, 4, 5, 6, 7, 78, 64, 45, 22, 55, 662, 243, 4343, 124, 234, 53, 54, 345, 3453, 65, 2]
     // const APP_NAME = process.env.APP_NAME;
     console.log(process.env.apiKey);
 
@@ -94,7 +96,7 @@ const SearchScreen = () => {
     const _onChangeText = (text: string) => {
         // console.log(dataRss);
 
-        const arrFilter = searchData(data[0], text)
+        const arrFilter = searchData(data, text)
         text !== "" ? setDataRssFilter(arrFilter) : setDataRssFilter([])
         console.log(arrFilter);
 
@@ -198,7 +200,7 @@ const SearchScreen = () => {
                                 alignItems: 'center',
                                 zIndex: 100
                             }}>
-                                <SimpleMenu item={item} />
+                                {/* <SimpleMenu item={item} /> */}
                             </View>
 
                         </View>

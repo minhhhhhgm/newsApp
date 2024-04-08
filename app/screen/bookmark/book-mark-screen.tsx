@@ -2,14 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
 import { Bookmark } from '../../database';
 import { COLOR } from '../../utils/color';
 import { dataInterest } from '../../utils/homeAction';
-import { getEmail, getInterest } from '../../utils/storage';
-import { SimpleMenu } from '../home/component/popover';
+import { getEmail } from '../../utils/storage';
+import { ItemNews } from '../home/component/item-news';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 const BookMarkScreen = () => {
 
@@ -20,7 +20,7 @@ const BookMarkScreen = () => {
     const getdata = async () => {
         const email = auth.currentUser?.email as string
         if (email) {
-            let data = await Bookmark.filter((item: any) => item.type === 'For You' && item.email === email).data();
+            let data = await Bookmark.filter((item: any) => item.type === 'forYou'  && item.email === email).data();
             console.log('data', data);
             setData(data)
         }
@@ -33,26 +33,18 @@ const BookMarkScreen = () => {
             setData(data)
         }
     }
-    function delayTime() {
-        return new Promise<void>((resolve, reject) => {
-            setTimeout(() => {
-                resolve();
-            }, 100);
-        });
-    }
     const removeBookmark = async (id: string, type: string) => {
         const item1 = await Bookmark.get({ id: id });
         await Bookmark.remove(item1)
-        delayTime().then(() => {
-            if (type === 'For You') {
+        Bookmark.onChange(() => {
+            if (type ===  'forYou') {
                 getdata()
             } else {
                 getdataByType(type)
             }
-        }).catch((error) => {
-            console.error("Đã xảy ra lỗi:", error);
-        });
+        })
     }
+    
     const handleNavigate = (title: string, link: string) => {
         navigation.navigate('Detail', { link, title })
     }
@@ -65,49 +57,22 @@ const BookMarkScreen = () => {
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         return (
-            <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => handleNavigate(item.title, item.url)}
-                style={styles.viewItem} key={index}>
-                <View
-                    style={{ flexDirection: 'row' }}>
-                    <Image
-                        source={{ uri: item.image }}
-                        style={styles.image}
-                    />
-                    <View style={styles.viewContentItem}>
-                        <TextRn
-                            numberOfLines={3}
-                            style={styles.textTitle}
-                        >{item.title}</TextRn>
-                        <TextRn style={styles.textAuthor}>{item.author}</TextRn>
-                        <View style={styles.viewRightContent}>
-                            <View style={styles.rowContent}>
-                                <TextRn style={styles.textType}>{item.type}</TextRn>
-                                <TextRn style={styles.bigDot}>⬤</TextRn>
-                                <TextRn numberOfLines={1}
-                                    style={{
-                                        flex: 0.7
-                                    }}>{relativeTime}</TextRn>
-                            </View>
-                            <View style={styles.viewPopover}>
-                                <SimpleMenu
-                                    isShareBookMark={true}
-                                    isRemoveBookmark
-                                    item={item}
-                                    saveBookMark={() => { removeBookmark(item.id, item.type) }}
-                                />
-                            </View>
-                        </View>
-                    </View>
-                </View>
-                <View style={{
-                    height: 1,
-                    backgroundColor: COLOR.buttonColorInactive,
-                    marginTop: 30,
-                    marginBottom: 20
-                }}></View>
-            </TouchableOpacity>
+            <ItemNews
+                handleRemoveBookmark={() => { removeBookmark(item.id, item.type) }}
+                isRemoveBookMark
+                style={{
+                    marginTop: 0
+                }}
+                index={index}
+                handleNavigateDetailNews={() => { handleNavigate(item.title, item.url) }}
+                imgSrc={item.image}
+                title={item.title}
+                relativeTime={relativeTime}
+                link={item.url}
+                titleNews={item.type}
+                time={item.time}
+                author={item.author}
+            />
         )
     };
     return (
@@ -118,47 +83,44 @@ const BookMarkScreen = () => {
                     style={styles.headerText}
                 />
             </View>
+            <View style={{ height: 90 }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {
+                        dataInterest.map((item: any, index) => {
+                            return (
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    key={index}
+                                    onPress={() => {
+                                        setIndexItem(index);
+                                        if (index != 0) {
+                                            getdataByType(item.text)
+                                        } if (index == 0) {
+                                            getdata()
+                                        }
+                                    }}
+                                    style={[styles.buttonCategory, {
+                                        backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
+                                        marginLeft: index === 0 ? 16 : 0,
+                                    }]}
+                                >
+                                    <Text
+                                        text={item.text}
+                                        style={{
+                                            color: index == indexItem ? COLOR.white : COLOR.authorColor
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            )
+                        })
+                    }
+                </ScrollView>
+            </View>
             {
                 data && <FlatList
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
                     data={data}
-                    extraData={data}
-                    ListHeaderComponent={() => {
-                        return (
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                {
-                                    dataInterest.map((item: any, index) => {
-                                        return (
-                                            <TouchableOpacity
-                                                activeOpacity={1}
-                                                key={index}
-                                                onPress={() => {
-                                                    setIndexItem(index);
-                                                    if (index != 0) {
-                                                        getdataByType(item.text)
-                                                    } if (index == 0) {
-                                                        getdata()
-                                                    }
-                                                }}
-                                                style={[styles.buttonCategory, {
-                                                    backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
-                                                    marginLeft: index === 0 ? 16 : 0,
-                                                }]}
-                                            >
-                                                <Text
-                                                    text={item.text}
-                                                    style={{
-                                                        color: index == indexItem ? COLOR.white : COLOR.authorColor
-                                                    }}
-                                                />
-                                            </TouchableOpacity>
-                                        )
-                                    })
-                                }
-                            </ScrollView>
-                        )
-                    }}
                     renderItem={renderItem}
                     ListEmptyComponent={() => {
                         return (
@@ -196,7 +158,6 @@ const styles = StyleSheet.create({
     },
     viewItem: {
         paddingHorizontal: 16,
-        marginTop: 15
     },
     image: {
         width: 137,
