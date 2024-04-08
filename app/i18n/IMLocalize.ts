@@ -1,8 +1,8 @@
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { en , enTrsl} from "./en";
-import { vi , viTrsl} from "./vi";
+import { enTrsl } from "./en";
+import { viTrsl } from "./vi";
 
 i18n
   .use(initReactI18next)
@@ -10,10 +10,10 @@ i18n
     compatibilityJSON: 'v3',
     resources: {
       en: {
-        translation: en
+        translation: enTrsl
       },
       vi: {
-        translation: vi
+        translation: viTrsl
       }
     },
     lng: "en",

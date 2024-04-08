@@ -15,7 +15,7 @@ export function Text(props: TextProps) {
   const $styles: StyleProp<TextStyle> = [
     $styleOverride,
     {
-      fontFamily: 'SFPRODISPLAYMEDIUM'
+      fontFamily: 'SFPRODISPLAYMEDIUM',
     }
   ]
   return (

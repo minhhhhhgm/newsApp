@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -10,7 +11,6 @@ import BackIcon from '../../icons/svg-component/backIcon';
 import { COLOR, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { handleValidateEmail } from '../../utils/validate';
-import { useNavigation } from '@react-navigation/native';
 
 const ForgotPasswordScreen = () => {
     const insets = useSafeAreaInsets();
@@ -63,11 +63,11 @@ const ForgotPasswordScreen = () => {
                     />
                     <Text
                         style={styles.headerText}
-                        text='new24'
+                        text={'new24'}
                     />
                     <Text
                         style={styles.contentText}
-                        text='Enter your email to be sent a reset password link.'
+                        text={'reset'}
                     />
                 </View>
                 <ScrollView
@@ -78,8 +78,8 @@ const ForgotPasswordScreen = () => {
                         onChangeText={onChangeEmail}
                         containerStyle={styles.textField}
                         style={{ paddingTop: 25 }}
-                        label='Email'
-                        placeholder='Email'
+                        label={'email'}
+                        placeholder={'email'}
                         helper={emailError}
                     />
                     <TouchableOpacity
@@ -90,7 +90,7 @@ const ForgotPasswordScreen = () => {
                             backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
                         }]}>
                         <Text
-                            text='Sign Up'
+                            text={'signUp'}
                             style={{
                                 color: COLOR.white
                             }}

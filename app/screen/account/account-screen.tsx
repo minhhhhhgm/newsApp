@@ -11,9 +11,9 @@ import { TextField } from '../../components/TextField';
 import LockIcon from '../../icons/svg-component/LockIcon';
 import RightChvron from '../../icons/svg-component/RightChvron';
 import BackIcon from '../../icons/svg-component/backIcon';
+import { COLOR } from '../../utils/color';
 import { handleValidatePass } from '../../utils/validate';
 import { Righticon } from '../sign-in/component/eye-icon';
-import { COLOR } from '../../utils/color';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Account'>
 
 
@@ -110,14 +110,14 @@ const AccountScreen = () => {
             <BackIcon />
           </TouchableOpacity>
           <Text
-            text='Account'
+            text={'account'}
             style={styles.headerText}
           />
         </View>
         <TouchableOpacity
-          onPress={isValid() ? handleChangePass : () => {}}>
+          onPress={isValid() ? handleChangePass : () => { }}>
           <Text
-            text={'Save'}
+            text={'save'}
             style={[styles.textSave, { color: isValid() ? COLOR.buttonColorActive : COLOR.buttonColorInactive }]}
           />
         </TouchableOpacity>
@@ -128,7 +128,7 @@ const AccountScreen = () => {
           <View style={styles.content}>
             <View style={{ flexDirection: 'row' }}>
               <Text
-                text='Email'
+                text={'email'}
                 style={styles.mailText}
               />
               <TextInput
@@ -151,7 +151,7 @@ const AccountScreen = () => {
                 <LockIcon />
                 <Text
                   style={styles.textChangePass}
-                  text='Change Password'
+                  text={'changePass'}
                 />
               </View>
               <RightChvron />
@@ -166,8 +166,8 @@ const AccountScreen = () => {
               style={{
                 paddingTop: 25
               }}
-              label='Current password'
-              placeholder='Current password'
+              label={'currentPassword'}
+              placeholder={'currentPassword'}
               secureTextEntry={!isShowPassword}
               RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
               helper={passwordError}
@@ -179,8 +179,8 @@ const AccountScreen = () => {
               style={{
                 paddingTop: 25
               }}
-              label='New password'
-              placeholder='New password'
+              label={'newPassword'}
+              placeholder={'newPassword'}
               secureTextEntry={!isShowNewPassword}
               RightAccessory={() => Righticon({ password: newPassword, handleShowPass: () => { setIsShownewPassword(!isShowNewPassword) }, isShowPassword: isShowNewPassword })}
               helper={newPasswordError}
@@ -192,8 +192,8 @@ const AccountScreen = () => {
               style={{
                 paddingTop: 25,
               }}
-              label='Confirm new password'
-              placeholder='Confirm new password'
+              label={'confirmNewPassword'}
+              placeholder={'confirmNewPassword'}
               secureTextEntry={!isShowConfirmPassword}
               RightAccessory={() => Righticon({ password: reNewPassword, handleShowPass: () => { setIsShowConfirmPassword(!isShowConfirmPassword) }, isShowPassword: isShowConfirmPassword })}
               helper={reNewPasswordError}

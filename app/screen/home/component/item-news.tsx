@@ -1,10 +1,11 @@
 import React, { memo, useRef, useState } from 'react';
 import { Image, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
-import { defaultImage } from '../../../utils/const';
-import { COLOR } from '../../../utils/color';
+import { auth } from '../../../../App';
 import ShareIcon from '../../../icons/svg-component/ShareIcon';
 import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
-import { handleSaveBookMark } from '../../../utils/homeAction';
+import { COLOR } from '../../../utils/color';
+import { defaultImage } from '../../../utils/const';
+import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
 
 interface IItemNews {
     index: number,
@@ -19,7 +20,8 @@ interface IItemNews {
     handleToggleVisible?: () => void,
     shareImage?: () => void,
     saveBookMark?: () => void,
-    setPosition?: (x: number, y: number) => void
+    setPosition?: (x: number, y: number) => void,
+    time?: string,
 }
 
 export const ItemNews = memo((props: IItemNews) => {
@@ -41,12 +43,13 @@ export const ItemNews = memo((props: IItemNews) => {
         // visible,
         // handleToggleVisible,
         author,
-        shareImage,
+        // shareImage,
         saveBookMark,
-        setPosition
+        setPosition,
+        time,
     } = props
 
-    
+    const email = auth.currentUser?.email
     const handleToggleVisible = (id: number) => {
         setIsVisible({
             id: id,
@@ -63,24 +66,19 @@ export const ItemNews = memo((props: IItemNews) => {
     }
     const visible = isVisible.visible && index === isVisible.id
 
-   
-    const onButtonPress = (index: number) => {
-        console.log('Press');
-        // newRef.current?.measureInWindow((fx, fy, width, height) => {
-        //     setPosition(fx, fy)
-        // });
-        handleToggleVisible(index);
-    };
 
     return (
-        <View
+        <TouchableOpacity
+            activeOpacity={1}
             key={index}
-            style={[styles.viewItem, { zIndex: 10, }]}>
+            style={[styles.viewItem, { zIndex: 10, }]}
+            onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}
+        >
             <View
                 style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}>
+                >
                     <Image
                         source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
                         style={styles.imageItem}
@@ -110,14 +108,12 @@ export const ItemNews = memo((props: IItemNews) => {
                         <TouchableOpacity
                             ref={newRef}
                             style={{ paddingHorizontal: 5, }}
-                            // activeOpacity={1}
-                            // onPress={handleToggleVisible}
-                            onPress={() => onButtonPress(index)}
+                            onPress={visible ? () => handleToggleVisible(-1) : () => handleToggleVisible(index)}
                         >
                             <TextRn
                                 style={{
                                     fontSize: 5,
-                                    color: '#180E19',
+                                    color: COLOR.focusColor,
                                     marginTop: 7
                                 }}>●●●</TextRn>
                         </TouchableOpacity>
@@ -125,7 +121,7 @@ export const ItemNews = memo((props: IItemNews) => {
                     </View>
                 </View>
             </View>
-            {/* <View style={styles.lineHorizotal}></View> */}
+            <View style={styles.lineHorizotal}></View>
             {
                 visible ? (
                     <View
@@ -135,7 +131,7 @@ export const ItemNews = memo((props: IItemNews) => {
                         }}>
                             <TouchableOpacity
                                 activeOpacity={1}
-                                onPress={shareImage}
+                                onPress={() => shareImage(link)}
                                 style={{
                                     flexDirection: 'row',
                                     paddingLeft: 10,
@@ -144,7 +140,7 @@ export const ItemNews = memo((props: IItemNews) => {
                                 <ShareIcon />
                                 <TextRn
                                     style={{
-                                        color: '#180E19',
+                                        color: COLOR.focusColor,
                                         marginLeft: 10,
                                         fontSize: 12
                                     }}
@@ -155,7 +151,9 @@ export const ItemNews = memo((props: IItemNews) => {
                             <View>
                                 <TouchableOpacity
                                     activeOpacity={1}
-                                    onPress={() => handleSaveBookMark(titleNews, title, author,  relativeTime, link, imgSrc, "test@gmail.com")}
+                                    onPress={() => {
+                                        handleSaveBookMark(titleNews, title, author, time as string, link, imgSrc, email as string)
+                                    }}
                                     style={{
                                         flexDirection: 'row',
                                         marginTop: 10,
@@ -164,7 +162,7 @@ export const ItemNews = memo((props: IItemNews) => {
                                     <BookMarkIcon fill={'none'} />
                                     <TextRn
                                         style={{
-                                            color: '#180E19',
+                                            color: COLOR.focusColor,
                                             marginLeft: 5,
                                             fontSize: 12
                                         }}
@@ -177,7 +175,7 @@ export const ItemNews = memo((props: IItemNews) => {
                     </View>
                 ) : null
             }
-        </View>
+        </TouchableOpacity>
     )
 
 

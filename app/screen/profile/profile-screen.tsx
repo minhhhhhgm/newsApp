@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
 import { storage } from '../../firebase/config';
+import { } from '../../i18n/en';
 import BackIcon from '../../icons/svg-component/backIcon';
 import { COLOR } from '../../utils/color';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Profile'>
@@ -17,7 +18,7 @@ const ProfileScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const insets = useSafeAreaInsets();
     console.log(auth.currentUser);
-    
+
     const handleChangePass = async () => {
         console.log('asjdi');
         const metadata = {
@@ -62,7 +63,7 @@ const ProfileScreen = () => {
                         <BackIcon />
                     </TouchableOpacity>
                     <Text
-                        text='Account'
+                        text={'account'}
                         style={styles.headerText}
                     />
                 </View>
@@ -71,7 +72,7 @@ const ProfileScreen = () => {
                     activeOpacity={1}>
                     <Text
 
-                        text={'SAVE'}
+                        text={'save'}
                         style={[styles.textSave, { color: COLOR.buttonColorActive }]}
                     />
                 </TouchableOpacity>
@@ -79,15 +80,15 @@ const ProfileScreen = () => {
             <View style={styles.content}>
                 <View style={{ flexDirection: 'row' }}>
                     <Text
-                        text='Email'
+                        text={'email'}
                         style={styles.mailText}
                     />
                     <TextInput
-                        value={auth.currentUser?.email}
+                        value={auth.currentUser?.email as string}
                         style={{
                             borderBottomWidth: 1,
                             flex: 1,
-                            borderBottomColor: '#EEEEEE',
+                            borderBottomColor: COLOR.buttonColorInactive,
                             marginLeft: 20,
                         }}
                     />
@@ -101,12 +102,12 @@ export default ProfileScreen
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: COLOR.backgroundColor,
     },
     headerText: {
         fontWeight: '700',
         fontSize: 18,
-        color: '#000000',
+        color: COLOR.darkBlack,
         marginLeft: 16,
     },
     button: {
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     mailText: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#000000',
+        color: COLOR.darkBlack,
         alignSelf: 'center'
         // marginTop : 20
     },
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
         marginTop: 40
     },
     textChangePass: {
-        color: '#000000',
+        color: COLOR.darkBlack,
         marginLeft: 10,
         fontWeight: '500'
     },

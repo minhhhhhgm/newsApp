@@ -3,43 +3,34 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ParamsList } from '../../../App';
+import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import { Todos } from '../../database';
+import { Bookmark } from '../../database';
 import { COLOR } from '../../utils/color';
+import { dataInterest } from '../../utils/homeAction';
 import { getEmail, getInterest } from '../../utils/storage';
 import { SimpleMenu } from '../home/component/popover';
-import { dataInterest } from '../../utils/homeAction';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 const BookMarkScreen = () => {
 
-    const insets = useSafeAreaInsets();
     const navigation = useNavigation<NavigationProps>()
     const [data, setData] = useState([])
-    const [countDelete, setCountDelete] = useState(0)
-    // const [dataInterests, setDataInterests] = React.useState<any[]>([])
     const [indexItem, setIndexItem] = useState(0)
-    const getDataInterest = async () => {
-        const response = await getInterest();
-        if (response) {
-            // setDataInterests(JSON.parse(response))
-        }
-    }
+
     const getdata = async () => {
-        const email = await getEmail()
+        const email = auth.currentUser?.email as string
         if (email) {
-            let todos = await Todos.filter((item: any) => item.type === 'For You' && item.email === email).data();
-            console.log('tode', todos);
-            setData(todos)
+            let data = await Bookmark.filter((item: any) => item.type === 'For You' && item.email === email).data();
+            console.log('data', data);
+            setData(data)
         }
     }
     const getdataByType = async (type: string) => {
         const email = await getEmail()
         if (email) {
-            let todos = await Todos.filter((item: any) => item.type === type && item.email === email).data();
-            console.log('tode', todos);
-            setData(todos)
+            let data = await Bookmark.filter((item: any) => item.type === type && item.email === email).data();
+            console.log('data', data);
+            setData(data)
         }
     }
     function delayTime() {
@@ -49,11 +40,9 @@ const BookMarkScreen = () => {
             }, 100);
         });
     }
-    const testDb = async (id: string, type: string) => {
-        const item1 = await Todos.get({ id: id });
-        await Todos.remove(item1)
-        const todos = await Todos.data();
-        // setData(todos)
+    const removeBookmark = async (id: string, type: string) => {
+        const item1 = await Bookmark.get({ id: id });
+        await Bookmark.remove(item1)
         delayTime().then(() => {
             if (type === 'For You') {
                 getdata()
@@ -70,11 +59,8 @@ const BookMarkScreen = () => {
 
     useEffect(() => {
         getdata()
-        getDataInterest()
-        // testDb()
     }, [])
-    // useEffect(() => {
-    // }, [countDelete])
+
 
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
@@ -109,7 +95,7 @@ const BookMarkScreen = () => {
                                     isShareBookMark={true}
                                     isRemoveBookmark
                                     item={item}
-                                    saveBookMark={() => { testDb(item.id, item.type) }}
+                                    saveBookMark={() => { removeBookmark(item.id, item.type) }}
                                 />
                             </View>
                         </View>
@@ -128,7 +114,7 @@ const BookMarkScreen = () => {
         <View style={styles.body}>
             <View>
                 <Text
-                    text='Bookmarked'
+                    text={'bookmarked'}
                     style={styles.headerText}
                 />
             </View>
@@ -152,7 +138,7 @@ const BookMarkScreen = () => {
                                                     if (index != 0) {
                                                         getdataByType(item.text)
                                                     } if (index == 0) {
-                                                        getdataByType(item.text)
+                                                        getdata()
                                                     }
                                                 }}
                                                 style={[styles.buttonCategory, {

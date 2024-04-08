@@ -1,22 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import ShareIcon from '../../icons/svg-component/ShareIcon';
-import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
-import { dataInterest, getDataRss, getDataRssByTitle, handleSaveBookMark, shareImage } from '../../utils/homeAction';
+import { dataInterest, getDataRss, getDataRssByTitle } from '../../utils/homeAction';
 import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
+
 const HomeScreen = () => {
-  
-    
     const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
     const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -33,12 +30,12 @@ const HomeScreen = () => {
         getData()
     }, [domain])
 
-    const handleToggleVisible = (id: number) => {
-        setIsVisible({
-            id: id,
-            visible: true
-        })
-    }
+    // const handleToggleVisible = (id: number) => {
+    //     setIsVisible({
+    //         id: id,
+    //         visible: true
+    //     })
+    // }
 
     const handlecloseVisible = () => {
         setIsVisible({
@@ -117,61 +114,14 @@ const HomeScreen = () => {
                     relativeTime={relativeTime}
                     link={link}
                     titleNews={titleNews}
+                    time={time}
                     // visible={visible}
                     author={author}
-                    // handleToggleVisible={() => handleToggleVisible(index)}
-                    // saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
-                    // shareImage={() => shareImage(link)}
-                    // setPosition={handleSetPosition}
+                // handleToggleVisible={() => handleToggleVisible(index)}
+                // saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
+                // shareImage={() => shareImage(link)}
+                // setPosition={handleSetPosition}
                 />
-                {/* {
-                    visible &&
-                    <View
-                        style={[styles.viewPopOver, { bottom: 0, }]}>
-                        <View style={{
-                            justifyContent: 'center'
-                        }}>
-                            <TouchableOpacity
-                                // activeOpacity={1}
-                                onPress={() => shareImage(link)}
-                                style={{
-                                    flexDirection: 'row',
-                                    paddingLeft: 10,
-                                    marginTop: 15,
-                                }}>
-                                <ShareIcon />
-                                <TextRn
-                                    style={{
-                                        color: COLOR.focusColor,
-                                        marginLeft: 10,
-                                        fontSize: 12
-                                    }}
-                                >Share</TextRn>
-                            </TouchableOpacity>
-                            <View style={styles.popOverLine}>
-                            </View>
-                            <View>
-                                <TouchableOpacity
-                                    // activeOpacity={1}
-                                    onPress={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc, email)}
-                                    style={{
-                                        flexDirection: 'row',
-                                        marginTop: 10,
-                                        marginLeft: 8
-                                    }}>
-                                    <BookMarkIcon fill={'none'} />
-                                    <TextRn
-                                        style={{
-                                            color: COLOR.focusColor,
-                                            marginLeft: 5,
-                                            fontSize: 12
-                                        }}
-                                    >{'Bookmark'}</TextRn>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                } */}
             </>
         )
     };
@@ -227,13 +177,6 @@ const HomeScreen = () => {
                         </View>
                     )
                 }}
-                ItemSeparatorComponent={() => <View style={{
-                    height: 1,
-                    backgroundColor: COLOR.buttonColorInactive,
-                    marginTop: 30,
-                    marginBottom: 20,
-                    marginHorizontal: 16
-                }} />}
             />
             {/* {
                 isVisible && position.x != 0 &&

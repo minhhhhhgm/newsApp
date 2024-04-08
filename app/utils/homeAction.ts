@@ -1,14 +1,15 @@
-import { Todos } from "../database";
+import { Bookmark, Todos } from "../database";
 import Toast from 'react-native-simple-toast';
 import Share from "react-native-share";
 import { useMemo } from "react";
 import axios from "axios";
 import { extractImageUrl, extractString } from "./validate";
+import { enTrsl } from "../i18n/en";
 
 
 export const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
     console.log('OK');
-    const item1 = await Todos.get({ title: title });
+    const item1 = await Bookmark.get({ title: title });
     if (item1) {
 
         Toast.show('The post has been saved', Toast.LONG);
@@ -23,7 +24,7 @@ export const handleSaveBookMark = async (type: string, title: string, author: st
         url: url,
         email: email
     }
-    Todos.insert(params)
+    Bookmark.insert(params)
     Toast.show('Saved to bookmark', Toast.LONG);
     // handlecloseVisible()
 }
@@ -71,11 +72,11 @@ export const getDataRssByTitle = async (domain: string, endpoint: string) => {
 }
 
 
-export const dataInterest = [{ "endpoint": "tin-moi-nhat", "text": "For You" },
-{ "endpoint": "the-gioi", "text": "World News" },
-{ "endpoint": "thoi-su", "text": "Politics" },
-{ "endpoint": "khoa-hoc", "text": "Technology" },
-{ "endpoint": "so-hoa", "text": "Science" },
-{ "endpoint": "kinh-doanh", "text": "Business" },
-{ "endpoint": "giai-tri", "text": "Entertainment" },
-{ "endpoint": "doi-song", "text": "Food" }]
+export const dataInterest = [{ "endpoint": "tin-moi-nhat", "text": 'forYou' },
+{ "endpoint": "the-gioi", "text": 'worldNews' },
+{ "endpoint": "thoi-su", "text": 'politics' },
+{ "endpoint": "khoa-hoc", "text": 'technology' },
+{ "endpoint": "so-hoa", "text": 'science' },
+{ "endpoint": "kinh-doanh", "text": 'business' },
+{ "endpoint": "giai-tri", "text": 'entertainment' },
+{ "endpoint": "doi-song", "text": 'food' }]

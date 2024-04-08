@@ -19,6 +19,8 @@ import { logoLogin } from '../../utils/const';
 import { setAccessToken } from '../../utils/storage';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
+import { } from '../../i18n/en';
+import Loading from '../../components/loading';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 
 const SignInScreen = () => {
@@ -29,9 +31,11 @@ const SignInScreen = () => {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const navigation = useNavigation<NavigationProps>()
+  const [ isLoading , setIsLoading] = useState(false)
   const { t } = useTranslation();
 
   const handleSignIn = async () => {
+    setIsLoading(true)
     try {
       const responseSignIn = await signInWithEmailAndPassword(auth, email, password)
       if (responseSignIn) {
@@ -41,11 +45,13 @@ const SignInScreen = () => {
           index: 0,
           routes: [{ name: 'BottomNavigation' }],
         });
+        setIsLoading(false)
       }
     } catch (err) {
       const error = JSON.stringify(err)
       console.log(error);
       Toast.show('Email or Password incorrect !', Toast.LONG);
+      setIsLoading(false)
     }
   }
 
@@ -76,6 +82,7 @@ const SignInScreen = () => {
   };
   return (
     <KeyboardAvoidingView style={styles.body} behavior='padding'>
+      <Loading isVisible={isLoading}/>
       <View>
         <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
           <Image
@@ -83,7 +90,7 @@ const SignInScreen = () => {
           />
           <Text
             style={styles.headerText}
-            text='new24'
+            text={'new24'}
           />
         </View>
         <ScrollView
@@ -94,8 +101,8 @@ const SignInScreen = () => {
             onChangeText={onChangeEmail}
             containerStyle={styles.textField}
             style={{ paddingTop: 25 }}
-            label='Email'
-            placeholder='Email'
+            label={'email'}
+            placeholder={'email'}
             helper={emailError}
           />
           <TextField
@@ -105,8 +112,8 @@ const SignInScreen = () => {
             style={{
               paddingTop: 25
             }}
-            label='Password'
-            placeholder='Password'
+            label={'password'}
+            placeholder={'password'}
             secureTextEntry={!isShowPassword}
             RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
             helper={passwordError}
@@ -122,7 +129,7 @@ const SignInScreen = () => {
                     color: COLOR.fogotPassColor,
                     fontWeight: '500',
                   }}
-                  text='Forgot password?'
+                  text={'forgotPassword'}
                 />
               </TouchableOpacity>
             )
@@ -135,7 +142,7 @@ const SignInScreen = () => {
               backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
             }]}>
             <Text
-              text='Sign Up'
+              text={'signUp'}
               style={{
                 color: COLOR.white
               }}
@@ -148,7 +155,7 @@ const SignInScreen = () => {
             marginTop: 50
           }}>
             <LineIcon />
-            <Text text='or sign in with'
+            <Text text={'orSignInWith'}
               style={{
                 marginHorizontal: 10,
                 color: COLOR.darkBlack
@@ -184,7 +191,7 @@ const SignInScreen = () => {
             color: COLOR.darkBlack,
             marginBottom: 50
           }}>
-            {t('Don’t have an account?')}
+            {t(`${'dontHaveAnAccount'}`)}
             <TextRn
               onPress={() => navigation.navigate('SignUp')}
               // text={`Register`}
@@ -193,7 +200,7 @@ const SignInScreen = () => {
                 color: COLOR.darkBlack,
                 fontFamily: '',
 
-              }} >{t('Register')}</TextRn>
+              }} > {t(`${'register'}`)}</TextRn>
           </TextRn>
         </ScrollView>
       </View>

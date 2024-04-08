@@ -96,7 +96,7 @@ const SignUpScreen = () => {
             marginTop: 20,
             color: headBlackColor
           }}
-          text='new24'
+          text={'new24'}
         />
       </View>
       <ScrollView
@@ -111,8 +111,8 @@ const SignUpScreen = () => {
           style={{
             paddingTop: 25
           }}
-          label='Username'
-          placeholder='Username'
+          label={'username'}
+          placeholder={'username'}
           helper={userNameError}
         />
         <TextField
@@ -120,8 +120,8 @@ const SignUpScreen = () => {
           onChangeText={onChangeEmail}
           containerStyle={styles.textField}
           style={{ paddingTop: 25 }}
-          label='Email'
-          placeholder='Email'
+          label={'email'}
+          placeholder={'email'}
           helper={emailError}
         />
         <TextField
@@ -131,8 +131,8 @@ const SignUpScreen = () => {
           style={{
             paddingTop: 25
           }}
-          label='Password'
-          placeholder='Password'
+          label={'password'}
+          placeholder={'password'}
           secureTextEntry={!isShowPassword}
           RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
           helper={passwordError}
@@ -146,7 +146,7 @@ const SignUpScreen = () => {
             backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
           }]}>
           <Text
-            text='Sign Up'
+            text={'signUp'}
             style={{
               color: COLOR.white
             }}
@@ -154,9 +154,9 @@ const SignUpScreen = () => {
         </TouchableOpacity>
         <View style={styles.lineView}>
           <LineIcon />
-          <Text text='or sign in with' style={{
+          <Text text={'orSignInWith'} style={{
             marginHorizontal: 10,
-            color:COLOR.black
+            color: COLOR.black
           }} />
           <LineIcon />
         </View>
@@ -183,8 +183,8 @@ const SignUpScreen = () => {
           textAlign: 'center',
           color: COLOR.darkBlack
         }}>
-          {t('By signing up to News24 you are accepting our')}
-          <Text text={`Terms & Conditions`} style={{
+          {t(`${'bySigningUpToNews24YouAreAcceptingOur'}`)}
+          <Text text={' ' + t(`${'termsAndConditions'}`)} style={{
             fontWeight: '700',
             color: COLOR.darkBlack
           }} />

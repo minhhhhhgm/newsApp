@@ -4,7 +4,7 @@ import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import React from 'react';
 import { LogBox, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
-import { Todos } from './app/database';
+import { Bookmark, Todos } from './app/database';
 import './app/i18n/IMLocalize';
 import BottomNavigation from './app/navigation/bottomNavigation';
 import BookMarkScreen from './app/screen/bookmark/book-mark-screen';
@@ -47,7 +47,9 @@ export type ParamsList = {
 const Stack = createNativeStackNavigator<ParamsList>()
 export const auth = FirebaseAuth
 LogBox.ignoreAllLogs();
-Todos.data()
+Bookmark.data()
+
+
 
 
 export const AppNavigation = () => {
@@ -59,7 +61,7 @@ export const AppNavigation = () => {
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="Interests" component={InterestsScreen} />
+      {/* <Stack.Screen name="Interests" component={InterestsScreen} /> */}
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />
@@ -79,7 +81,7 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="Interests" component={InterestsScreen} />
+      {/* <Stack.Screen name="Interests" component={InterestsScreen} /> */}
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="BookMark" component={BookMarkScreen} />

@@ -7,7 +7,7 @@ import Share from "react-native-share";
 import Toast from 'react-native-simple-toast';
 import WebView from 'react-native-webview';
 import { ParamsList } from '../../../App';
-import { Todos } from '../../database';
+import { Bookmark } from '../../database';
 import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
@@ -39,7 +39,7 @@ const DetailScreen = () => {
             })
     }
     const handleCheckIsSave = async () => {
-        const item1 = await Todos.get({ title: title });
+        const item1 = await Bookmark.get({ title: title });
         if (item1) {
             setIsSaveBookMark(!isSaveBookMark)
             return item1;
@@ -48,7 +48,7 @@ const DetailScreen = () => {
         }
     }
     const handleSaveBookMark = async () => {
-        const item1 = await Todos.get({ title: title });
+        const item1 = await Bookmark.get({ title: title });
         if (item1) {
             setIsSaveBookMark(true)
             Toast.show('The post has been saved', Toast.LONG);
@@ -63,7 +63,7 @@ const DetailScreen = () => {
             url: link,
             email
         }
-        Todos.insert(params)
+        Bookmark.insert(params)
         Toast.show('Saved to bookmark', Toast.LONG);
         console.log('Save DB OK',);
         setIsSaveBookMark(true)

@@ -12,6 +12,6 @@ export const COLOR = {
     textTypeColor:'#69BDFD',
     black:'black',
     colorSwitchOn:'#180E19',
-    colorSwitchOff:'#767577'
-
+    colorSwitchOff:'#767577',
+    defaulColor : '#000000'
 }

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TextField } from '../../components/TextField';
-import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
-import CancelIcon from '../../icons/svg-component/cancelcon';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ParamsList } from '../../../App';
+import { TextField } from '../../components/TextField';
+import Loading from '../../components/loading';
+import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
+import CancelIcon from '../../icons/svg-component/cancelcon';
 import { Article } from '../../type/NewsType';
 import { extractContentInsideBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
 import { SimpleMenu } from '../home/component/popover';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ParamsList } from '../../../App';
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Search'>
 
@@ -216,6 +216,7 @@ const SearchScreen = () => {
     };
     return (
         <View style={[styles.body, { paddingTop: insets.top }]}>
+            <Loading />
             <TextField
                 inputWrapperStyle={{
                     borderBottomWidth: 0,
@@ -224,7 +225,7 @@ const SearchScreen = () => {
                 onChangeText={(text) => { setSearch(text); }}
                 containerStyle={styles.textField}
                 label=''
-                placeholder='Search'
+                placeholder={'search'}
                 helper={""}
                 LeftAccessory={() => {
                     return (

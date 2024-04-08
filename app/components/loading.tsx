@@ -1,9 +1,8 @@
-import * as React from "react"
-import { ActivityIndicator, View, ViewStyle } from "react-native"
+import React, { useState } from "react";
+import { ActivityIndicator, View, ViewStyle } from "react-native";
 
 const CONTAINER: ViewStyle = {
-  // justifyContent: "center",
-  backgroundColor: 'red',
+  backgroundColor: 'black',
   opacity: 0.5,
   flex: 1,
   position: "absolute",
@@ -14,37 +13,21 @@ const CONTAINER: ViewStyle = {
   justifyContent: "center",
   alignItems: "center",
   zIndex: 10
+};
 
+interface LoadingProps {
+  style?: ViewStyle;
+  isVisible? : boolean
 }
 
+const Loading: React.FC<LoadingProps> = (props) => {
 
-export interface LoadingProps {
+ 
+  return props.isVisible ? (
+    <View style={[CONTAINER, props.style]}>
+      <ActivityIndicator size={"large"} />
+    </View>
+  ) : null;
+};
 
-  style?: ViewStyle
-}
-
-
-export default class Loading extends React.Component {
-  state = {
-    isVisible: false
-  }
-
-  showLoading() {
-    this.setState({ isVisible: true })
-  }
-
-  hideLoading() {
-    this.setState({ isVisible: false })
-  }
-
-  render() {
-    return this.state.isVisible ? (
-      <View style={CONTAINER}>
-        <ActivityIndicator size={"large"}  />
-      </View>
-    ) : null
-
-  }
-}
-
-
+export default Loading;

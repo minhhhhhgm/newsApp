@@ -1,20 +1,19 @@
-import React from 'react';
-import { Dimensions, Modal, ScrollView, StyleSheet, Switch, View, Text as TextRN, TouchableOpacity } from 'react-native';
-import { Text } from '../../components/Text';
-import ProfileIcon from '../../icons/svg-component/profile';
-import RightChvron from '../../icons/svg-component/RightChvron';
-import InterRestIcon from '../../icons/svg-component/interser';
-import Noti from '../../icons/svg-component/noti';
-import DarkModeicon from '../../icons/svg-component/darkmodeicon';
-import SettingIconProfile from '../../icons/svg-component/setting';
-import LogOutIcon from '../../icons/svg-component/logout';
-import { removeAccessToken } from '../../utils/storage';
-import { useTranslation } from 'react-i18next';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ParamsListBottomNav } from '../../navigation/bottomNavigation';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View } from 'react-native';
 import { ParamsList } from '../../../App';
+import { Text } from '../../components/Text';
+import RightChvron from '../../icons/svg-component/RightChvron';
+import DarkModeicon from '../../icons/svg-component/darkmodeicon';
+import InterRestIcon from '../../icons/svg-component/interser';
+import LogOutIcon from '../../icons/svg-component/logout';
+import Noti from '../../icons/svg-component/noti';
+import ProfileIcon from '../../icons/svg-component/profile';
+import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR } from '../../utils/color';
+import { removeAccessToken } from '../../utils/storage';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
@@ -28,7 +27,7 @@ const SettingScreen = () => {
     const data = [
         {
             index: 0,
-            name: 'Profile',
+            name: 'profile',
             onPress: () => {
                 navigation.navigate('Profile')
             },
@@ -36,7 +35,7 @@ const SettingScreen = () => {
         },
         {
             index: 1,
-            name: 'Account',
+            name: 'account',
             onPress: () => {
                 navigation.navigate('Account')
             },
@@ -44,7 +43,7 @@ const SettingScreen = () => {
         },
         {
             index: 2,
-            name: 'Interest',
+            name: 'interest',
             onPress: () => {
                 const isBack = true;
                 const isHome = false
@@ -57,31 +56,31 @@ const SettingScreen = () => {
         },
         {
             index: 3,
-            name: 'Change Language',
+            name: 'changeLanguage',
             onPress: () => { setIsChoosLanguage(!isChoosLanguage) },
             icon: ProfileIcon
         },
         {
             index: 4,
-            name: 'Dark Mode',
+            name: 'darkMode',
             onPress: () => { },
             icon: ProfileIcon
         },
         {
             index: 5,
-            name: 'Terms & Conditions',
+            name: 'termsAndConditions',
             onPress: () => { },
             icon: ProfileIcon
         },
         {
             index: 6,
-            name: 'About',
+            name: 'about',
             onPress: () => { },
             icon: ProfileIcon
         },
         {
             index: 7,
-            name: 'Log Out',
+            name: 'logOut',
             onPress: async () => {
                 await removeAccessToken()
                 navigation.replace('SignIn')
@@ -150,7 +149,7 @@ const SettingScreen = () => {
     return (
         <View style={styles.body}>
             <Text
-                text='Settings'
+                text={'settings'}
                 style={{
                     marginTop: 60,
                     fontSize: 15,
