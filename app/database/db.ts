@@ -8,11 +8,12 @@ import Vasern from 'vasern';
 import { BookmarkModel } from './Bookmark';
 import { TodoModel } from './Todo';
 import { UserModel } from './User';
+import { ViewedModel } from './Viewed';
 
 /**
  * Creating Instance of Vasern DB.
  * Providing all the models that are imported above as Schema to the instance.
  */
 export default new Vasern({
-    schemas: [TodoModel, UserModel, BookmarkModel]
+    schemas: [TodoModel, UserModel, BookmarkModel,ViewedModel]
 });

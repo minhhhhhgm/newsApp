@@ -98,6 +98,7 @@
     newPassword: "Mật khẩu mới",
     confirmNewPassword: "Xác nhận mật khẩu mới",
     save : 'LƯU',
-    changePass :'Đổi mật khẩu'
+    changePass :'Đổi mật khẩu',
+    viewed : 'Đã xem'
 
 }

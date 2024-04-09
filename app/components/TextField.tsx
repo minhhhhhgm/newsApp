@@ -37,9 +37,9 @@ export const TextField = (props: TextFieldProps) => {
         helper,
         RightAccessory,
         LeftAccessory,
-        style: $inputStyleOverride,
-        containerStyle: $containerStyleOverride,
-        inputWrapperStyle: $inputWrapperStyleOverride,
+        style,
+        containerStyle,
+        inputWrapperStyle,
         value,
         ...TextInputProps
     } = props
@@ -53,7 +53,7 @@ export const TextField = (props: TextFieldProps) => {
     return (
         <TouchableOpacity
             activeOpacity={1}
-            style={$containerStyleOverride}
+            style={containerStyle}
             onPress={focusInput}>
             {(label && value) && (
                 <Text
@@ -63,7 +63,7 @@ export const TextField = (props: TextFieldProps) => {
             )}
             <View style={[
                 $inputWrapperStyle,
-                $inputWrapperStyleOverride,
+                inputWrapperStyle,
             ]}>
                 {LeftAccessory && (
                     <LeftAccessory style={$leftAccessoryStyle} />
@@ -75,7 +75,7 @@ export const TextField = (props: TextFieldProps) => {
                     placeholderTextColor={'gray'}
                     style={[
                         $inputStyle,
-                        $inputStyleOverride,
+                        style,
                     ]}
                     value={value}
                     {...TextInputProps}
@@ -97,7 +97,7 @@ export const TextField = (props: TextFieldProps) => {
 const $labelStyle: TextStyle = {
     position: 'absolute',
     zIndex: 1,
-    color:COLOR.black
+    color: COLOR.black
 }
 
 const $inputWrapperStyle: ViewStyle = {

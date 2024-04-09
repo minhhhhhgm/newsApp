@@ -1,13 +1,13 @@
 import axios from "axios";
 import Share from "react-native-share";
 import Toast from 'react-native-simple-toast';
-import { Bookmark } from "../database";
+import { Bookmark, Viewed } from "../database";
 import { extractImageUrl, extractString } from "./validate";
 
 
 export const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
     console.log('OK');
-    const item1 = await Bookmark.get({ title: title });
+    const item1 = await Bookmark.get({ title: title, email: email });
     if (item1) {
 
         Toast.show('The post has been saved', Toast.LONG);
@@ -25,6 +25,27 @@ export const handleSaveBookMark = async (type: string, title: string, author: st
     Bookmark.insert(params)
     Toast.show('Saved to bookmark', Toast.LONG);
 }
+
+
+
+export const handleSaveHistory = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
+    console.log('SAVE-HISTORY');
+    const item1 = await Viewed.get({ title: title, email: email });
+    if (item1) {
+        return;
+    }
+    const params = {
+        type: type,
+        title: title,
+        author: author,
+        timeWatched: time,
+        image: image,
+        url: url,
+        email: email
+    }
+    Viewed.insert(params)
+}
+
 
 
 export const shareImage = (link: string) => {

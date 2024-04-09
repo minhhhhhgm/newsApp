@@ -20,6 +20,7 @@ import AccountScreen from './app/screen/account/account-screen';
 import { FirebaseAuth } from './app/firebase/config';
 import ForgotPasswordScreen from './app/screen/forgot-password/forgot-password-screen';
 import ProfileScreen from './app/screen/profile/profile-screen';
+import ViewedScreen from './app/screen/viewed/viewed-screen';
 
 export type ParamsList = {
   Detail: {
@@ -40,7 +41,8 @@ export type ParamsList = {
   Home: undefined,
   Account: undefined,
   ForgotPassword: undefined,
-  Profile: undefined
+  Profile: undefined,
+  Viewed: undefined
 
 }
 
@@ -68,6 +70,8 @@ export const AppNavigation = () => {
       <Stack.Screen name="Account" component={AccountScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Viewed" component={ViewedScreen} />
+
     </Stack.Navigator>
   )
 }
@@ -88,11 +92,14 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="Account" component={AccountScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Viewed" component={ViewedScreen} />
+
     </Stack.Navigator>
   )
 }
 interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> { }
 const AppNavigator = (props: NavigationProps) => {
+  
   return (
     <AuthProvider>
     </AuthProvider>

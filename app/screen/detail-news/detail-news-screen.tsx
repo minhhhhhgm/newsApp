@@ -12,16 +12,17 @@ import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../utils/color';
+import type { RouteProp } from '@react-navigation/native';
+import { handleSaveBookMark } from '../../utils/homeAction';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Detail'>
+
 
 const DetailScreen = () => {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation<NavigationProps>()
-    const route = useRoute();
+    const route = useRoute<RouteProp<ParamsList, 'Detail'>>();
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
-
-    const { link, author, time, imageUrl, type, title, email } = route.params as any;
-
+    const { link, author, time, imageUrl, type, title, email } = route.params;
     useEffect(() => {
         handleCheckIsSave()
     }, [])
@@ -39,7 +40,9 @@ const DetailScreen = () => {
             })
     }
     const handleCheckIsSave = async () => {
-        const item1 = await Bookmark.get({ title: title });
+        const item1 = await Bookmark.get({ title: title, email: email });
+        console.log('ITEM', item1);
+
         if (item1) {
             setIsSaveBookMark(!isSaveBookMark)
             return item1;
@@ -47,25 +50,8 @@ const DetailScreen = () => {
             return null
         }
     }
-    const handleSaveBookMark = async () => {
-        const item1 = await Bookmark.get({ title: title });
-        if (item1) {
-            setIsSaveBookMark(true)
-            Toast.show('The post has been saved', Toast.LONG);
-            return;
-        }
-        const params = {
-            type: type,
-            title: title,
-            author: author,
-            time: time,
-            image: imageUrl,
-            url: link,
-            email
-        }
-        Bookmark.insert(params)
-        Toast.show('Saved to bookmark', Toast.LONG);
-        console.log('Save DB OK',);
+    const onSave = async () => {
+        handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string) 
         setIsSaveBookMark(true)
     }
     const Header = () => {
@@ -88,7 +74,7 @@ const DetailScreen = () => {
                 }}>
                     <TouchableOpacity
                         activeOpacity={1}
-                        onPress={handleSaveBookMark}
+                        onPress={onSave}
                         style={{
                             marginRight: 15
                         }}>
@@ -114,7 +100,7 @@ const DetailScreen = () => {
                 startInLoadingState={true}
                 renderLoading={() =>
                     <ActivityIndicator
-                        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor:'rgba(0, 0, 0, 0.3)' }}
+                        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
                         size="large" color={COLOR.backgroundColor} />}
                 source={{ uri: link }} />
         </View>
@@ -123,3 +109,7 @@ const DetailScreen = () => {
 
 
 export default DetailScreen;
+
+function RouteProp<T, U>() {
+    throw new Error('Function not implemented.');
+}

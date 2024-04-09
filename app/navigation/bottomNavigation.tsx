@@ -8,6 +8,7 @@ import SearchScreen from '../screen/search/search-screen';
 import BookMarkScreen from '../screen/bookmark/book-mark-screen';
 import SettingScreen from '../screen/setting/setting-screen';
 import { COLOR } from '../utils/color';
+import ViewedScreen from '../screen/viewed/viewed-screen';
 
 export type ParamsListBottomNav = {
     Home: undefined,
@@ -42,8 +43,9 @@ export default function BottomNavigation() {
                 }} />
             <Tab.Screen
                 name="Search"
-                component={SearchScreen}
+                component={ViewedScreen}
                 options={{
+                    // unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <SearchIcons fill={focused ? COLOR.focusColor : 'none'} />
                     )

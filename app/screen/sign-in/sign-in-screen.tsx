@@ -142,7 +142,7 @@ const SignInScreen = () => {
               backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
             }]}>
             <Text
-              text={'signUp'}
+              text={'signIn'}
               style={{
                 color: COLOR.white
               }}

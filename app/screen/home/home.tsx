@@ -2,17 +2,17 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
+import { addNews } from '../../store/newsSlice';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
-import { dataInterest, getDataRss, getDataRssByTitle } from '../../utils/homeAction';
+import { dataInterest, getDataRss, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
 import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
-import { useDispatch } from 'react-redux';
-import { addNews } from '../../store/newsSlice';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const HomeScreen = () => {
@@ -34,7 +34,7 @@ const HomeScreen = () => {
         setFeedItems([])
         try {
             const parsedItems = await getDataRss(domain)
-            setFeedItems(parsedItems);            
+            setFeedItems(parsedItems);
             dispatch(addNews(parsedItems))
         } catch (error) {
             console.error('Error fetching RSS feed:', error);
@@ -52,8 +52,12 @@ const HomeScreen = () => {
 
     function handleRefresh() { }
 
-    const handleNavigateDetailNews = (type: string, title: string, author: string, time: string, url: string, image: string) => {
-        navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email })
+    const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
+        const now = moment()
+        const mail = auth.currentUser?.email as string
+        console.log('email', mail);
+        await handleSaveHistory(type, title, author, now.toString(), url, image, mail)
+        navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email: mail })
     }
     const handleChangeVnE = () => {
         setNewsName('VnExpress');
