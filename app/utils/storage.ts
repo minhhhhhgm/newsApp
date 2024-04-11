@@ -47,6 +47,45 @@ export async function setInterest(token: any) {
     }
 }
 
+
+
+export async function setInterestApp(newInterest: any, mail: string) {
+    try {
+        const data = await getInterest();
+        if (!data) {
+            const existingInterest = await AsyncStorage.getItem(UserStatus.Interest);
+            let updatedInterest = [];
+            if (existingInterest) {
+                updatedInterest = JSON.parse(existingInterest);
+                updatedInterest.push(newInterest);
+            } else {
+                updatedInterest = [newInterest];
+            }
+            await AsyncStorage.setItem(UserStatus.Interest, JSON.stringify(updatedInterest));
+        } else {
+            console.log('OK');
+
+            const dataFilter = data.filter((item: any) => item.email === mail);
+            console.log(dataFilter);
+            
+            if (dataFilter) {
+                return
+            }
+            const existingInterest = await AsyncStorage.getItem(UserStatus.Interest);
+            let updatedInterest = [];
+            if (existingInterest) {
+                updatedInterest = JSON.parse(existingInterest);
+                updatedInterest.push(newInterest);
+            } else {
+                updatedInterest = [newInterest];
+            }
+            await AsyncStorage.setItem(UserStatus.Interest, JSON.stringify(updatedInterest));
+        }
+
+    } catch (err) {
+        console.log(err);
+    }
+}
 export async function getInterest() {
     try {
         const userData = await AsyncStorage.getItem(UserStatus.Interest);
@@ -83,7 +122,7 @@ export async function getNews() {
         return null;
     }
 }
-export async function setEmail(token: string) {
+export async function setEmailApp(token: string) {
     try {
         await AsyncStorage.setItem(
             UserStatus.Email,
@@ -94,7 +133,7 @@ export async function setEmail(token: string) {
     }
 }
 
-export async function getEmail() {
+export async function getEmailApp() {
     try {
         const userData = await AsyncStorage.getItem(UserStatus.Email);
         if (userData !== null) {

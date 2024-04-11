@@ -51,8 +51,14 @@ const DetailScreen = () => {
         }
     }
     const onSave = async () => {
-        handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string) 
+        handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string)
         setIsSaveBookMark(true)
+    }
+    const onRemove = async () => {
+        const item1 = await Bookmark.get({ title: title });
+        await Bookmark.remove(item1)
+        setIsSaveBookMark(false)
+        Toast.show('The post has been remove', Toast.SHORT);
     }
     const Header = () => {
         return (
@@ -74,7 +80,7 @@ const DetailScreen = () => {
                 }}>
                     <TouchableOpacity
                         activeOpacity={1}
-                        onPress={onSave}
+                        onPress={!isSaveBookMark ? onSave : onRemove}
                         style={{
                             marginRight: 15
                         }}>
@@ -100,8 +106,8 @@ const DetailScreen = () => {
                 startInLoadingState={true}
                 renderLoading={() =>
                     <ActivityIndicator
-                        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-                        size="large" color={COLOR.backgroundColor} />}
+                        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'transparent' }}
+                        size="large" color={'blue'} />}
                 source={{ uri: link }} />
         </View>
     );

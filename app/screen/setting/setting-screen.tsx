@@ -50,7 +50,7 @@ const SettingScreen = () => {
                 console.log("loggg");
 
 
-                // navigation.navigate('Interests', { isBack, isHome })
+                navigation.navigate('Category')
             },
             icon: ProfileIcon
         },

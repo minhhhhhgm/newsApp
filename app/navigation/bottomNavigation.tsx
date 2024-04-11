@@ -54,7 +54,7 @@ export default function BottomNavigation() {
                 name="Fav"
                 component={BookMarkScreen}
                 options={{
-                    unmountOnBlur: true,
+                    // unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
                         <BookMarkIcon fill={focused ? COLOR.focusColor : 'none'} />
                     )

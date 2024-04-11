@@ -2,22 +2,33 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { User, updateProfile } from 'firebase/auth';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import { storage } from '../../firebase/config';
+import { db, storage } from '../../firebase/config';
 import { } from '../../i18n/en';
 import BackIcon from '../../icons/svg-component/backIcon';
 import { COLOR } from '../../utils/color';
+import {
+    ref as refdb,
+    onValue,
+    push,
+    update,
+    remove
+  } from 'firebase/database';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { dataInterests } from '../../utils/homeAction';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Profile'>
 
 
 const ProfileScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const insets = useSafeAreaInsets();
-    console.log(auth.currentUser?.photoURL);
+    console.log(auth.currentUser?.uid);
+    const email = useSelector((state: RootState) => state.newsReducer.mail)
 
     const handleChangeAvatar = async () => {
         console.log('asjdi');
@@ -53,6 +64,20 @@ const ProfileScreen = () => {
         }
     }
 
+    function addNewTodo() {
+        const dataInterest = dataInterests(email)
+        push(refdb(db, `/category/${auth.currentUser?.uid}`), dataInterest);
+      }
+      useEffect(() => {
+        return onValue(refdb(db, '/todos/email'), querySnapShot => {
+          let data = querySnapShot.val() || {};
+          let todoItems = {...data};
+          console.log('todoItems',data);
+          const todosKeys = Object.keys(data);
+          console.log('todosKeys',todosKeys);
+          
+        });
+      }, []);
 
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
@@ -94,6 +119,15 @@ const ProfileScreen = () => {
                     />
                 </View>
             </View>
+            <TouchableOpacity
+                    onPress={addNewTodo}
+                    activeOpacity={1}>
+                    <Text
+
+                        text={'Test'}
+                        style={[styles.textSave, { color: COLOR.buttonColorActive , marginLeft: 100, margin : 50}]}
+                    />
+                </TouchableOpacity>
         </View>
     )
 }

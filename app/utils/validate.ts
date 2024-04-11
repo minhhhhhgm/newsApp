@@ -64,25 +64,7 @@ export const extractContentInsideBrackets = (inputString: string): string | null
   }
 };
 
-export const extractContentInsideSecondBrackets = (inputString: string): string | null => {
-  const firstStartIndex: number = inputString.indexOf('[');
-  const firstEndIndex: number = inputString.indexOf(']');
 
-  if (firstStartIndex === -1 || firstEndIndex === -1 || firstStartIndex >= firstEndIndex) {
-    console.error('Invalid input string format.');
-    return null;
-  }
-
-  const secondStartIndex: number = inputString.indexOf('[', firstEndIndex);
-  const secondEndIndex: number = inputString.indexOf(']', firstEndIndex);
-
-  if (secondStartIndex === -1 || secondEndIndex === -1 || secondStartIndex >= secondEndIndex) {
-    console.error('Second pair of brackets not found.');
-    return null;
-  }
-
-  return inputString.substring(secondStartIndex + 1, secondEndIndex);
-};
 
 
 export const handleValidateEmail = (input: string) => {

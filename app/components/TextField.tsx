@@ -1,4 +1,4 @@
-import React, { ComponentType, useRef } from "react"
+import React, { ReactElement, useRef } from "react"
 import {
     StyleProp,
     TextInput,
@@ -10,12 +10,9 @@ import {
 } from "react-native"
 
 import { useTranslation } from "react-i18next"
-import { Text, TextProps } from "./Text"
 import { COLOR } from "../utils/color"
+import { Text, TextProps } from "./Text"
 
-export interface TextFieldAccessoryProps {
-    style: StyleProp<any>
-}
 
 export interface TextFieldProps extends TextInputProps {
     label?: string
@@ -26,8 +23,8 @@ export interface TextFieldProps extends TextInputProps {
     style?: StyleProp<TextStyle>
     containerStyle?: StyleProp<ViewStyle>
     inputWrapperStyle?: StyleProp<ViewStyle>
-    RightAccessory?: ComponentType<TextFieldAccessoryProps>
-    LeftAccessory?: ComponentType<TextFieldAccessoryProps>
+    RightIcon?: ReactElement
+    LeftIcon?: ReactElement
 }
 
 export const TextField = (props: TextFieldProps) => {
@@ -35,8 +32,8 @@ export const TextField = (props: TextFieldProps) => {
         label,
         placeholder,
         helper,
-        RightAccessory,
-        LeftAccessory,
+        RightIcon,
+        LeftIcon,
         style,
         containerStyle,
         inputWrapperStyle,
@@ -58,15 +55,15 @@ export const TextField = (props: TextFieldProps) => {
             {(label && value) && (
                 <Text
                     text={label}
-                    style={$labelStyle}
+                    style={labelStyle}
                 />
             )}
             <View style={[
-                $inputWrapperStyle,
+                inputWrapperStyleRoot,
                 inputWrapperStyle,
             ]}>
-                {LeftAccessory && (
-                    <LeftAccessory style={$leftAccessoryStyle} />
+                {LeftIcon && (
+                    LeftIcon
                 )}
                 <TextInput
                     ref={input}
@@ -74,40 +71,43 @@ export const TextField = (props: TextFieldProps) => {
                     placeholder={t(placeholder)}
                     placeholderTextColor={'gray'}
                     style={[
-                        $inputStyle,
+                        inputStyle,
                         style,
                     ]}
                     value={value}
                     {...TextInputProps}
                 />
-                {RightAccessory && (
-                    <RightAccessory style={$rightAccessoryStyle} />
+                {RightIcon && (
+                    <View style={rightAccessoryStyle}>
+                        {RightIcon}
+                    </View>
+
                 )}
             </View>
             {(helper) && (
                 <Text
                     text={helper}
-                    style={$helperStyle}
+                    style={helperStyle}
                 />
             )}
         </TouchableOpacity>
     )
 }
 
-const $labelStyle: TextStyle = {
+const labelStyle: TextStyle = {
     position: 'absolute',
     zIndex: 1,
     color: COLOR.black
 }
 
-const $inputWrapperStyle: ViewStyle = {
+const inputWrapperStyleRoot: ViewStyle = {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderColor: '#909090',
     overflow: "hidden",
 }
 
-const $inputStyle: TextStyle = {
+const inputStyle: TextStyle = {
     paddingVertical: 0,
     paddingHorizontal: 0,
     minHeight: 50,
@@ -117,20 +117,15 @@ const $inputStyle: TextStyle = {
     color: '#180E19'
 }
 
-const $helperStyle: TextStyle = {
+const helperStyle: TextStyle = {
     marginTop: 6,
     color: '#BA1818',
     position: 'absolute',
     bottom: -25
 }
 
-const $rightAccessoryStyle: ViewStyle = {
-    height: 40,
+const rightAccessoryStyle: ViewStyle = {
     justifyContent: "center",
     alignItems: "center",
-}
-const $leftAccessoryStyle: ViewStyle = {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingLeft: 20
 }

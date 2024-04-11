@@ -6,7 +6,6 @@ import { Router } from './router';
 type AuthContextData = {
   redirect?:number
   loading:boolean
-  changeLoginStatus():void
 };
 interface IAuth {
   childrent : React.ReactNode
@@ -37,12 +36,8 @@ const AuthProvider = () => {
     }
   }
 
-  const changeLoginStatus = async () => {
-    await loadStorageData()
-  }
-
   return (
-    <AuthContext.Provider value={{redirect, loading, changeLoginStatus}}>
+    <AuthContext.Provider value={{redirect, loading}}>
       <Router/>
     </AuthContext.Provider>
   )

@@ -142,7 +142,7 @@ const SignUpScreen = () => {
           label={'password'}
           placeholder={'password'}
           secureTextEntry={!isShowPassword}
-          RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
+          RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword)}} isShowPassword={isShowPassword}/>}//Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })
           helper={passwordError}
         />
 
@@ -160,14 +160,15 @@ const SignUpScreen = () => {
             }}
           />
         </TouchableOpacity>
-        <View style={styles.lineView}>
-          <LineIcon />
-          <Text text={'orSignInWith'} style={{
-            marginHorizontal: 10,
-            color: COLOR.black
-          }} />
-          <LineIcon />
-        </View>
+        <View style={styles.rowLine}>
+            <View style={styles.line}></View>
+            <Text text={'orSignInWith'}
+              style={{
+                marginHorizontal: 10,
+                color: COLOR.darkBlack,
+              }} />
+            <View style={styles.line}></View>
+          </View>
         <View style={styles.lineView}>
           <TouchableOpacity onPress={() => navigation.navigate('SignIn' as never)}>
             <GmailIcon />
@@ -228,6 +229,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: 50
+  },
+  rowLine :{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems:'center',
+    marginTop: 50,
+    marginHorizontal: 46
+  },
+  line:{
+    backgroundColor: COLOR.black,
+    height: 1.1,
+    flex: 1,
   }
 });
 

@@ -229,34 +229,30 @@ const SearchScreen = () => {
                 label=''
                 placeholder={'search'}
                 helper={""}
-                LeftAccessory={() => {
-                    return (
-                        <TouchableOpacity
-                            style={{
-                                justifyContent: 'center',
-                                marginLeft: 18,
-                                marginRight: 10
-                            }}>
-                            <SearchNewsIcons />
-                        </TouchableOpacity>
-                    )
-                }}
-                RightAccessory={() => {
-                    return (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setSearch('');
-                                setDataRssFilter([])
-                            }}
-                            style={{
-                                justifyContent: 'center',
-                                marginRight: 18
-                            }}>
-                            <CancelIcon stroke={search ? '#180E19' : '#919191'} />
-                        </TouchableOpacity>
-
-                    )
-                }}
+                LeftIcon={
+                    <TouchableOpacity
+                        onPress={() => {
+                            console.log('aksjdkas');
+                        }}
+                        style={{
+                            justifyContent: 'center',
+                            marginLeft: 18,
+                            marginRight: 10
+                        }}>
+                        <SearchNewsIcons />
+                    </TouchableOpacity>}
+                RightIcon={
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSearch('');
+                            setDataRssFilter([])
+                        }}
+                        style={{
+                            justifyContent: 'center',
+                            marginRight: 18
+                        }}>
+                        <CancelIcon stroke={search ? '#180E19' : '#919191'} />
+                    </TouchableOpacity>}
             />
             {
                 dataRss && <FlatList

@@ -1,18 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
 import { addNews } from '../../store/newsSlice';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
-import { dataInterest, getDataRss, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
+import { Category, dataInterest, getDataRss, getDataRssByTitle, handleGetCategory, handleSaveHistory } from '../../utils/homeAction';
 import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
+import { RootState } from '../../store/store';
+import { getEmailApp, getInterest } from '../../utils/storage';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const HomeScreen = () => {
@@ -21,15 +23,25 @@ const HomeScreen = () => {
     const [titleNews, setTitleNews] = useState('forYou')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
     const [domain, setDomain] = useState('vnexpress.net')
+    const [endpoint, setEndpoint] = useState('')
+    const [refresh, setRefresh] = useState(false)
     const [newsName, setNewsName] = useState('VnExpress')
+    const [dataCategory, setDataCategory] = useState<Category[]>([])
     const email = auth.currentUser?.email as string
+    const mail = useSelector((state: RootState) => state.newsReducer.mail)
+    const isFocused = useIsFocused()
     const dispatch = useDispatch()
-    // console.log('titleNews',titleNews);
 
     useEffect(() => {
+        // getDataCategory()
         getData()
     }, [domain])
 
+    // useEffect(() => {
+    //     getDataCategory()
+    // }, [isFocused])
+
+    
     const getData = async () => {
         setFeedItems([])
         try {
@@ -49,8 +61,13 @@ const HomeScreen = () => {
             console.error('Error fetching RSS feed:', error);
         }
     }
-
-    function handleRefresh() { }
+    const handleRefresh = async () => {
+        if (indexItem == 0) {
+            await getData()
+        } else {
+            await handleGetDataByTitle(endpoint)
+        }
+    }
 
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
         const now = moment()
@@ -72,6 +89,28 @@ const HomeScreen = () => {
         setIndexItem(0)
         setTitleNews('forYou')
     }
+
+    const getDataCategory = async () => {
+
+        const mail = await getEmailApp()
+        console.log('jasdhjash', mail);
+        const data = await getInterest();
+        const dataFilter = data.filter((item: any) => item.email === mail);
+
+        console.log(data, dataFilter);
+
+        // const dataFilter = data.filter((item: any) => item.email === mail);
+        // console.log('DATAs', dataFilter[0].listCategory);
+
+        if (data) {
+            setDataCategory(dataFilter[0].listCategory)
+
+        }
+    }
+
+
+
+
 
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;
@@ -123,6 +162,7 @@ const HomeScreen = () => {
                                 setTitleNews(item.text);
                                 if (index != 0) {
                                     handleGetDataByTitle(item.endpoint);
+                                    setEndpoint(item.endpoint)
                                 } else {
                                     getData()
                                 }
@@ -140,10 +180,17 @@ const HomeScreen = () => {
 
                     )
                 }}
+                ListEmptyComponent={() => {
+                    return (
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                            <ActivityIndicator />
+                        </View>
+                    )
+                }}
             />
             <FlatList
                 showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
+                refreshControl={<RefreshControl refreshing={refresh} onRefresh={handleRefresh} />}
                 data={feedItems}
                 renderItem={renderItem}
                 ListEmptyComponent={() => {

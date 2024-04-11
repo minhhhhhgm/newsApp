@@ -7,7 +7,8 @@ import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
-const { width, height } = Dimensions.get('screen');
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
     index: number,
@@ -19,10 +20,6 @@ interface IItemNews {
     titleNews: string,
     visible?: boolean,
     author: string,
-    handleToggleVisible?: () => void,
-    shareImage?: () => void,
-    saveBookMark?: () => void,
-    setPosition?: (x: number, y: number) => void,
     time?: string,
     style?: ViewStyle;
     isRemoveBookMark?: boolean,
@@ -53,13 +50,10 @@ export const ItemNews = (props: IItemNews) => {
     // console.log('render');
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
-
+    const tabBarHeight = useBottomTabBarHeight();
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
-            console.log(x, y);
-            if (y > 600) {
-                setOffset({ x, y: 540 });
-            }
+            console.log(x, y, 'height -', height,tabBarHeight, height - tabBarHeight - 98);
             setOffset({ x, y });
         })
         setIsVisible({
@@ -240,7 +234,8 @@ const styles = StyleSheet.create({
     titleNews: {
         fontWeight: '700',
         fontFamily: 'SF Pro',
-        color: COLOR.textTypeColor
+        color: COLOR.textTypeColor,
+        fontSize : 14
     },
     bigDot: {
         fontSize: 10,

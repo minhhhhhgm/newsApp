@@ -3,11 +3,13 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { NewsType } from '../type/NewsType'
 
 export interface CounterState {
-    data: null
+    data: null,
+    mail: string
 }
 
 const initialState: CounterState = {
     data: null,
+    mail: ''
 }
 
 export const newsSlice = createSlice({
@@ -18,9 +20,15 @@ export const newsSlice = createSlice({
             const data = actions.payload
             state.data = data
         },
+        addMail: (state, actions) => {
+            console.log('actions.payload', actions.payload);
+            
+            const mail = actions.payload
+            state.mail = mail
+        },
     },
 })
 
-export const { addNews } = newsSlice.actions
+export const { addNews, addMail } = newsSlice.actions
 
 export default newsSlice.reducer

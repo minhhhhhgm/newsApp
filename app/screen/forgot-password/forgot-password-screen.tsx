@@ -11,6 +11,7 @@ import BackIcon from '../../icons/svg-component/backIcon';
 import { COLOR, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { handleValidateEmail } from '../../utils/validate';
+import Loading from '../../components/loading';
 
 const ForgotPasswordScreen = () => {
     const insets = useSafeAreaInsets();
@@ -18,6 +19,7 @@ const ForgotPasswordScreen = () => {
     const auth = FirebaseAuth
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const onChangeEmail = (value: string) => {
         const mailValidate = handleValidateEmail(value)
@@ -36,20 +38,25 @@ const ForgotPasswordScreen = () => {
     };
     const handleReset = async () => {
         try {
+            setIsLoading(true)
             sendPasswordResetEmail(auth, email).then(function (user) {
                 console.log('res', user);
                 Toast.show('Email sent. Please check your email to reset your password', Toast.LONG);
+                setIsLoading(false)
             }).catch(function (e) {
                 console.log(e)
+                setIsLoading(false)
             })
         } catch (err) {
             const error = JSON.stringify(err)
             console.log(error);
             Toast.show('Email or Password incorrect !', Toast.LONG);
+            setIsLoading(false)
         }
     }
     return (
         <KeyboardAvoidingView style={styles.body} behavior='padding'>
+            <Loading isVisible={isLoading} />
             <View>
                 <View style={{ marginTop: insets.top + 32 }}>
                     <TouchableOpacity style={{ marginLeft: 10 }}
@@ -90,7 +97,7 @@ const ForgotPasswordScreen = () => {
                             backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
                         }]}>
                         <Text
-                            text={'signUp'}
+                            text={'Reset'}
                             style={{
                                 color: COLOR.white
                             }}

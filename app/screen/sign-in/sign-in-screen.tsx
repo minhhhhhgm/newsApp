@@ -16,11 +16,15 @@ import LineIcon from '../../icons/svg-component/lineIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
 import { COLOR, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
-import { setAccessToken } from '../../utils/storage';
+import { setAccessToken, setEmailApp } from '../../utils/storage';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
 import { } from '../../i18n/en';
 import Loading from '../../components/loading';
+import { Category } from '../../database';
+import { dataInterests, handleSaveCategory } from '../../utils/homeAction';
+import { useDispatch } from 'react-redux';
+import { addMail } from '../../store/newsSlice';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 
 const SignInScreen = () => {
@@ -31,20 +35,25 @@ const SignInScreen = () => {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const navigation = useNavigation<NavigationProps>()
-  const [ isLoading , setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
   const { t } = useTranslation();
-
+  const dataInterest = dataInterests(email)
   const handleSignIn = async () => {
     setIsLoading(true)
+   
     try {
       const responseSignIn = await signInWithEmailAndPassword(auth, email, password)
       if (responseSignIn) {
         console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
+        await setEmailApp(email)
+        dispatch(addMail(email))
         navigation.reset({
           index: 0,
           routes: [{ name: 'BottomNavigation' }],
         });
+        // await handleSaveCategory(email, dataInterest)
         setIsLoading(false)
       }
     } catch (err) {
@@ -82,7 +91,7 @@ const SignInScreen = () => {
   };
   return (
     <KeyboardAvoidingView style={styles.body} behavior='padding'>
-      <Loading isVisible={isLoading}/>
+      <Loading isVisible={isLoading} />
       <View>
         <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
           <Image
@@ -100,7 +109,7 @@ const SignInScreen = () => {
             value={email}
             onChangeText={onChangeEmail}
             containerStyle={styles.textField}
-            style={{ paddingTop: 25 }}
+            style={{ paddingTop: 25, }}
             label={'email'}
             placeholder={'email'}
             helper={emailError}
@@ -115,7 +124,8 @@ const SignInScreen = () => {
             label={'password'}
             placeholder={'password'}
             secureTextEntry={!isShowPassword}
-            RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
+            RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} />}
+            // RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
             helper={passwordError}
           />
           {
@@ -148,19 +158,14 @@ const SignInScreen = () => {
               }}
             />
           </TouchableOpacity>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignSelf: 'center',
-            marginTop: 50
-          }}>
-            <LineIcon />
+          <View style={styles.rowLine}>
+            <View style={styles.line}></View>
             <Text text={'orSignInWith'}
               style={{
                 marginHorizontal: 10,
-                color: COLOR.darkBlack
+                color: COLOR.darkBlack,
               }} />
-            <LineIcon />
+            <View style={styles.line}></View>
           </View>
           <View style={{
             flexDirection: 'row',
@@ -184,24 +189,26 @@ const SignInScreen = () => {
               <AppleIcon />
             </TouchableOpacity>
           </View>
-          <TextRn style={{
-            marginHorizontal: 48,
-            marginTop: 30,
-            textAlign: 'center',
-            color: COLOR.darkBlack,
-            marginBottom: 50
-          }}>
-            {t(`${'dontHaveAnAccount'}`)}
-            <TextRn
-              onPress={() => navigation.navigate('SignUp')}
-              // text={`Register`}
-              style={{
-                fontWeight: '700',
-                color: COLOR.darkBlack,
-                fontFamily: '',
+          <View style={styles.viewRegister}>
+            <TextRn style={{
+              marginHorizontal: 48,
+              marginTop: 30,
+              textAlign: 'center',
+              color: COLOR.darkBlack,
+              marginBottom: 50
+            }}>
+              {t(`${'dontHaveAnAccount'}`)}
+              <TextRn
+                onPress={() => navigation.navigate('SignUp')}
+                // text={`Register`}
+                style={{
+                  fontWeight: '700',
+                  color: COLOR.darkBlack,
+                  fontFamily: '',
 
-              }} > {t(`${'register'}`)}</TextRn>
-          </TextRn>
+                }} > {t(`${'register'}`)}</TextRn>
+            </TextRn>
+          </View>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -240,7 +247,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingHorizontal: 46,
     marginTop: 5,
-
+  },
+  rowLine: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+    marginHorizontal: 46
+  },
+  line: {
+    backgroundColor: COLOR.black,
+    height: 1,
+    flex: 1,
+  },
+  viewRegister: {
+    marginBottom: 200
   }
 });
 

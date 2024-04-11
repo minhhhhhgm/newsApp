@@ -110,7 +110,7 @@ const AccountScreen = () => {
 
   return (
     <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
-      <Loading isVisible={isLoading}/>
+      <Loading isVisible={isLoading} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
         <View style={{ flexDirection: 'row', }}>
           <TouchableOpacity style={{ marginLeft: 10 }}
@@ -177,13 +177,12 @@ const AccountScreen = () => {
               label={'currentPassword'}
               placeholder={'currentPassword'}
               secureTextEntry={!isShowPassword}
-              RightAccessory={() =>
-                Righticon({
-                  password: password,
-                  handleShowPass: () => { setIsShowPassword(!isShowPassword) },
-                  isShowPassword,
-                  paddingRight: 16
-                })}
+              RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} paddingRight={16} />}//Righticon({
+              // password: password,
+              // handleShowPass: () => { setIsShowPassword(!isShowPassword) },
+              // isShowPassword,
+              // paddingRight: 16
+              // })
               helper={passwordError}
             />
             <TextField
@@ -196,12 +195,9 @@ const AccountScreen = () => {
               label={'newPassword'}
               placeholder={'newPassword'}
               secureTextEntry={!isShowNewPassword}
-              RightAccessory={() => Righticon({
-                password: newPassword,
-                handleShowPass: () => { setIsShownewPassword(!isShowNewPassword) },
-                isShowPassword: isShowNewPassword,
-                paddingRight: 16
-              })}
+              RightIcon={
+                <Righticon password={newPassword} handleShowPass={() => { setIsShownewPassword(!isShowNewPassword) }} isShowPassword={isShowNewPassword} paddingRight={16} />
+              }
               helper={newPasswordError}
             />
             <TextField
@@ -214,7 +210,9 @@ const AccountScreen = () => {
               label={'confirmNewPassword'}
               placeholder={'confirmNewPassword'}
               secureTextEntry={!isShowConfirmPassword}
-              RightAccessory={() => Righticon({ password: reNewPassword, handleShowPass: () => { setIsShowConfirmPassword(!isShowConfirmPassword) }, isShowPassword: isShowConfirmPassword ,paddingRight: 16})}
+              RightIcon={
+                <Righticon password={reNewPassword} handleShowPass={() => { setIsShowConfirmPassword(!isShowConfirmPassword) }} isShowPassword={isShowConfirmPassword} paddingRight={16} />
+              }
               helper={reNewPasswordError}
             />
           </View>

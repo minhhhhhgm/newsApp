@@ -53,8 +53,8 @@ const ViewedScreen = () => {
             <View style={{ marginTop: 25 }}>
 
                 <ItemNews
-                    handleRemoveBookmark={() => { removeBookmark(item.id) }}
-                    isRemoveBookMark
+                    // handleRemoveBookmark={() => { removeBookmark(item.id) }}
+                    // isRemoveBookMark
                     style={{
                         marginTop: 0
                     }}
@@ -65,7 +65,7 @@ const ViewedScreen = () => {
                     relativeTime={formattedTime}
                     link={item.url}
                     titleNews={item.type}
-                    time={item.timeWatched}
+                    time={time}
                     author={item.author}
                 />
             </View>
