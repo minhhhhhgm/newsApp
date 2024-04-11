@@ -10,15 +10,18 @@ import BackIcon from '../../icons/svg-component/backIcon';
 import { getInterest, setInterest, setInterestApp } from '../../utils/storage';
 import { auth } from '../../../App';
 import { Category, ItemCategory } from '../../database';
-import { dataInterests, handleGetCategory, handleSaveCategory } from '../../utils/homeAction';
-import { useSelector } from 'react-redux';
+import { Category as ICategory, dataInterests, handleGetCategory, handleSaveCategory } from '../../utils/homeAction';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { changeCate } from '../../store/newsSlice';
+import { nanoid } from '@reduxjs/toolkit';
 export interface DataInterests {
     text: string,
     isCheck?: boolean,
     endpoint: string,
     mail: string,
-    isShow: boolean
+    isShow: boolean,
+    id: string
 }
 
 const CategoryManagementScreen = () => {
@@ -62,60 +65,68 @@ const CategoryManagementScreen = () => {
 
     const mail = useSelector((state: RootState) => state.newsReducer.mail)
     const dataInterestss = dataInterests(mail)
-    const [data, setData] = useState(dataInterestss);
+    const [data, setData] = useState<DataInterests[]>([]);
+    const dispatch = useDispatch()
+    const getDataCategory = async () => {
+        setData([])
+        setTimeout(() => {
+            const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
+            console.log('adatacategory', item1);
+            console.log('adatacategory', item1.length);
 
-    // useEffect(() => {
-    //     getDataI()
-    // }, [])
+            if (item1) {
+                setData(item1)
+            }
+        }, 100)
 
-
-    const setDataI = async () => {
-        const params = {
-            listCategory: dataInterest,
-            email: mail
-        }
-        await setInterestApp(params, mail)
     }
+    useEffect(() => {
+        getDataCategory()
+    }, [])
 
-    const getDataI = (data: any) => {
-
-
+    const getDataI = async (data: any) => {
         const mail = auth.currentUser?.email as string
         ItemCategory.perform(function (db: any) {
             ItemCategory.data().forEach(function (item: any) {
                 if (item.mail == mail) {
                     db.remove(item);
-
+                    console.log('remove data');
                 }
             })
         })
         savetest(data)
-        setTimeout(() => {
-            const item1 = ItemCategory.data();
-            console.log(item1);
-            console.log('==============');
-            
-            // console.log(data);
-            
-        }, 100)
-
+        dispatch(changeCate(nanoid()))
+        // await getDataCategory()
     }
 
-    const savetest = (dataC :any) => {
+    const savetest = (dataC: any) => {
+        console.log("SAVE data category", dataC);
+
         const mail = auth.currentUser?.email as string
-        const dataInterest = dataInterests(mail)
         const item1 = ItemCategory.get({ email: mail });
         if (item1) {
             return;
         }
-        ItemCategory.insert(dataC);
+        const filteredData = dataC.map((item: any) => {
+            const { id, ...rest } = item; 
+            return rest; 
+        });
+        console.log('item1', item1, filteredData);
+
+        ItemCategory.insert(filteredData);
+        setTimeout(() => {
+            const item1 = ItemCategory.data();
+            console.log('data insert', item1);
+        }, 200)
     }
+
+
 
     const renderItem = ({ item, drag, isActive }: RenderItemParams<DataInterests>) => {
         return (
             <ScaleDecorator>
                 <TouchableOpacity
-                    style={{ backgroundColor: isActive ? 'red' : 'white' }}
+                    style={{ backgroundColor: isActive ? 'gray' : 'white' }}
                     onLongPress={drag}>
                     <View style={{
                         paddingHorizontal: 16,
@@ -156,7 +167,7 @@ const CategoryManagementScreen = () => {
                 }
                 <TouchableOpacity
                     style={{ marginTop: 20, marginLeft: 10 }}
-                    // onPress={async () => { savetest() }}
+                    onPress={async () => { savetest(dataInterestss) }}
                 >
                     <BackIcon />
                 </TouchableOpacity>
@@ -176,7 +187,7 @@ const CategoryManagementScreen = () => {
                     getDataI(data)
                     // await setInterest(data)
                 }}
-                keyExtractor={(item) => item.endpoint}
+                keyExtractor={(item) => item.id}
                 renderItem={renderItem}
             />
 

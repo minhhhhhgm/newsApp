@@ -22,7 +22,7 @@ import { Righticon } from './component/eye-icon';
 import { } from '../../i18n/en';
 import Loading from '../../components/loading';
 import { Category } from '../../database';
-import { dataInterests, handleSaveCategory } from '../../utils/homeAction';
+import { dataInterests, handleSaveCategory, saveCate } from '../../utils/homeAction';
 import { useDispatch } from 'react-redux';
 import { addMail } from '../../store/newsSlice';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -53,6 +53,7 @@ const SignInScreen = () => {
           index: 0,
           routes: [{ name: 'BottomNavigation' }],
         });
+        saveCate(dataInterest, email)
         // await handleSaveCategory(email, dataInterest)
         setIsLoading(false)
       }

@@ -75,6 +75,24 @@ export const handleSaveHistory = async (type: string, title: string, author: str
 
 
 
+export const saveCate = (dataC: any, mail: string) => {
+    console.log("SAVE data category", dataC);
+
+    const item1 = ItemCategory.get({ mail: mail });
+    if (item1) {
+        return;
+    }
+    const filteredData = dataC.map((item: any) => {
+        const { id, ...rest } = item;
+        return rest;
+    });
+    console.log('item1', item1, filteredData);
+
+    ItemCategory.insert(filteredData);
+}
+
+
+
 export const shareImage = (link: string) => {
     const urlNews: string = link
     const options = {
@@ -130,7 +148,7 @@ export const dataInterest =
 
 export const dataInterests = (mail: string) => {
     return [
-        { "endpoint": "tin-moi-nhat", "text": 'forYou', 'mail': mail, 'isShow': true },
+        { "endpoint": "tin-noi-bat", "text": 'forYou', 'mail': mail, 'isShow': true },
         { "endpoint": "the-gioi", "text": 'worldNews', 'mail': mail, 'isShow': true },
         { "endpoint": "thoi-su", "text": 'politics', 'mail': mail, 'isShow': true },
         { "endpoint": "khoa-hoc", "text": 'technology', 'mail': mail, 'isShow': true },

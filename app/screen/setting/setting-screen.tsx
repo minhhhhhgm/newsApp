@@ -47,9 +47,6 @@ const SettingScreen = () => {
             onPress: () => {
                 const isBack = true;
                 const isHome = false
-                console.log("loggg");
-
-
                 navigation.navigate('Category')
             },
             icon: ProfileIcon

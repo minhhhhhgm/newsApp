@@ -4,12 +4,14 @@ import { NewsType } from '../type/NewsType'
 
 export interface CounterState {
     data: null,
-    mail: string
+    mail: string,
+    changeCategory: string
 }
 
 const initialState: CounterState = {
     data: null,
-    mail: ''
+    mail: '',
+    changeCategory:''
 }
 
 export const newsSlice = createSlice({
@@ -26,9 +28,13 @@ export const newsSlice = createSlice({
             const mail = actions.payload
             state.mail = mail
         },
+        changeCate: (state, actions) => {
+            const cate = actions.payload
+            state.changeCategory = cate
+        },
     },
 })
 
-export const { addNews, addMail } = newsSlice.actions
+export const { addNews, addMail, changeCate } = newsSlice.actions
 
 export default newsSlice.reducer

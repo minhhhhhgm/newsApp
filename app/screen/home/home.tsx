@@ -15,6 +15,7 @@ import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
 import { RootState } from '../../store/store';
 import { getEmailApp, getInterest } from '../../utils/storage';
+import { ItemCategory } from '../../database';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const HomeScreen = () => {
@@ -29,6 +30,8 @@ const HomeScreen = () => {
     const [dataCategory, setDataCategory] = useState<Category[]>([])
     const email = auth.currentUser?.email as string
     const mail = useSelector((state: RootState) => state.newsReducer.mail)
+    const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
+
     const isFocused = useIsFocused()
     const dispatch = useDispatch()
 
@@ -37,11 +40,28 @@ const HomeScreen = () => {
         getData()
     }, [domain])
 
-    // useEffect(() => {
-    //     getDataCategory()
-    // }, [isFocused])
+    useEffect(() => {
+        getDataCategory()
+        
+    }, [cate])
 
     
+    const getDataCategory = async () => {
+
+        setTimeout(() => {
+            const item1 = ItemCategory.data().filter((item: any) => item.mail === email);
+            console.log('Data category home', item1);
+
+            if (item1) {
+                setDataCategory(item1)
+            }
+            handleGetDataByTitle(item1[0].endpoint)
+            setIndexItem(0)
+            setTitleNews(item1[0].text)
+        }, 100)
+
+    }
+
     const getData = async () => {
         setFeedItems([])
         try {
@@ -90,23 +110,7 @@ const HomeScreen = () => {
         setTitleNews('forYou')
     }
 
-    const getDataCategory = async () => {
-
-        const mail = await getEmailApp()
-        console.log('jasdhjash', mail);
-        const data = await getInterest();
-        const dataFilter = data.filter((item: any) => item.email === mail);
-
-        console.log(data, dataFilter);
-
-        // const dataFilter = data.filter((item: any) => item.email === mail);
-        // console.log('DATAs', dataFilter[0].listCategory);
-
-        if (data) {
-            setDataCategory(dataFilter[0].listCategory)
-
-        }
-    }
+    
 
 
 
@@ -151,7 +155,7 @@ const HomeScreen = () => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
-                data={dataInterest}
+                data={dataCategory}
                 renderItem={({ item, index }) => {
                     return (
                         <TouchableOpacity
@@ -160,12 +164,8 @@ const HomeScreen = () => {
                             onPress={() => {
                                 setIndexItem(index);
                                 setTitleNews(item.text);
-                                if (index != 0) {
-                                    handleGetDataByTitle(item.endpoint);
-                                    setEndpoint(item.endpoint)
-                                } else {
-                                    getData()
-                                }
+                                handleGetDataByTitle(item.endpoint);
+                                setEndpoint(item.endpoint)
                             }}
                             style={[styles.button, {
                                 backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
