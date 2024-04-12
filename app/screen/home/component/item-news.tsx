@@ -8,6 +8,7 @@ import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import moment from 'moment';
 const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
@@ -53,7 +54,7 @@ export const ItemNews = (props: IItemNews) => {
     const tabBarHeight = useBottomTabBarHeight();
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
-            console.log(x, y, 'height -', height,tabBarHeight, height - tabBarHeight - 98);
+            console.log(x, y, 'height -', height, tabBarHeight, height - tabBarHeight - 98);
             setOffset({ x, y });
         })
         setIsVisible({
@@ -155,7 +156,10 @@ export const ItemNews = (props: IItemNews) => {
                                                 // activeOpacity={1}
                                                 onPress={
                                                     isRemoveBookMark ? handleRemoveBookmark :
-                                                        () => { handleSaveBookMark(titleNews, title, author, time as string, link, imgSrc, email as string) }
+                                                        () => {
+                                                            const formattedTime = moment(time).format('YYYY-MM-DD');
+                                                            handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
+                                                        }
                                                 }
                                                 style={{
                                                     flexDirection: 'row',
@@ -183,7 +187,7 @@ export const ItemNews = (props: IItemNews) => {
                             </View>
                         </TouchableOpacity>
                     </Modal>
-                ) 
+                )
             }
         </TouchableOpacity>
     )
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontFamily: 'SF Pro',
         color: COLOR.textTypeColor,
-        fontSize : 14
+        fontSize: 14
     },
     bigDot: {
         fontSize: 10,

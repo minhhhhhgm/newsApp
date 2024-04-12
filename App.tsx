@@ -24,6 +24,7 @@ import { addMail } from './app/store/newsSlice';
 import { store } from './app/store/store';
 import { AuthProvider } from './app/useAuth/auth';
 import { getEmailApp } from './app/utils/storage';
+import SwipeGesture from './app/screen/category-management/swipe-screen';
 
 export type ParamsList = {
   Detail: {
@@ -46,7 +47,8 @@ export type ParamsList = {
   ForgotPassword: undefined,
   Profile: undefined,
   Viewed: undefined,
-  Category: undefined
+  Category: undefined,
+  Swipe: undefined
 
 }
 
@@ -76,6 +78,7 @@ export const AppNavigation = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Viewed" component={ViewedScreen} />
       <Stack.Screen name="Category" component={CategoryManagementScreen} />
+      <Stack.Screen name="Swipe" component={SwipeGesture} />
 
     </Stack.Navigator>
   )
@@ -99,6 +102,7 @@ export const AppNavigationAuth = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Viewed" component={ViewedScreen} />
       <Stack.Screen name="Category" component={CategoryManagementScreen} />
+      <Stack.Screen name="Swipe" component={SwipeGesture} />
 
 
     </Stack.Navigator>

@@ -16,7 +16,6 @@ const CONTAINER: ViewStyle = {
 };
 
 interface LoadingProps {
-  style?: ViewStyle;
   isVisible?: boolean
 }
 
@@ -24,7 +23,7 @@ const Loading = (props: LoadingProps) => {
 
 
   return props.isVisible ? (
-    <View style={[CONTAINER, props.style]}>
+    <View style={[CONTAINER]}>
       <ActivityIndicator size={"large"} />
     </View>
   ) : null;

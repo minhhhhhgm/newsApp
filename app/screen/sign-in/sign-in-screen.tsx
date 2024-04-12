@@ -49,11 +49,12 @@ const SignInScreen = () => {
         await setAccessToken(await responseSignIn.user.getIdToken())
         await setEmailApp(email)
         dispatch(addMail(email))
+        saveCate(dataInterest, email)
         navigation.reset({
           index: 0,
           routes: [{ name: 'BottomNavigation' }],
         });
-        saveCate(dataInterest, email)
+       
         // await handleSaveCategory(email, dataInterest)
         setIsLoading(false)
       }

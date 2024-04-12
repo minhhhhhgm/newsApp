@@ -72,7 +72,7 @@ const SettingScreen = () => {
         {
             index: 6,
             name: 'about',
-            onPress: () => { },
+            onPress: () => { navigation.navigate('Swipe')},
             icon: ProfileIcon
         },
         {

@@ -8,18 +8,31 @@ import { Text } from '../../components/Text';
 import { Viewed } from '../../database';
 import { COLOR } from '../../utils/color';
 import { ItemNews } from '../home/component/item-news';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
+interface IViewed {
+    type: string,
+    title: string,
+    author: string,
+    timeWatched: string,
+    image: string,
+    url: string,
+    email: string
+}
 const ViewedScreen = () => {
 
     const navigation = useNavigation<NavigationProps>()
     const isFocused = useIsFocused()
     const [data, setData] = useState([])
-    const email = auth.currentUser?.email as string
+    // const email = auth.currentUser?.email as string
+    const email = useSelector((state: RootState) => state.newsReducer.mail)
+
     console.log('email', email);
 
     const getdata = () => {
         if (email) {
-            const data = Viewed.filter((item: any) => item.email === email).data();
+            const data = Viewed.filter((item: IViewed) => item.email === email).data();
             setData(data.reverse())
         }
     }
@@ -42,16 +55,14 @@ const ViewedScreen = () => {
     }, [isFocused])
 
 
-    const renderItem = ({ item, index }: { item: any, index: number }) => {
+    const renderItem = ({ item, index }: { item: IViewed, index: number }) => {
         const formattedTime = moment(new Date(item.timeWatched)).format('YYYY-MM-DD');
         const time = moment((new Date(item.timeWatched))).format('ddd, DD MMM YYYY HH:mm:ss Z');
-
         const relativeTime = moment(formattedTime, 'YYYY-MM-DD').fromNow()
-        // console.log('relativeTime',);
-
+        console.log(item.timeWatched);
+        
         return (
             <View style={{ marginTop: 25 }}>
-
                 <ItemNews
                     // handleRemoveBookmark={() => { removeBookmark(item.id) }}
                     // isRemoveBookMark
@@ -65,7 +76,7 @@ const ViewedScreen = () => {
                     relativeTime={formattedTime}
                     link={item.url}
                     titleNews={item.type}
-                    time={time}
+                    time={formattedTime}
                     author={item.author}
                 />
             </View>
@@ -79,7 +90,6 @@ const ViewedScreen = () => {
                     style={styles.headerText}
                 />
             </View>
-
             {
                 data && <FlatList
                     showsVerticalScrollIndicator={false}

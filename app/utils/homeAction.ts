@@ -28,12 +28,12 @@ export const handleSaveBookMark = async (type: string, title: string, author: st
 }
 
 export type Category = {
-    endpoint: string; text: string; mail: string; isShow: boolean;
+    endpoint: string; text: string; mail: string; isShow: boolean | number;
 }
 
 export const handleSaveCategory = (email: string, data: Category[]) => {
     console.log('OK');
-    
+
     const item1 = Category.get({ email: email });
     if (item1) {
         return;
@@ -47,7 +47,7 @@ export const handleSaveCategory = (email: string, data: Category[]) => {
     Category.insert(params)
 }
 
-export const handleGetCategory = async(email: string) => {
+export const handleGetCategory = async (email: string) => {
     const item1 = await Category.get({ email: email });
     if (item1) {
         return item1;
@@ -86,8 +86,6 @@ export const saveCate = (dataC: any, mail: string) => {
         const { id, ...rest } = item;
         return rest;
     });
-    console.log('item1', item1, filteredData);
-
     ItemCategory.insert(filteredData);
 }
 

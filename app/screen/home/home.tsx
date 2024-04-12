@@ -1,21 +1,21 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import { addNews } from '../../store/newsSlice';
+import { ItemCategory } from '../../database';
+import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
-import { Category, dataInterest, getDataRss, getDataRssByTitle, handleGetCategory, handleSaveHistory } from '../../utils/homeAction';
+import { Category, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
+import { getEmailApp } from '../../utils/storage';
 import { extractContentInsideBrackets } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
-import { RootState } from '../../store/store';
-import { getEmailApp, getInterest } from '../../utils/storage';
-import { ItemCategory } from '../../database';
+const { width } = Dimensions.get('window')
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const HomeScreen = () => {
@@ -28,49 +28,43 @@ const HomeScreen = () => {
     const [refresh, setRefresh] = useState(false)
     const [newsName, setNewsName] = useState('VnExpress')
     const [dataCategory, setDataCategory] = useState<Category[]>([])
-    const email = auth.currentUser?.email as string
-    const mail = useSelector((state: RootState) => state.newsReducer.mail)
     const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
-
-    const isFocused = useIsFocused()
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        // getDataCategory()
-        getData()
-    }, [domain])
-
     useEffect(() => {
         getDataCategory()
-        
-    }, [cate])
+    }, [cate, domain])
 
-    
+
     const getDataCategory = async () => {
-
-        setTimeout(() => {
-            const item1 = ItemCategory.data().filter((item: any) => item.mail === email);
-            console.log('Data category home', item1);
-
-            if (item1) {
-                setDataCategory(item1)
-            }
-            handleGetDataByTitle(item1[0].endpoint)
-            setIndexItem(0)
-            setTitleNews(item1[0].text)
-        }, 100)
-
-    }
-
-    const getData = async () => {
         setFeedItems([])
-        try {
-            const parsedItems = await getDataRss(domain)
-            setFeedItems(parsedItems);
-            dispatch(addNews(parsedItems))
-        } catch (error) {
-            console.error('Error fetching RSS feed:', error);
-        }
+        // ItemCategory.onChange(() => {
+        //     ItemCategory.perform(async function (db: any) {
+        //         const mail = await getEmailApp()
+        //         console.log('----', ItemCategory.data());
+        //         setTimeout(() => {
+        //             const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
+        //             if (data) {
+        //                 console.log('data-origin', data);
+        //                 const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+        //                 console.log('dataFilter', dataFilter);
+        //                 setDataCategory(dataFilter)
+        //                 handleGetDataByTitle(dataFilter[0].endpoint)
+        //                 setIndexItem(0)
+        //                 setTitleNews(dataFilter[0].text)
+        //             }
+        //         }, 100);
+        //     })
+        // })
+        ItemCategory.perform(async function (db: any) {
+            const mail = await getEmailApp()
+            const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
+            if (data) {
+                const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+                setDataCategory(dataFilter)
+                handleGetDataByTitle(dataFilter[0].endpoint)
+                setIndexItem(0)
+                setTitleNews(dataFilter[0].text)
+            }
+        })
     }
     const handleGetDataByTitle = async (endpoint: string) => {
         setFeedItems([])
@@ -82,19 +76,18 @@ const HomeScreen = () => {
         }
     }
     const handleRefresh = async () => {
-        if (indexItem == 0) {
-            await getData()
-        } else {
-            await handleGetDataByTitle(endpoint)
-        }
+        await handleGetDataByTitle(endpoint)
     }
 
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
         const now = moment()
+        const formattedTime = moment(now).format('YYYY-MM-DD');
+        console.log('TIME', formattedTime);
+
         const mail = auth.currentUser?.email as string
         console.log('email', mail);
-        await handleSaveHistory(type, title, author, now.toString(), url, image, mail)
-        navigation.navigate('Detail', { link: url, author, time, imageUrl: image, type, title, email: mail })
+        await handleSaveHistory(type, title, author, formattedTime, url, image, mail)
+        navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
     }
     const handleChangeVnE = () => {
         setNewsName('VnExpress');
@@ -110,12 +103,6 @@ const HomeScreen = () => {
         setTitleNews('forYou')
     }
 
-    
-
-
-
-
-
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;
         const imgSrcMatch = item.description.match(imgSrcRegex);
@@ -129,19 +116,17 @@ const HomeScreen = () => {
         const link = newsName === 'VnExpress' ? item.link : extractContentInsideBrackets(item.link)
         const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
         return (
-            <>
-                <ItemNews
-                    index={index}
-                    handleNavigateDetailNews={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}
-                    imgSrc={imgSrc}
-                    title={title}
-                    relativeTime={relativeTime}
-                    link={link}
-                    titleNews={titleNews}
-                    time={time}
-                    author={author}
-                />
-            </>
+            <ItemNews
+                index={index}
+                handleNavigateDetailNews={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}
+                imgSrc={imgSrc}
+                title={title}
+                relativeTime={relativeTime}
+                link={link}
+                titleNews={titleNews}
+                time={time}
+                author={author}
+            />
         )
     };
     return (
@@ -150,44 +135,50 @@ const HomeScreen = () => {
                 newsName={newsName}
                 onChangeVnE={handleChangeVnE}
                 onChangeTt={handleChangeTt} />
-            <FlatList
-                style={{ minHeight: 70 }}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
-                data={dataCategory}
-                renderItem={({ item, index }) => {
-                    return (
-                        <TouchableOpacity
-                            activeOpacity={1}
-                            key={index}
-                            onPress={() => {
-                                setIndexItem(index);
-                                setTitleNews(item.text);
-                                handleGetDataByTitle(item.endpoint);
-                                setEndpoint(item.endpoint)
-                            }}
-                            style={[styles.button, {
-                                backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
-                                marginLeft: index === 0 ? 16 : 0,
-                            }]}>
-                            <Text
-                                text={item.text}
-                                style={{
-                                    color: index == indexItem ? COLOR.white : COLOR.authorColor
-                                }} />
-                        </TouchableOpacity>
+            {
+                dataCategory &&
+                <FlatList
+                    style={{ minHeight: 70 }}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
+                    data={dataCategory}
+                    renderItem={({ item, index }) => {
+                        return (
 
-                    )
-                }}
-                ListEmptyComponent={() => {
-                    return (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <ActivityIndicator />
-                        </View>
-                    )
-                }}
-            />
+                            item.isShow == 1 || item.isShow == true ?
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    key={index}
+                                    onPress={() => {
+                                        setIndexItem(index);
+                                        setTitleNews(item.text);
+                                        handleGetDataByTitle(item.endpoint);
+                                        setEndpoint(item.endpoint)
+                                    }}
+                                    style={[styles.button, {
+                                        backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
+                                        marginLeft: index === 0 ? 16 : 0,
+                                    }]}>
+                                    <Text
+                                        text={item.text}
+                                        style={{
+                                            color: index == indexItem ? COLOR.white : COLOR.authorColor
+                                        }} />
+                                </TouchableOpacity>
+                                : null
+
+                        )
+                    }}
+                    ListEmptyComponent={() => {
+                        return (
+                            <View style={{ alignSelf: 'center', width: width }}>
+                                <ActivityIndicator />
+                            </View>
+                        )
+                    }}
+                />
+            }
             <FlatList
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refresh} onRefresh={handleRefresh} />}

@@ -9,29 +9,37 @@ import { Bookmark } from '../../database';
 import { COLOR } from '../../utils/color';
 import { dataInterest, handleSaveHistory } from '../../utils/homeAction';
 import { ItemNews } from '../home/component/item-news';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
-const BookMarkScreen = () => {
+interface IBookmark {
+    type: string,
+    title: string,
+    author: string,
+    time: string,
+    image: string,
+    url: string,
+    email: string,
+    id : string
+}
 
+const BookMarkScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const isFocused = useIsFocused()
     const [data, setData] = useState([])
     const [indexItem, setIndexItem] = useState(0)
     const [type, setType] = useState('forYou')
+    const email = useSelector((state: RootState) => state.newsReducer.mail)
 
-    const getdata = async () => {
-        const email = auth.currentUser?.email as string
-        console.log(email);
-        if (email) {
-            let data = await Bookmark.filter((item: any) => item.type === 'forYou' && item.email === email).data();
-            console.log('dataF', data);
-            setData(data)
-        }
-    }
+    useEffect(() => {
+        getdataByType(type)
+    }, [isFocused])
+
+
     const getdataByType = async (type: string) => {
-        const email = auth.currentUser?.email as string
+        // const email = auth.currentUser?.email as string
         if (email) {
-            let data = await Bookmark.filter((item: any) => item.type === type && item.email === email).data();
-            console.log('dataE', data);
+            let data = await Bookmark.filter((item: IBookmark) => item.type === type && item.email === email).data();
             setData(data)
         }
     }
@@ -39,11 +47,7 @@ const BookMarkScreen = () => {
         const item1 = await Bookmark.get({ id: id });
         await Bookmark.remove(item1)
         setTimeout(() => {
-            if (type === 'forYou') {
-                getdata()
-            } else {
-                getdataByType(type)
-            }
+            getdataByType(type)
         }, 100);
     }
 
@@ -55,19 +59,11 @@ const BookMarkScreen = () => {
     }
 
 
-    useEffect(() => {
-        if (type === 'forYou') {
-            getdata()
-        } else {
-            getdataByType(type)
-        }
-    }, [isFocused])
-
-
-    const renderItem = ({ item, index }: { item: any, index: number }) => {
+    const renderItem = ({ item, index }: { item: IBookmark, index: number }) => {
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
-        const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');
-
+        
+        const formattedTime = moment(item.time).format('YYYY-MM-DD');        
+        const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');        
         return (
             <ItemNews
                 handleRemoveBookmark={() => { removeBookmark(item.id, item.type, index) }}
@@ -79,7 +75,7 @@ const BookMarkScreen = () => {
                 handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, time, item.image, item.type) }}
                 imgSrc={item.image}
                 title={item.title}
-                relativeTime={relativeTime}
+                relativeTime={formattedTime}
                 link={item.url}
                 titleNews={item.type}
                 time={item.time}
@@ -98,7 +94,7 @@ const BookMarkScreen = () => {
             <View style={{ height: 90 }}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {
-                        dataInterest.map((item: any, index) => {
+                        dataInterest.map((item, index) => {                            
                             return (
                                 <TouchableOpacity
                                     activeOpacity={1}
@@ -106,11 +102,7 @@ const BookMarkScreen = () => {
                                     onPress={() => {
                                         setIndexItem(index);
                                         setType(item.text)
-                                        if (index != 0) {
-                                            getdataByType(item.text)
-                                        } if (index == 0) {
-                                            getdataByType('forYou')
-                                        }
+                                        getdataByType(item.text)
                                     }}
                                     style={[styles.buttonCategory, {
                                         backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
