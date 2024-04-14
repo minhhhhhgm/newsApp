@@ -14,6 +14,7 @@ import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../utils/color';
 import type { RouteProp } from '@react-navigation/native';
 import { handleSaveBookMark } from '../../utils/homeAction';
+import moment from 'moment';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Detail'>
 
 
@@ -51,6 +52,7 @@ const DetailScreen = () => {
         }
     }
     const onSave = async () => {
+        
         handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string)
         setIsSaveBookMark(true)
     }

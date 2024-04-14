@@ -26,11 +26,37 @@ export async function getAccessToken() {
     }
 }
 
+
 export async function removeAccessToken() {
     try {
         await AsyncStorage.removeItem(UserStatus.ACCESS_TOKEN);
     } catch (err) {
         return false;
+    }
+}
+
+
+export async function setLanguage(lang: string) {
+    try {
+        await AsyncStorage.setItem(
+            UserStatus.LANGUAGE,
+            JSON.stringify(lang),
+        );
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export async function getLanguage() {
+    try {
+        const userData = await AsyncStorage.getItem(UserStatus.LANGUAGE);
+        if (userData !== null) {
+            return JSON.parse(userData);
+        } else {
+            return null;
+        }
+    } catch (err) {
+        return null;
     }
 }
 

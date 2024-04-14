@@ -19,6 +19,7 @@ import { changeCate } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { COLOR } from '../../utils/color';
 import { dataInterests } from '../../utils/homeAction';
+import Loading from '../../components/loading';
 
 
 export interface DataInterests {
@@ -77,6 +78,8 @@ const CategoryManagementScreen = () => {
     const mail = useSelector((state: RootState) => state.newsReducer.mail)
     // const dataInterestss = dataInterests(mail)
     const [data, setData] = useState<DataInterests[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
     const dispatch = useDispatch()
     const swipeableRef = useRef<Swipeable[]>([])
     const navigation = useNavigation()
@@ -91,6 +94,7 @@ const CategoryManagementScreen = () => {
         const data = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
         if (data) {
             setData(data)
+            setLoading(false)
         }
     }
 
@@ -133,7 +137,7 @@ const CategoryManagementScreen = () => {
 
     const handleShowCategory = (item: DataInterests, index: number) => {
         ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ id: item.id });
+            const newItem = ItemCategory.get({ endpoint: item.endpoint });
             db.update(newItem, { isShow: 0 })
             dispatch(changeCate(nanoid()))
         })
@@ -145,12 +149,12 @@ const CategoryManagementScreen = () => {
     }
     const handleHideCategory = (item: DataInterests, index: number) => {
         ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ id: item.id });
+            const newItem = ItemCategory.get({ endpoint: item.endpoint });
             db.update(newItem, { isShow: 1 })
             dispatch(changeCate(nanoid()))
         })
         swipeableRef.current?.[index].close()
-        const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
+        const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
         if (item1) {
             setData(item1)
         }
@@ -265,6 +269,7 @@ const CategoryManagementScreen = () => {
     };
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
+            <Loading isVisible={loading}/>
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                     style={{ marginTop: 20, marginLeft: 10 }}

@@ -23,8 +23,9 @@ import ViewedScreen from './app/screen/viewed/viewed-screen';
 import { addMail } from './app/store/newsSlice';
 import { store } from './app/store/store';
 import { AuthProvider } from './app/useAuth/auth';
-import { getEmailApp } from './app/utils/storage';
+import { getEmailApp, getLanguage } from './app/utils/storage';
 import SwipeGesture from './app/screen/category-management/swipe-screen';
+import { useTranslation } from 'react-i18next';
 
 export type ParamsList = {
   Detail: {
@@ -108,23 +109,27 @@ export const AppNavigationAuth = () => {
     </Stack.Navigator>
   )
 }
-interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> { }
-const AppNavigator = (props: NavigationProps) => {
-
+const AppNavigator = () => {
   return (
     <AuthProvider>
     </AuthProvider>
   )
 }
 function App(): React.JSX.Element {
-  const handleGetEmail = async () => {
+  const { i18n } = useTranslation();
+
+  const handleGetEmailAndSetLanguage = async () => {
     const mail = await getEmailApp()
-    if(mail){
+    const lang = await getLanguage()
+    if (mail) {
       store.dispatch(addMail(mail))
+    }
+    if (lang) {
+      i18n.changeLanguage(lang)
     }
   }
   useEffect(() => {
-    handleGetEmail()
+    handleGetEmailAndSetLanguage()
   }, [])
   return (
     <Provider store={store}>

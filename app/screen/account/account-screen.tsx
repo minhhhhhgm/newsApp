@@ -91,7 +91,7 @@ const AccountScreen = () => {
             setPassword('')
             setNewPassword('')
             setReNewPassword('')
-            setIsChangPass(!isChangePass)
+            setIsChangPass(false)
             setIsLoading(false)
           })
           .catch((error) => {
@@ -150,7 +150,7 @@ const AccountScreen = () => {
               />
             </View>
             <TouchableOpacity
-              onPress={() => setIsChangPass(!isChangePass)}
+              onPress={() => setIsChangPass(true)}
               activeOpacity={0.7}
               style={styles.viewChangePass}>
               <View style={{

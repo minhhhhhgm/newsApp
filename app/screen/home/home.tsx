@@ -82,10 +82,7 @@ const HomeScreen = () => {
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
         const now = moment()
         const formattedTime = moment(now).format('YYYY-MM-DD');
-        console.log('TIME', formattedTime);
-
         const mail = auth.currentUser?.email as string
-        console.log('email', mail);
         await handleSaveHistory(type, title, author, formattedTime, url, image, mail)
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
     }

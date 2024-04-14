@@ -60,7 +60,7 @@ const ViewedScreen = () => {
         const time = moment((new Date(item.timeWatched))).format('ddd, DD MMM YYYY HH:mm:ss Z');
         const relativeTime = moment(formattedTime, 'YYYY-MM-DD').fromNow()
         console.log(item.timeWatched);
-        
+
         return (
             <View style={{ marginTop: 25 }}>
                 <ItemNews
@@ -70,7 +70,7 @@ const ViewedScreen = () => {
                         marginTop: 0
                     }}
                     index={index}
-                    handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, time, item.image, item.type) }}
+                    handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, formattedTime, item.image, item.type) }}
                     imgSrc={item.image}
                     title={item.title}
                     relativeTime={formattedTime}

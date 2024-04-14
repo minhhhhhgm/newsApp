@@ -99,6 +99,6 @@
     confirmNewPassword: "Xác nhận mật khẩu mới",
     save : 'LƯU',
     changePass :'Đổi mật khẩu',
-    viewed : 'Đã xem'
-
+    viewed : 'Đã xem',
+    category: 'Danh mục'
 }

@@ -7,9 +7,7 @@ type AuthContextData = {
   redirect?:number
   loading:boolean
 };
-interface IAuth {
-  childrent : React.ReactNode
-}
+
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider = () => {
@@ -20,7 +18,7 @@ const AuthProvider = () => {
     loadStorageData();
   }, []);
 
-  async function loadStorageData(): Promise<void> {
+  async function loadStorageData() {
     try {
       const accessToken = await getAccessToken()
       // console.log("accessToken", accessToken)

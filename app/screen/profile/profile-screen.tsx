@@ -27,7 +27,6 @@ type NavigationProps = NativeStackNavigationProp<ParamsList, 'Profile'>
 const ProfileScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const insets = useSafeAreaInsets();
-    console.log(auth.currentUser?.uid);
     const email = useSelector((state: RootState) => state.newsReducer.mail)
 
     const handleChangeAvatar = async () => {
@@ -68,16 +67,26 @@ const ProfileScreen = () => {
         const dataInterest = dataInterests(email)
         push(refdb(db, `/category/${auth.currentUser?.uid}`), dataInterest);
       }
-      useEffect(() => {
-        return onValue(refdb(db, '/todos/email'), querySnapShot => {
-          let data = querySnapShot.val() || {};
-          let todoItems = {...data};
-          console.log('todoItems',data);
-          const todosKeys = Object.keys(data);
-          console.log('todosKeys',todosKeys);
+    //   useEffect(() => {
+    //     return onValue(refdb(db, '/todos/email'), querySnapShot => {
+    //       let data = querySnapShot.val() || {};
+    //       let todoItems = {...data};
+    //       console.log('todoItems',data);
+    //       const todosKeys = Object.keys(data);
+    //       console.log('todosKeys',todosKeys);
           
-        });
-      }, []);
+    //     });
+    //   }, []);
+     const extractString = (text: string, startTag: string, endTag: string) => {
+        const startIndex = text.indexOf(startTag) + startTag.length;
+        const endIndex = text.indexOf(endTag, startIndex);
+        console.log(startIndex, endIndex);
+        
+        return text.substring(startIndex, endIndex);
+    };
+
+    console.log('ok123456'.indexOf("5"));
+    
 
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>

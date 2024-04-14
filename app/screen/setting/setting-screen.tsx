@@ -13,14 +13,14 @@ import Noti from '../../icons/svg-component/noti';
 import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR } from '../../utils/color';
-import { removeAccessToken } from '../../utils/storage';
+import { removeAccessToken, setLanguage } from '../../utils/storage';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const SettingScreen = () => {
     const [darkmode, setDarkMode] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
-    const {  i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
 
 
@@ -43,7 +43,7 @@ const SettingScreen = () => {
         },
         {
             index: 2,
-            name: 'interest',
+            name: 'category',
             onPress: () => {
                 const isBack = true;
                 const isHome = false
@@ -72,7 +72,7 @@ const SettingScreen = () => {
         {
             index: 6,
             name: 'about',
-            onPress: () => { navigation.navigate('Swipe')},
+            onPress: () => { navigation.navigate('Swipe') },
             icon: ProfileIcon
         },
         {
@@ -181,9 +181,10 @@ const SettingScreen = () => {
                                         marginBottom: 10
                                     }}>Choose Language</TextRN>
                                     <TouchableOpacity
-                                        onPress={() => {
+                                        onPress={async () => {
                                             setIsChoosLanguage(!isChoosLanguage)
                                             i18n.changeLanguage('vi')
+                                            await setLanguage('vi')
                                         }}>
                                         <TextRN style={{
                                             fontWeight: '700',
@@ -201,9 +202,10 @@ const SettingScreen = () => {
                                     }}>
 
                                     </View>
-                                    <TouchableOpacity onPress={() => {
+                                    <TouchableOpacity onPress={async () => {
                                         setIsChoosLanguage(!isChoosLanguage);
                                         i18n.changeLanguage('en')
+                                        await setLanguage('en')
                                     }}>
                                         <TextRN style={{
                                             fontWeight: '700',

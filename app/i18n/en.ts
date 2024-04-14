@@ -98,5 +98,6 @@
     confirmNewPassword: 'Confirm new password',
     save : 'SAVE',
     changePass :'Change Password',
-    viewed : 'Viewed'
+    viewed : 'Viewed',
+    category :'Category'
 }
