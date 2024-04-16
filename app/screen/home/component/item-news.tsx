@@ -164,7 +164,8 @@ export const ItemNews = (props: IItemNews) => {
                                                 onPress={
                                                     isRemoveBookMark ? handleRemoveBookmark :
                                                         () => {
-                                                            const formattedTime = moment(time).format('YYYY-MM-DD');
+                                                            const newStr = time?.replace(/GMT\+\d+/, "")
+                                                            const formattedTime = moment(newStr).format('YYYY-MM-DD');
                                                             handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
                                                         }
                                                 }

@@ -4,6 +4,7 @@ import Toast from 'react-native-simple-toast';
 import { Bookmark, Category, ItemCategory, Viewed } from "../database";
 import { extractImageUrl, extractString } from "./validate";
 import { auth } from "../../App";
+import moment from "moment";
 
 
 export const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
@@ -59,6 +60,9 @@ export const handleSaveHistory = (type: string, title: string, author: string, t
     console.log('SAVE-HISTORY');
     const item1 = Viewed.get({ title: title, email: email });
     if (item1) {
+        const now = moment();
+        const formattedTime = moment(now).format('YYYY-MM-DD HH:mm:ss');
+        Viewed.update(item1, { timeWatched: formattedTime })
         return;
     }
     const params = {

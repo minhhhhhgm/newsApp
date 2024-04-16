@@ -26,11 +26,15 @@ const ViewedScreen = () => {
     const isFocused = useIsFocused()
     const [data, setData] = useState([])
     const email = useSelector((state: RootState) => state.newsReducer.mail)
-    console.log('email', email);
+    // console.log('email', email);
     const getdata = () => {
         if (email) {
+            // Viewed.removeAllRecords()
             const data = Viewed.filter((item: IViewed) => item.email === email).data();
-            setData(data.reverse())
+            data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
+                return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
+            });
+            setData(data)
         }
     }
 
@@ -54,7 +58,7 @@ const ViewedScreen = () => {
 
     const renderItem = ({ item, index }: { item: IViewed, index: number }) => {
         const formattedTime = moment(new Date(item.timeWatched)).format('YYYY-MM-DD');
-        console.log(item.timeWatched);
+        // console.log(item);
 
         return (
             <View style={{ marginTop: 25 }}>

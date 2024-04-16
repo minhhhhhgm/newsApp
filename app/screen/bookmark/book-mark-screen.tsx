@@ -1,16 +1,20 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList, Modal, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View, Text as TextRn } from 'react-native';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
 import { Bookmark } from '../../database';
 import { COLOR } from '../../utils/color';
 import { dataInterest, handleSaveHistory } from '../../utils/homeAction';
 import { ItemNews } from '../home/component/item-news';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import BellIcon from '../../icons/svg-component/BellIcon';
+import { changeNews } from '../../store/newsSlice';
+const { width, height } = Dimensions.get('screen');
+
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 interface IBookmark {
     type: string,
@@ -29,16 +33,33 @@ const BookMarkScreen = () => {
     const [data, setData] = useState([])
     const [indexItem, setIndexItem] = useState(0)
     const [type, setType] = useState('forYou')
+    const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+    const [isVisible, setIsVisible] = useState(false)
     const email = useSelector((state: RootState) => state.newsReducer.mail)
+    const news = useSelector((state: RootState) => state.newsReducer.newsName)
+    const dispatch = useDispatch()
+
+    console.log(news);
+
+    const ref = useRef<TouchableOpacity>(null);
 
     useEffect(() => {
-        getdataByType(type)
-    }, [isFocused])
+        getdataByType()
+    }, [isFocused, news])
+    const onPress = () => {
+        setIsVisible(!isVisible)
+        ref.current?.measureInWindow((x, y) => {
+            console.log(x, y);
+            setOffset({ x, y });
+        })
+    }
 
-
-    const getdataByType = (type: string) => {
+    const getdataByType = () => {
         if (email) {
-            let data = Bookmark.filter((item: IBookmark) => item.type === type && item.email === email).data();
+            const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            console.log(data);
+            
             setData(data)
         }
     }
@@ -48,8 +69,8 @@ const BookMarkScreen = () => {
         // setTimeout(() => {
         //     getdataByType(type)
         // }, 100);
-        Bookmark.onChange(()=>{
-            getdataByType(type)
+        Bookmark.onChange(() => {
+            getdataByType()
         })
     }
 
@@ -86,50 +107,76 @@ const BookMarkScreen = () => {
     };
     return (
         <View style={styles.body}>
-            <View>
+            <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 55,
+                marginHorizontal: 16
+            }}>
                 <Text
                     text={'bookmarked'}
                     style={styles.headerText}
                 />
+                <TouchableOpacity
+                    ref={ref}
+                    onPress={onPress}>
+                    <BellIcon />
+                </TouchableOpacity>
             </View>
-            <View style={{ height: 90 }}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {
-                        dataInterest.map((item, index) => {
-                            return (
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    key={index}
-                                    onPress={() => {
-                                        setIndexItem(index);
-                                        setType(item.text)
-                                        getdataByType(item.text)
-                                    }}
-                                    style={[styles.buttonCategory, {
-                                        backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
-                                        marginLeft: index === 0 ? 16 : 0,
-                                    }]}
-                                >
-                                    <Text
-                                        text={item.text}
-                                        style={{
-                                            color: index == indexItem ? COLOR.white : COLOR.authorColor
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })
-                    }
-                </ScrollView>
-            </View>
+
             {
                 data && <FlatList
+                    style={{ marginTop: 30 }}
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
                     data={data}
                     renderItem={renderItem}
                 />
             }
+            <Modal
+                visible={isVisible}
+                animationType='fade'
+                onRequestClose={() => setIsVisible(false)}
+                transparent={true}
+            >
+                <TouchableOpacity style={styles.main}
+                    onPress={() => setIsVisible(false)}
+                    activeOpacity={1}
+                >
+                    <View style={[styles.content, {
+                        top: offset.y + 30,
+                        left: offset.x + 30
+                    }]}>
+                        <View
+                            style={[styles.viewPopOver]}>
+                            <View style={{
+                                justifyContent: 'center'
+                            }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        dispatch(changeNews('VnExpress'))
+                                    }}
+                                    style={styles.btnVnE}>
+                                    <TextRn style={styles.textVnE}>VnExpress</TextRn>
+                                </TouchableOpacity>
+                                <View style={styles.popOverLine}>
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            dispatch(changeNews('tuoitre'))
+                                        }}
+                                        style={styles.btnTt}>
+                                        <TextRn
+                                            style={styles.textTt}
+                                        >Tuổi Trẻ</TextRn>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </View>
     );
 };
@@ -143,8 +190,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: COLOR.darkBlack,
         fontSize: 15,
-        marginTop: 55,
-        marginLeft: 16
+
     },
     buttonCategory: {
         marginTop: 30,
@@ -155,6 +201,57 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginRight: 10,
         marginBottom: 20
+    }, main: {
+        backgroundColor: 'transparent',
+        width: width,
+        height: height,
+        flex: 1
+    },
+    content: {
+        position: 'absolute',
+        bottom: 22,
+        alignSelf: 'center',
+    },
+    btnVnE: {
+        flexDirection: 'row',
+        paddingLeft: 10,
+        marginTop: 15,
+    },
+    textVnE: {
+        color: COLOR.focusColor,
+        marginLeft: 5,
+        fontSize: 12
+    },
+    btnTt: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginLeft: 8,
+    },
+    textTt: {
+        flex: 1,
+        color: COLOR.focusColor,
+        marginLeft: 5,
+        fontSize: 12,
+        alignSelf: 'center',
+    },
+    popOverLine: {
+        height: 1,
+        backgroundColor: COLOR.buttonColorInactive,
+        marginTop: 7,
+    },
+    viewPopOver: {
+        backgroundColor: COLOR.backgroundColor,
+        width: 121,
+        height: 78,
+        shadowColor: COLOR.black,
+        shadowOffset: { width: -2, height: 4 },
+        shadowOpacity: 10,
+        shadowRadius: 30,
+        elevation: 5,
+        borderRadius: 10,
+        position: 'absolute',
+        zIndex: 10,
+        right: 15,
     },
 
 });

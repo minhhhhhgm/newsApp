@@ -174,8 +174,8 @@ const HomeScreen = () => {
     }
 
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
-        const now = moment()
-        const formattedTime = moment(now).format('YYYY-MM-DD');
+        const now = moment();
+        const formattedTime = moment(now).format('YYYY-MM-DD HH:mm:ss');
         const mail = auth.currentUser?.email as string
         handleSaveHistory(type, title, author, formattedTime, url, image, mail)
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
@@ -211,7 +211,7 @@ const HomeScreen = () => {
         const relativeTime = moment(newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate), 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         const title = newsName === 'VnExpress' ? item.title : extractContentTuoiTre(item.title)
         const link = newsName === 'VnExpress' ? item.link : extractContentTuoiTre(item.link)
-        const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
+        const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'        
         return (
             <ItemNews
                 index={index}
