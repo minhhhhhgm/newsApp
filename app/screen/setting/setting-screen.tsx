@@ -14,6 +14,8 @@ import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR } from '../../utils/color';
 import { removeAccessToken, setLanguage } from '../../utils/storage';
+import { useDispatch } from 'react-redux';
+import { changeStatusLogin } from '../../store/newsSlice';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
@@ -22,17 +24,10 @@ const SettingScreen = () => {
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
     const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
+    const dispatch = useDispatch()
 
 
     const data = [
-        {
-            index: 0,
-            name: 'profile',
-            onPress: () => {
-                navigation.navigate('Profile')
-            },
-            icon: ProfileIcon
-        },
         {
             index: 1,
             name: 'account',
@@ -45,53 +40,33 @@ const SettingScreen = () => {
             index: 2,
             name: 'category',
             onPress: () => {
-                const isBack = true;
-                const isHome = false
                 navigation.navigate('Category')
             },
-            icon: ProfileIcon
+            icon: InterRestIcon
         },
         {
             index: 3,
             name: 'changeLanguage',
             onPress: () => { setIsChoosLanguage(!isChoosLanguage) },
-            icon: ProfileIcon
+            icon: SettingIconProfile
         },
-        {
-            index: 4,
-            name: 'darkMode',
-            onPress: () => { },
-            icon: ProfileIcon
-        },
-        {
-            index: 5,
-            name: 'termsAndConditions',
-            onPress: () => { },
-            icon: ProfileIcon
-        },
-        {
-            index: 6,
-            name: 'about',
-            onPress: () => { navigation.navigate('Swipe') },
-            icon: ProfileIcon
-        },
+
         {
             index: 7,
             name: 'logOut',
             onPress: async () => {
                 await removeAccessToken()
-                navigation.replace('SignIn')
+                // navigation.replace('SignIn')
+                dispatch(changeStatusLogin(false))
             },
-            icon: ProfileIcon
+            icon: LogOutIcon
         },
 
     ]
-    const dataItem = [ProfileIcon, ProfileIcon, InterRestIcon, Noti, DarkModeicon, SettingIconProfile, SettingIconProfile, LogOutIcon]
     const rederItem = ({ item, index }: { item: any, index: number }) => {
         return (
             <View key={index}>
                 <View
-
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
@@ -101,8 +76,7 @@ const SettingScreen = () => {
                         flexDirection: 'row'
                     }}>
                         {
-                            //@ts-ignore
-                            <View style={{ alignSelf: "center" }}>{dataItem[index]()}</View>
+                            <View style={{ alignSelf: "center" }}>{item.icon()}</View>
                         }
                         <TouchableOpacity onPress={item.onPress}>
                             <Text text={item.name} style={{
@@ -114,23 +88,7 @@ const SettingScreen = () => {
                         </TouchableOpacity>
 
                     </View>
-                    {
-                        index == 4 ?
-                            <View style={{
-                                marginBottom: -10
-                            }}>
-                                <Switch
-                                    trackColor={{ false: COLOR.colorSwitchOff, true: COLOR.colorSwitchOn }}
-                                    thumbColor={darkmode ? COLOR.backgroundColor : "#ddd"}
-                                    ios_backgroundColor="#3e3e3e"
-                                    onValueChange={() => { setDarkMode(!darkmode) }}
-                                    value={darkmode}
-                                />
-                            </View>
-                            :
-                            <RightChvron />
-
-                    }
+                    <RightChvron />
                 </View>
                 <View style={{
                     height: 1,

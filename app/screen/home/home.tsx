@@ -1,23 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
-import { ItemCategory } from '../../database';
+import { CategoryManagementModel } from '../../database';
+import { changeNews, setVnExpress } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
 import { Category, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
 import { getEmailApp } from '../../utils/storage';
-import { extractContentInsideBrackets } from '../../utils/validate';
+import { extractContentTuoiTre } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
 const { width } = Dimensions.get('window')
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
-
 const HomeScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
@@ -28,9 +28,15 @@ const HomeScreen = () => {
     const [refresh, setRefresh] = useState(false)
     const [newsName, setNewsName] = useState('VnExpress')
     const [dataCategory, setDataCategory] = useState<Category[]>([])
+    const dispatch = useDispatch()
     const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
+    const textRef = useRef<string>('')
+
+    // useEffect(() => {
+    //     getDataCategory()
+    // }, [domain])
     useEffect(() => {
-        getDataCategory()
+        handleGetDataWhenCategoryChange()
     }, [cate, domain])
 
 
@@ -54,18 +60,106 @@ const HomeScreen = () => {
         //         }, 100);
         //     })
         // })
-        ItemCategory.perform(async function (db: any) {
-            const mail = await getEmailApp()
-            const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
-            if (data) {
-                const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-                setDataCategory(dataFilter)
-                handleGetDataByTitle(dataFilter[0].endpoint)
-                setIndexItem(0)
-                setTitleNews(dataFilter[0].text)
-            }
-        })
+        // ItemCategory.perform(async function (db: any) {
+        //     const mail = await getEmailApp()
+        //     console.log('mail', mail);
+        //     const dataC = ItemCategory.data()
+        //     console.log('dataC==',dataC);
+        //     const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
+        //     if (data) {
+        //         console.log('data==',data);
+
+        //         const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+        //         const firstItem = dataFilter.find((item: Category) => true);
+        //         console.log(firstItem);
+
+        //         setDataCategory(dataFilter)
+        //         await handleGetDataByTitle(firstItem.endpoint)
+        //         setIndexItem(0)
+        //         setTitleNews(firstItem.text)
+        //     }
+        // })
+        const mail = await getEmailApp()
+        console.log('mail', mail);
+        const getData = CategoryManagementModel.get({ email: mail })
+        // CategoryManagementModel.update(getData,{listCategory:''})
+
+        // const listCategory = JSON.parse(getData.listCategory)
+        // console.log('Data==== ', getData);
+        // console.log('HERE', CategoryManagementModel.get({ email: mail, tuoiTre: 'the-gioi' }));
+
+        if (newsName === 'VnExpress') {
+            const data = JSON.parse(getData.vnExpress)
+            // console.log('data ==', getData);
+
+            setDataCategory(data)
+            const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+            const firstItem = dataFilter.find((item: Category) => true);
+            setDataCategory(dataFilter)
+            await handleGetDataByTitle(firstItem.endpoint)
+            textRef.current = firstItem.text
+            setIndexItem(0)
+            setTitleNews(firstItem.text)
+
+
+        } else {
+            const data = JSON.parse(getData.tuoiTre)
+            setDataCategory(data)
+            const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+            const firstItem = dataFilter.find((item: Category) => true);
+            setDataCategory(dataFilter)
+            await handleGetDataByTitle(firstItem.endpoint)
+            textRef.current = firstItem.text
+            setIndexItem(0)
+            setTitleNews(firstItem.text)
+
+        }
+
+
+
+
+        // ItemCategory.onLoaded(async () => {
+        //     setTimeout(async () => {
+        //         const dataC = await ItemCategory.data()
+        //         console.log('dataC==', dataC);
+        //         const data = await ItemCategory.data().filter((item: Category) => item.mail === mail)
+        //         if (data) {
+        //             console.log('data==', data);
+        //             const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
+        //             const firstItem = dataFilter.find((item: Category) => true);
+        //             setDataCategory(dataFilter)
+        //             await handleGetDataByTitle(firstItem.endpoint)
+        //             setIndexItem(0)
+        //             setTitleNews(firstItem.text)
+        //         }
+        //     }, 100);
+
+        // })
+
     }
+    const handleGetDataWhenCategoryChange = async () => {
+        const mail = await getEmailApp();
+        let newsData;
+        let dataFilter;
+        let firstItem;
+        if (newsName === 'VnExpress') {
+            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).vnExpress);
+            dispatch(setVnExpress(newsData))
+        } else {
+            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).tuoiTre);
+        }
+        dataFilter = newsData.filter((item: Category) => item.isShow);
+        firstItem = dataFilter.find(() => true);
+        const isExistItem = dataFilter.find((item: Category) => item.text === textRef.current);
+        if (isExistItem === undefined) {
+            await handleGetDataByTitle(firstItem.endpoint);
+            textRef.current = firstItem.text;
+            setIndexItem(0);
+            setTitleNews(firstItem.text);
+        }
+        setDataCategory(dataFilter);
+    };
+
     const handleGetDataByTitle = async (endpoint: string) => {
         setFeedItems([])
         try {
@@ -83,34 +177,40 @@ const HomeScreen = () => {
         const now = moment()
         const formattedTime = moment(now).format('YYYY-MM-DD');
         const mail = auth.currentUser?.email as string
-        await handleSaveHistory(type, title, author, formattedTime, url, image, mail)
+        handleSaveHistory(type, title, author, formattedTime, url, image, mail)
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
     }
     const handleChangeVnE = () => {
+        setDataCategory([])
         setNewsName('VnExpress');
         setDomain('vnexpress.net')
         setIndexItem(0)
         setTitleNews('forYou')
+        dispatch(changeNews('VnExpress'))
+        textRef.current = ''
     }
 
     const handleChangeTt = () => {
+        setDataCategory([])
         setNewsName('Tuổi Trẻ');
         setDomain('tuoitre.vn')
         setIndexItem(0)
         setTitleNews('forYou')
+        dispatch(changeNews('tuoitre'))
+        textRef.current = ''
     }
 
-    const renderItem = ({ item, index }: { item: any, index: number }) => {
+    const renderItem = ({ item, index }: { item: NewsType, index: number }) => {
         const imgSrcRegex = /<img src="([^"]+)"/;
         const imgSrcMatch = item.description.match(imgSrcRegex);
         let imgSrc = '';
         if (imgSrcMatch && imgSrcMatch[1]) {
             imgSrc = imgSrcMatch[1];
         }
-        const time = newsName === 'VnExpress' ? item.pubDate : extractContentInsideBrackets(item.pubDate)
-        const relativeTime = moment(newsName === 'VnExpress' ? item.pubDate : extractContentInsideBrackets(item.pubDate), 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
-        const title = newsName === 'VnExpress' ? item.title : extractContentInsideBrackets(item.title)
-        const link = newsName === 'VnExpress' ? item.link : extractContentInsideBrackets(item.link)
+        const time = newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate)
+        const relativeTime = moment(newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate), 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
+        const title = newsName === 'VnExpress' ? item.title : extractContentTuoiTre(item.title)
+        const link = newsName === 'VnExpress' ? item.link : extractContentTuoiTre(item.link)
         const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
         return (
             <ItemNews
@@ -152,15 +252,16 @@ const HomeScreen = () => {
                                         setTitleNews(item.text);
                                         handleGetDataByTitle(item.endpoint);
                                         setEndpoint(item.endpoint)
+                                        textRef.current = item.text
                                     }}
                                     style={[styles.button, {
-                                        backgroundColor: index == indexItem ? COLOR.focusColor : COLOR.buttonColorInactive,
+                                        backgroundColor: item.text == textRef.current ? COLOR.focusColor : COLOR.buttonColorInactive,
                                         marginLeft: index === 0 ? 16 : 0,
                                     }]}>
                                     <Text
                                         text={item.text}
                                         style={{
-                                            color: index == indexItem ? COLOR.white : COLOR.authorColor
+                                            color: item.text == textRef.current ? COLOR.white : COLOR.authorColor
                                         }} />
                                 </TouchableOpacity>
                                 : null
@@ -170,7 +271,7 @@ const HomeScreen = () => {
                     ListEmptyComponent={() => {
                         return (
                             <View style={{ alignSelf: 'center', width: width }}>
-                                <ActivityIndicator />
+                                {/* <ActivityIndicator /> */}
                             </View>
                         )
                     }}

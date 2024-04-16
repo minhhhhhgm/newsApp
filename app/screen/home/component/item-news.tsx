@@ -7,8 +7,8 @@ import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import moment from 'moment';
+import { Bookmark } from '../../../database';
 const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
@@ -34,6 +34,7 @@ export const ItemNews = (props: IItemNews) => {
         id: 0,
         visible: false
     })
+    const [isBookmark, setIsBookmark] = useState(false)
     const {
         index,
         handleNavigateDetailNews,
@@ -51,16 +52,22 @@ export const ItemNews = (props: IItemNews) => {
     // console.log('render');
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
-    const tabBarHeight = useBottomTabBarHeight();
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
-            console.log(x, y, 'height -', height, tabBarHeight, height - tabBarHeight - 98);
+            // console.log(x, y, 'height -', height, tabBarHeight, height - tabBarHeight - 98);
             setOffset({ x, y });
         })
         setIsVisible({
             id: id,
             visible: true
         })
+        const item1 =  Bookmark.get({ title: title, email: email });
+        console.log('ITEM', item1);
+        if (item1) {
+            setIsBookmark(true)
+        }else{
+            setIsBookmark(false)
+        }
     }
     return (
         <TouchableOpacity
@@ -167,7 +174,7 @@ export const ItemNews = (props: IItemNews) => {
                                                     marginLeft: 8,
                                                 }}>
                                                 <View style={{ justifyContent: 'center' }}>
-                                                    <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />
+                                                   {isBookmark ? <BookMarkIcon fill={ '#180E19'} /> : <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />}
                                                 </View>
                                                 <TextRn
                                                     style={{

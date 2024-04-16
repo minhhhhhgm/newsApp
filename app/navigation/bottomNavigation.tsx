@@ -9,6 +9,7 @@ import BookMarkScreen from '../screen/bookmark/book-mark-screen';
 import SettingScreen from '../screen/setting/setting-screen';
 import { COLOR } from '../utils/color';
 import ViewedScreen from '../screen/viewed/viewed-screen';
+import { SettingStack } from '../../App';
 
 export type ParamsListBottomNav = {
     Home: undefined,
@@ -61,7 +62,7 @@ export default function BottomNavigation() {
                 }} />
             <Tab.Screen
                 name="About"
-                component={SettingScreen}
+                component={SettingStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <SettingIcon fill={focused ? COLOR.focusColor : 'none'} />

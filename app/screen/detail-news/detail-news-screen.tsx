@@ -45,7 +45,7 @@ const DetailScreen = () => {
         console.log('ITEM', item1);
 
         if (item1) {
-            setIsSaveBookMark(!isSaveBookMark)
+            setIsSaveBookMark(true)
             return item1;
         } else {
             return null
@@ -118,6 +118,4 @@ const DetailScreen = () => {
 
 export default DetailScreen;
 
-function RouteProp<T, U>() {
-    throw new Error('Function not implemented.');
-}
+

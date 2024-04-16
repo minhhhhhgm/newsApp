@@ -1,25 +1,25 @@
 import { Article } from "../type/NewsType"
 
-export function toASCII(chars: any) {
-  let ascii = ""
-  for (var i = 0, l = chars.length; i < l; i++) {
-    let c = chars[i].charCodeAt(0)
-    if (c === 12288) {
-      c = chars[i].charCodeAt(0) - 12256
-    }
-    if (c >= 0xff00 && c <= 0xffef) {
-      c = 0xff & (c + 0x20)
-    }
-    ascii += String.fromCharCode(c)
-  }
+// export function toASCII(chars: any) {
+//   let ascii = ""
+//   for (var i = 0, l = chars.length; i < l; i++) {
+//     let c = chars[i].charCodeAt(0)
+//     if (c === 12288) {
+//       c = chars[i].charCodeAt(0) - 12256
+//     }
+//     if (c >= 0xff00 && c <= 0xffef) {
+//       c = 0xff & (c + 0x20)
+//     }
+//     ascii += String.fromCharCode(c)
+//   }
 
-  return ascii
-}
+//   return ascii
+// }
 
 export function searchData(data: any, txt: any) {
   const arr = data?.filter((i: any) => {
     if (i?.title) {
-      return toASCII(i?.title).toLowerCase().includes(toASCII(txt)?.toLowerCase())
+      return i?.title.toLowerCase().includes(txt?.toLowerCase())
     }
     return i
   })
@@ -48,7 +48,7 @@ export const extractImageUrl = (item: string) => {
   return item.substring(enclosureStartIndex, enclosureEndIndex);
 };
 
-export const extractContentInsideBrackets = (inputString: string): string | null => {
+export const extractContentTuoiTre = (inputString: string): string  => {
   const startIndex: number = inputString.indexOf('[');
   const endIndex: number = inputString.indexOf(']');
 

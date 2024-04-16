@@ -6,7 +6,7 @@ import VasernDB from './db';
 /**
  * Destructuring the necessary DB Schema to be used in the Application
  */
-const { Todos , Users,  Bookmark , Viewed, Category,ItemCategory} = VasernDB as any;
+const { Todos , Users,  Bookmark , Viewed, Category,ItemCategory,TestCategoryModel,CategoryManagementModel} = VasernDB as any;
 
 /**
  * Exporting VasernDB as default instance.
@@ -21,5 +21,7 @@ export {
     Bookmark,
     Viewed,
     Category,
-    ItemCategory
+    ItemCategory,
+    TestCategoryModel,
+    CategoryManagementModel
 }

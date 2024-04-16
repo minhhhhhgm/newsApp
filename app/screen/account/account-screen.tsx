@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EmailAuthProvider, User, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-simple-toast';
@@ -32,8 +32,26 @@ const AccountScreen = () => {
   const [newPasswordError, setNewPasswordError] = useState('')
   const [reNewPasswordError, setReNewPasswordError] = useState('')
   const [isLoading, setIsLoading] = useState(false);
-
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (newPassword && password) {
+      if (newPassword === password) {
+        setNewPasswordError('The new password matches the current password')
+      } else if (newPassword.length > 6 && newPassword !== password) {
+        setNewPasswordError('')
+      }
+    }
+  }, [newPassword, password])
+  useEffect(() => {
+    if (reNewPassword && newPassword) {
+      if (reNewPassword !== newPassword) {
+        setReNewPasswordError('The confirm password not matches the new password')
+      } else if(reNewPassword.length > 6 &&reNewPassword == newPassword) {
+        setReNewPasswordError('')
+      }
+    }
+  }, [reNewPassword, newPassword])
   const onChangePass = (value: string) => {
     const passValidate = handleValidatePass(value)
     if (passValidate) {
@@ -177,12 +195,7 @@ const AccountScreen = () => {
               label={'currentPassword'}
               placeholder={'currentPassword'}
               secureTextEntry={!isShowPassword}
-              RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} paddingRight={16} />}//Righticon({
-              // password: password,
-              // handleShowPass: () => { setIsShowPassword(!isShowPassword) },
-              // isShowPassword,
-              // paddingRight: 16
-              // })
+              RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} paddingRight={16} />}
               helper={passwordError}
             />
             <TextField

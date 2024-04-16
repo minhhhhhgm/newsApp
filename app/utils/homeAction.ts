@@ -55,9 +55,9 @@ export const handleGetCategory = async (email: string) => {
 }
 
 
-export const handleSaveHistory = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
+export const handleSaveHistory = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
     console.log('SAVE-HISTORY');
-    const item1 = await Viewed.get({ title: title, email: email });
+    const item1 = Viewed.get({ title: title, email: email });
     if (item1) {
         return;
     }
@@ -75,10 +75,10 @@ export const handleSaveHistory = async (type: string, title: string, author: str
 
 
 
-export const saveCate = (dataC: any, mail: string) => {
+export const saveCate = async (dataC: any, mail: string) => {
     console.log("SAVE data category", dataC);
 
-    const item1 = ItemCategory.get({ mail: mail });
+    const item1 = await ItemCategory.get({ mail: mail });
     if (item1) {
         return;
     }
@@ -86,7 +86,9 @@ export const saveCate = (dataC: any, mail: string) => {
         const { id, ...rest } = item;
         return rest;
     });
-    ItemCategory.insert(filteredData);
+    const isInsert = ItemCategory.insert(dataC);
+    return isInsert
+
 }
 
 

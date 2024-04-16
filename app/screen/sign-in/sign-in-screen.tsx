@@ -22,9 +22,9 @@ import { Righticon } from './component/eye-icon';
 import { } from '../../i18n/en';
 import Loading from '../../components/loading';
 import { Category } from '../../database';
-import { dataInterests, handleSaveCategory, saveCate } from '../../utils/homeAction';
 import { useDispatch } from 'react-redux';
-import { addMail } from '../../store/newsSlice';
+import { addMail, changeStatusLogin } from '../../store/newsSlice';
+import { dataCategoryTuoiTre, dataCategoryVnEpress, handleSaveCategory } from '../../utils/categoryManagement';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 
 const SignInScreen = () => {
@@ -38,10 +38,11 @@ const SignInScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const dispatch = useDispatch()
   const { t } = useTranslation();
-  const dataInterest = dataInterests(email)
+  // const dataInterest = dataInterests(email)
   const handleSignIn = async () => {
     setIsLoading(true)
-   
+    const dataVnE = JSON.stringify(dataCategoryVnEpress())
+    const dataTt = JSON.stringify(dataCategoryTuoiTre())
     try {
       const responseSignIn = await signInWithEmailAndPassword(auth, email, password)
       if (responseSignIn) {
@@ -49,13 +50,8 @@ const SignInScreen = () => {
         await setAccessToken(await responseSignIn.user.getIdToken())
         await setEmailApp(email)
         dispatch(addMail(email))
-        saveCate(dataInterest, email)
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'BottomNavigation' }],
-        });
-       
-        // await handleSaveCategory(email, dataInterest)
+        handleSaveCategory(dataVnE, dataTt, email)
+        dispatch(changeStatusLogin(true))
         setIsLoading(false)
       }
     } catch (err) {
@@ -127,7 +123,6 @@ const SignInScreen = () => {
             placeholder={'password'}
             secureTextEntry={!isShowPassword}
             RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} />}
-            // RightAccessory={() => Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })}
             helper={passwordError}
           />
           {

@@ -20,7 +20,7 @@ interface IBookmark {
     image: string,
     url: string,
     email: string,
-    id : string
+    id: string
 }
 
 const BookMarkScreen = () => {
@@ -36,34 +36,35 @@ const BookMarkScreen = () => {
     }, [isFocused])
 
 
-    const getdataByType = async (type: string) => {
-        // const email = auth.currentUser?.email as string
+    const getdataByType = (type: string) => {
         if (email) {
-            let data = await Bookmark.filter((item: IBookmark) => item.type === type && item.email === email).data();
+            let data = Bookmark.filter((item: IBookmark) => item.type === type && item.email === email).data();
             setData(data)
         }
     }
-    const removeBookmark = async (id: string, type: string, index: number) => {
-        const item1 = await Bookmark.get({ id: id });
-        await Bookmark.remove(item1)
-        setTimeout(() => {
+    const removeBookmark = (id: string, type: string, index: number) => {
+        const item1 = Bookmark.get({ id: id });
+        Bookmark.remove(item1)
+        // setTimeout(() => {
+        //     getdataByType(type)
+        // }, 100);
+        Bookmark.onChange(()=>{
             getdataByType(type)
-        }, 100);
+        })
     }
 
     const handleNavigate = async (title: string, link: string, author: string, time: string, image: string, type: string) => {
         const email = auth.currentUser?.email as string
         const now = moment()
-        await handleSaveHistory(type, title, author, now.toString(), link, image, email)
+        handleSaveHistory(type, title, author, now.toString(), link, image, email)
         navigation.navigate('Detail', { link, author, time, imageUrl: image, type, title, email })
     }
 
 
     const renderItem = ({ item, index }: { item: IBookmark, index: number }) => {
         const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
-        
-        const formattedTime = moment(item.time).format('YYYY-MM-DD');        
-        const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');        
+        const formattedTime = moment(item.time).format('YYYY-MM-DD');
+        const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');
         return (
             <ItemNews
                 handleRemoveBookmark={() => { removeBookmark(item.id, item.type, index) }}
@@ -94,7 +95,7 @@ const BookMarkScreen = () => {
             <View style={{ height: 90 }}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {
-                        dataInterest.map((item, index) => {                            
+                        dataInterest.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     activeOpacity={1}
@@ -127,12 +128,6 @@ const BookMarkScreen = () => {
                     refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
                     data={data}
                     renderItem={renderItem}
-                    ListEmptyComponent={() => {
-                        return (
-                            <View>
-                            </View>
-                        )
-                    }}
                 />
             }
         </View>

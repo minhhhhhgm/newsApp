@@ -25,11 +25,8 @@ const ViewedScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const isFocused = useIsFocused()
     const [data, setData] = useState([])
-    // const email = auth.currentUser?.email as string
     const email = useSelector((state: RootState) => state.newsReducer.mail)
-
     console.log('email', email);
-
     const getdata = () => {
         if (email) {
             const data = Viewed.filter((item: IViewed) => item.email === email).data();
@@ -37,14 +34,14 @@ const ViewedScreen = () => {
         }
     }
 
-    const removeBookmark = async (id: string) => {
-        const item1 = await Viewed.get({ id: id });
-        await Viewed.remove(item1)
-        Viewed.onChange(() => {
-            console.log('DATA CHANGE');
-            getdata()
-        })
-    }
+    // const removeBookmark = async (id: string) => {
+    //     const item1 = await Viewed.get({ id: id });
+    //     await Viewed.remove(item1)
+    //     Viewed.onChange(() => {
+    //         console.log('DATA CHANGE');
+    //         getdata()
+    //     })
+    // }
 
     const handleNavigate = (title: string, link: string, author: string, time: string, image: string, type: string) => {
         navigation.navigate('Detail', { link, author, time, imageUrl: image, type, title, email })
@@ -57,15 +54,11 @@ const ViewedScreen = () => {
 
     const renderItem = ({ item, index }: { item: IViewed, index: number }) => {
         const formattedTime = moment(new Date(item.timeWatched)).format('YYYY-MM-DD');
-        const time = moment((new Date(item.timeWatched))).format('ddd, DD MMM YYYY HH:mm:ss Z');
-        const relativeTime = moment(formattedTime, 'YYYY-MM-DD').fromNow()
         console.log(item.timeWatched);
 
         return (
             <View style={{ marginTop: 25 }}>
                 <ItemNews
-                    // handleRemoveBookmark={() => { removeBookmark(item.id) }}
-                    // isRemoveBookMark
                     style={{
                         marginTop: 0
                     }}

@@ -11,7 +11,7 @@ import Loading from '../../components/loading';
 import SearchNewsIcons from '../../icons/svg-component/SearchNewsIcon';
 import CancelIcon from '../../icons/svg-component/cancelcon';
 import { Article } from '../../type/NewsType';
-import { extractContentInsideBrackets, extractImageUrl, extractString, searchData } from '../../utils/validate';
+import { extractContentTuoiTre, extractImageUrl, extractString, searchData } from '../../utils/validate';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 // import { SimpleMenu } from '../home/component/popover';
@@ -46,7 +46,7 @@ const SearchScreen = () => {
                 pubDate: extractString(item, '<pubDate>', '</pubDate>'),
                 imageUrl: extractImageUrl(item),
             }));
-            console.log('data - ', extractContentInsideBrackets(parsedItems[0].title));
+            console.log('data - ', extractContentTuoiTre(parsedItems[0].title));
 
             //   setFeedItems(parsedItems);
         } catch (error) {

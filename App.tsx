@@ -1,10 +1,10 @@
+import "react-native-gesture-handler";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, } from '@react-navigation/native-stack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LogBox, StatusBar } from 'react-native';
-import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { Bookmark } from './app/database';
 import { FirebaseAuth } from './app/firebase/config';
 import './app/i18n/IMLocalize';
@@ -20,12 +20,13 @@ import SearchScreen from './app/screen/search/search-screen';
 import SignInScreen from './app/screen/sign-in/sign-in-screen';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import ViewedScreen from './app/screen/viewed/viewed-screen';
-import { addMail } from './app/store/newsSlice';
-import { store } from './app/store/store';
-import { AuthProvider } from './app/useAuth/auth';
-import { getEmailApp, getLanguage } from './app/utils/storage';
+import { addMail, changeStatusLogin } from './app/store/newsSlice';
+import { RootState, store } from './app/store/store';
+import { getAccessToken, getEmailApp, getLanguage } from './app/utils/storage';
 import SwipeGesture from './app/screen/category-management/swipe-screen';
 import { useTranslation } from 'react-i18next';
+import Loading from "./app/components/loading";
+import SettingScreen from "./app/screen/setting/setting-screen";
 
 export type ParamsList = {
   Detail: {
@@ -49,11 +50,14 @@ export type ParamsList = {
   Profile: undefined,
   Viewed: undefined,
   Category: undefined,
-  Swipe: undefined
+  Swipe: undefined,
+  Setting: undefined,
+  About: undefined
 
 }
 
 const Stack = createNativeStackNavigator<ParamsList>()
+
 export const auth = FirebaseAuth
 LogBox.ignoreAllLogs();
 Bookmark.data()
@@ -63,56 +67,90 @@ Bookmark.data()
 
 export const AppNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName='SignIn' screenOptions={{
+    <NavigationContainer>
+
+      <Stack.Navigator initialRouteName='SignIn' screenOptions={{
+        headerShown: false
+      }}>
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
+
+export const SettingStack = () => {
+  return (
+    <Stack.Navigator  screenOptions={{
       headerShown: false
     }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-      <Stack.Screen name="SignIn" component={SignInScreen} />
-      {/* <Stack.Screen name="Interests" component={InterestsScreen} /> */}
-      <Stack.Screen name="Search" component={SearchScreen} />
-      <Stack.Screen name="Detail" component={DetailScreen} />
-      <Stack.Screen name="BookMark" component={BookMarkScreen} />
-      <Stack.Screen name="Account" component={AccountScreen} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Viewed" component={ViewedScreen} />
+      <Stack.Screen name="About" component={SettingScreen} />
       <Stack.Screen name="Category" component={CategoryManagementScreen} />
-      <Stack.Screen name="Swipe" component={SwipeGesture} />
-
     </Stack.Navigator>
   )
 }
 
 export const AppNavigationAuth = () => {
   return (
-    <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-      <Stack.Screen name="SignIn" component={SignInScreen} />
-      {/* <Stack.Screen name="Interests" component={InterestsScreen} /> */}
-      <Stack.Screen name="Search" component={SearchScreen} />
-      <Stack.Screen name="Detail" component={DetailScreen} />
-      <Stack.Screen name="BookMark" component={BookMarkScreen} />
-      <Stack.Screen name="Account" component={AccountScreen} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Viewed" component={ViewedScreen} />
-      <Stack.Screen name="Category" component={CategoryManagementScreen} />
-      <Stack.Screen name="Swipe" component={SwipeGesture} />
-
-
-    </Stack.Navigator>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
+        headerShown: false
+      }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="Search" component={SearchScreen} />
+        <Stack.Screen name="Detail" component={DetailScreen} />
+        <Stack.Screen name="BookMark" component={BookMarkScreen} />
+        <Stack.Screen name="Account" component={AccountScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Viewed" component={ViewedScreen} />
+        <Stack.Screen name="Category" component={CategoryManagementScreen} />
+        <Stack.Screen name="Swipe" component={SwipeGesture} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 const AppNavigator = () => {
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
+  const isLogin = useSelector((state: RootState) => state.newsReducer.isLogin)
+  useEffect(() => {
+    loadStorageData();
+  }, [isLogin]);
+
+  async function loadStorageData() {
+    try {
+      const accessToken = await getAccessToken()
+      if (accessToken) {
+        dispatch(changeStatusLogin(true))
+      } else {
+        dispatch(changeStatusLogin(false))
+      }
+    } catch (error) {
+      dispatch(changeStatusLogin(false))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getStack = () => {
+    if (loading) {
+      return <Loading />
+    }
+    if (isLogin) {
+      return <AppNavigationAuth />
+    } else if (isLogin === false) {
+      return <AppNavigation />
+    }
+
+  }
+
   return (
-    <AuthProvider>
-    </AuthProvider>
+    getStack()
   )
 }
 function App(): React.JSX.Element {

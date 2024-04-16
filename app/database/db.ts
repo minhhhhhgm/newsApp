@@ -11,10 +11,21 @@ import { UserModel } from './User';
 import { ViewedModel } from './Viewed';
 import { CategoryModel } from './Category';
 import { ItemCategory } from './Category';
+import { TestCategoryModel } from './Category';
+import { CategoryManagementModel } from './Category';
 /**
  * Creating Instance of Vasern DB.
  * Providing all the models that are imported above as Schema to the instance.
  */
 export default new Vasern({
-    schemas: [TodoModel, UserModel, BookmarkModel,ViewedModel, CategoryModel,ItemCategory]
+    schemas: [
+        TodoModel,
+        UserModel,
+        BookmarkModel,
+        ViewedModel,
+        CategoryModel,
+        ItemCategory,
+        TestCategoryModel,
+        CategoryManagementModel
+    ]
 });

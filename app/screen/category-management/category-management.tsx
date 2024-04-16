@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { auth } from '../../../App';
 import { Text } from '../../components/Text';
-import { ItemCategory } from '../../database';
+import { CategoryManagementModel, ItemCategory } from '../../database';
 import BackIcon from '../../icons/svg-component/backIcon';
 import EyeIcon from '../../icons/svg-component/eyeIcon';
 import EyeOffIcon from '../../icons/svg-component/eyeOffIcon';
@@ -19,16 +19,12 @@ import { changeCate } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { COLOR } from '../../utils/color';
 import { dataInterests } from '../../utils/homeAction';
-import Loading from '../../components/loading';
 
 
 export interface DataInterests {
     text: string,
-    isCheck?: boolean,
     endpoint: string,
-    mail: string,
     isShow: boolean | number,
-    id: string
 }
 
 interface ICategory {
@@ -40,45 +36,10 @@ interface ICategory {
 
 const CategoryManagementScreen = () => {
     const insets = useSafeAreaInsets();
-    // const dataInterest = [
-    //     {
-    //         text: 'All',
-    //         endpoint: 'tin-moi-nhat'
-    //     },
-    //     {
-    //         text: 'World News',
-    //         endpoint: 'the-gioi'
-
-    //     },
-    //     {
-    //         text: 'Politics',
-    //         endpoint: 'thoi-su'
-    //     },
-    //     {
-    //         text: 'Technology',
-    //         endpoint: 'khoa-hoc'
-    //     },
-    //     {
-    //         text: 'Science',
-    //         endpoint: 'so-hoa'
-    //     },
-    //     {
-    //         text: 'Business',
-    //         endpoint: 'kinh-doanh'
-    //     },
-    //     {
-    //         text: 'Entertainment',
-    //         endpoint: 'giai-tri'
-    //     },
-    //     {
-    //         text: 'Food',
-    //         endpoint: 'doi-song'
-    //     },
-    // ];
     const mail = useSelector((state: RootState) => state.newsReducer.mail)
-    // const dataInterestss = dataInterests(mail)
+    const news = useSelector((state: RootState) => state.newsReducer.newsName)
+
     const [data, setData] = useState<DataInterests[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
 
     const dispatch = useDispatch()
     const swipeableRef = useRef<Swipeable[]>([])
@@ -91,15 +52,22 @@ const CategoryManagementScreen = () => {
 
     const getDataCategory = () => {
         setData([])
-        const data = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
-        if (data) {
+        const getData = CategoryManagementModel.get({ email: mail })
+
+        if (news == 'VnExpress') {
+            const data = JSON.parse(getData.vnExpress)
+            console.log(data);
+
             setData(data)
-            setLoading(false)
+        }
+        else {
+            const data = JSON.parse(getData.tuoiTre)
+            setData(data)
         }
     }
 
 
-    const updateCategory = (data: any) => {
+    const updateCategory = (data: DataInterests[]) => {
         const mail = auth.currentUser?.email as string
         ItemCategory.perform(function (db: any) {
             ItemCategory.data().forEach(function (item: ICategory) {
@@ -111,20 +79,15 @@ const CategoryManagementScreen = () => {
         saveToDatabase(data)
     }
 
-    const saveToDatabase = (dataC: any) => {
-        const mail = auth.currentUser?.email as string
-        const item1 = ItemCategory.get({ email: mail });
-        if (item1) {
-            return;
-        }
-        const filteredData = dataC.map((item: any) => {
-            const { id, ...rest } = item;
-            return rest;
+    const saveToDatabase = (dataC: DataInterests[]) => {
+        const filteredData = dataC.map((item) => {
+            // const { id, ...rest } = item;
+            // return rest;
         });
         ItemCategory.insert(filteredData);
         // dispatch(changeCate(nanoid()))
         // ItemCategory.onInsert(() => {
-            
+
         //     dispatch(changeCate(nanoid()))
         // })
         setTimeout(() => {
@@ -137,24 +100,24 @@ const CategoryManagementScreen = () => {
 
     const handleShowCategory = (item: DataInterests, index: number) => {
         ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ endpoint: item.endpoint });
+            const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
             db.update(newItem, { isShow: 0 })
             dispatch(changeCate(nanoid()))
         })
         swipeableRef.current?.[index].close()
-        const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
+        const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
         if (item1) {
             setData(item1)
         }
     }
     const handleHideCategory = (item: DataInterests, index: number) => {
         ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ endpoint: item.endpoint });
+            const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
             db.update(newItem, { isShow: 1 })
             dispatch(changeCate(nanoid()))
         })
         swipeableRef.current?.[index].close()
-        const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
+        const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
         if (item1) {
             setData(item1)
         }
@@ -164,12 +127,9 @@ const CategoryManagementScreen = () => {
             <View style={{ backgroundColor: COLOR.authorColor, justifyContent: 'center', paddingHorizontal: 30 }}>
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={() => handleHideCategory(item, index)}
-                >
-                     <EyeIcon width={20} height={20} />
-                   
+                    onPress={() => handleHideCategory(item, index)}>
+                    <EyeIcon width={20} height={20} />
                 </TouchableOpacity>
-
             </View>
         );
     };
@@ -187,43 +147,101 @@ const CategoryManagementScreen = () => {
                     activeOpacity={1}
                     onPress={() => handleShowCategory(item, index)}
                 >
-                     <EyeOffIcon />
+                    <EyeOffIcon />
                 </TouchableOpacity>
             </View>
         );
     };
 
-    // const swipeFromLeftOpen = (direction: any, item: DataInterests, index: number) => {
-    //     console.log(direction);
-    //     // if (direction == 'right') {
-    //     //     ItemCategory.perform(function (db: any) {
-    //     //         const newItem = ItemCategory.get({ id: item.id });
-    //     //         console.log('newItem', newItem);
-    //     //         db.update(newItem, { isShow: 0 })
-    //     //         console.log(newItem);
-    //     //         dispatch(changeCate(nanoid()))
+    const swipeFromLeftOpen = (direction: string, index: number) => {
+        const getData = CategoryManagementModel.get({ email: mail })
+        console.log(direction, index);
+        if (direction == 'right') {
+            const updatedArray = data.map((item, indexs) => {
+                if (indexs === index) {
+                    return { ...item, isShow: false };
+                }
+                return item;
+            });
+            const stringData = JSON.stringify(updatedArray)
+            if (news == 'VnExpress') {
+                const isUpdate = CategoryManagementModel.update(getData, { vnExpress: stringData })
+                if (isUpdate) {
+                    dispatch(changeCate(nanoid()))
+                }
+            } else {
+                const isUpdate = CategoryManagementModel.update(getData, { tuoiTre: stringData })
+                if (isUpdate) {
+                    dispatch(changeCate(nanoid()))
+                }
+            }
+            getDataCategory()
 
-    //     //     })
-    //     //     swipeableRef.current?.[index].close()
-    //     //     const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
-    //     //     if (item1) {
-    //     //         setData(item1)
-    //     //     }
-    //     // } else {
-    //     //     ItemCategory.perform(function (db: any) {
-    //     //         const newItem = ItemCategory.get({ id: item.id });
-    //     //         console.log('newItem', newItem);
-    //     //         db.update(newItem, { isShow: 1 })
-    //     //         console.log(newItem);
-    //     //         dispatch(changeCate(nanoid()))
+        } else {
+            const updatedArray = data.map((item, indexs) => {
+                if (indexs === index) {
+                    return { ...item, isShow: true };
+                }
+                return item;
+            });
+            const stringData = JSON.stringify(updatedArray)
+            if (news == 'VnExpress') {
+                const isUpdate = CategoryManagementModel.update(getData, { vnExpress: stringData })
+                if (isUpdate) {
+                    dispatch(changeCate(nanoid()))
+                }
+            } else {
+                const isUpdate = CategoryManagementModel.update(getData, { tuoiTre: stringData })
+                if (isUpdate) {
+                    dispatch(changeCate(nanoid()))
+                }
+            }
+            getDataCategory()
+        }
+        // if (direction == 'right') {
+        //     ItemCategory.perform(function (db: any) {
+        //         const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
+        //         db.update(newItem, { isShow: 0 })
+        //         dispatch(changeCate(nanoid()))
+        //     })
+        //     swipeableRef.current?.[index].close()
+        //     const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
+        //     if (item1) {
+        //         setData(item1)
+        //     }
+        // } if (direction == 'left') {
+        //     ItemCategory.perform(function (db: any) {
+        //         const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
+        //         db.update(newItem, { isShow: 1 })
+        //         dispatch(changeCate(nanoid()))
+        //     })
+        //     swipeableRef.current?.[index].close()
+        //     const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
+        //     if (item1) {
+        //         setData(item1)
+        //     }
+        // }
+    };
 
-    //     //     })
-    //     //     const item1 = ItemCategory.data().filter((item: any) => item.mail === mail);
-    //     //     if (item1) {
-    //     //         setData(item1)
-    //     //     }
-    //     // }
-    // };
+    const handleUpdatePositionCategory = (data: DataInterests[]) => {
+        const getData = CategoryManagementModel.get({ email: mail })
+        if (news == 'VnExpress') {
+            const stringData = JSON.stringify(data)
+            const isUpdate = CategoryManagementModel.update(getData, { vnExpress: stringData })
+            // console.log('isUpdate', isUpdate);
+            if (isUpdate) {
+                dispatch(changeCate(nanoid()))
+            }
+
+        }
+        else {
+            const stringData = JSON.stringify(data)
+            const isUpdate = CategoryManagementModel.update(getData, { tuoiTre: stringData })
+            if (isUpdate) {
+                dispatch(changeCate(nanoid()))
+            }
+        }
+    }
 
     const renderItem = ({ item, drag, isActive, getIndex }: RenderItemParams<DataInterests>) => {
         return (
@@ -236,11 +254,11 @@ const CategoryManagementScreen = () => {
                     }}
                     renderLeftActions={() => LeftSwipeActions(item, getIndex() as number)}
                     renderRightActions={() => rightSwipeActions(item, getIndex() as number)}
-                    // onSwipeableOpen={(direction) => { swipeFromLeftOpen(direction, item, getIndex() as number) }}
-                    >
+                    onSwipeableOpen={(direction) => { swipeFromLeftOpen(direction, getIndex() as number) }}
+                >
                     <TouchableOpacity
                         activeOpacity={1}
-                        style={{ backgroundColor: item.isShow == 0 ? '#EEEEEE' : 'white', marginHorizontal :5}}
+                        style={{ backgroundColor: !item.isShow ? '#EEEEEE' : 'white', marginHorizontal: 5 }}
                         onLongPress={drag}>
                         <View style={{
                             paddingHorizontal: 16,
@@ -256,7 +274,7 @@ const CategoryManagementScreen = () => {
                         <View
                             style={{
                                 height: 1,
-                                backgroundColor: !(item.isShow == 0) ? '#EEEEEE' : 'white',
+                                backgroundColor: (item.isShow) ? '#EEEEEE' : 'white',
                                 marginLeft: 16,
                                 marginTop: 20,
                                 marginBottom: 25
@@ -269,7 +287,6 @@ const CategoryManagementScreen = () => {
     };
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>
-            <Loading isVisible={loading}/>
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                     style={{ marginTop: 20, marginLeft: 10 }}
@@ -278,19 +295,28 @@ const CategoryManagementScreen = () => {
                     <BackIcon />
                 </TouchableOpacity>
                 <Text
-                    text='Interests'
+                    text='category'
                     style={styles.headerText}
                 />
             </View>
-            <DraggableFlatList
-                data={data}
-                onDragEnd={({ data }) => {
-                    setData(data)
-                    updateCategory(data)
-                }}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-            />
+            <View style={{
+                flex: 1
+            }}>
+
+                <DraggableFlatList
+                    data={data}
+                    onDragEnd={({ data }) => {
+                        console.log('data update ===', data);
+
+                        setData(data)
+                        // updateCategory(data)
+                        handleUpdatePositionCategory(data)
+                    }}
+                    keyExtractor={(item) => item.text}
+                    renderItem={renderItem}
+                />
+            </View>
+
         </View>
     )
 }

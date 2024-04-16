@@ -17,3 +17,23 @@ export class CategoryModel {
         email: 'string'
     }
 }
+
+
+export class TestCategoryModel {
+
+    name = "TestCategoryModel";
+    props = {
+        listCategory: 'string',
+        email: 'string'
+    }
+}
+
+export class CategoryManagementModel {
+
+    name = "CategoryManagementModel";
+    props = {
+        vnExpress: 'string',
+        tuoiTre: 'string',
+        email: 'string'
+    }
+}
