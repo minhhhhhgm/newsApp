@@ -20,13 +20,14 @@ import SearchScreen from './app/screen/search/search-screen';
 import SignInScreen from './app/screen/sign-in/sign-in-screen';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import ViewedScreen from './app/screen/viewed/viewed-screen';
-import { addMail, changeStatusLogin } from './app/store/newsSlice';
+import { addMail, changeNews, changeStatusLogin } from './app/store/newsSlice';
 import { RootState, store } from './app/store/store';
-import { getAccessToken, getEmailApp, getLanguage } from './app/utils/storage';
+import { getAccessToken, getEmailApp, getLanguage, getNews } from './app/utils/storage';
 import SwipeGesture from './app/screen/category-management/swipe-screen';
 import { useTranslation } from 'react-i18next';
 import Loading from "./app/components/loading";
 import SettingScreen from "./app/screen/setting/setting-screen";
+import VasernDB from './app/database/db';
 
 export type ParamsList = {
   Detail: {
@@ -60,8 +61,8 @@ const Stack = createNativeStackNavigator<ParamsList>()
 
 export const auth = FirebaseAuth
 LogBox.ignoreAllLogs();
-Bookmark.data()
-
+// Bookmark.data()
+VasernDB
 
 
 
@@ -82,10 +83,10 @@ export const AppNavigation = () => {
 
 export const SettingStack = () => {
   return (
-    <Stack.Navigator  screenOptions={{
+    <Stack.Navigator screenOptions={{
       headerShown: false
     }}>
-      <Stack.Screen name="About" component={SettingScreen} />
+      <Stack.Screen name="Setting" component={SettingScreen} />
       <Stack.Screen name="Category" component={CategoryManagementScreen} />
     </Stack.Navigator>
   )
@@ -159,6 +160,16 @@ function App(): React.JSX.Element {
   const handleGetEmailAndSetLanguage = async () => {
     const mail = await getEmailApp()
     const lang = await getLanguage()
+    const news = await getNews()
+    console.log('=============', news);
+    if(news){
+      if (news == 'VnExpress') {
+        store.dispatch(changeNews('VnExpress'))
+      }else{
+        store.dispatch(changeNews('tuoitre'))
+      }
+    }
+    
     if (mail) {
       store.dispatch(addMail(mail))
     }

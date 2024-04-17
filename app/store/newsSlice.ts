@@ -7,7 +7,9 @@ export interface CounterState {
     isLogin: boolean,
     newsName: string,
     vnExpress : [],
-    tuoiTre : []
+    tuoiTre : [],
+    removeBookmark : string,
+    domain: string
 }
 
 const initialState: CounterState = {
@@ -15,9 +17,11 @@ const initialState: CounterState = {
     mail: '',
     changeCategory: '',
     isLogin: false,
-    newsName: 'VnExpress',
+    newsName: '',
     vnExpress : [],
-    tuoiTre : []
+    tuoiTre : [],
+    removeBookmark:'',
+    domain : ''
 }
 
 export const newsSlice = createSlice({
@@ -44,16 +48,25 @@ export const newsSlice = createSlice({
         },
         changeNews: (state, actions) => {
             const name = actions.payload
+            if(name =='VnExpress'){
+                state.domain = 'vnexpress.net'
+            }else{
+                state.domain = 'tuoitre.vn'
+            }
             state.newsName = name
         },
         setVnExpress: (state, actions) => {
             const data = actions.payload
             state.vnExpress = data
         },
+        removeBookmarkApp: (state, actions) => {
+            const bookmark = actions.payload
+            state.removeBookmark = bookmark
+        },
         
     },
 })
 
-export const { addNews, addMail, changeCate, changeStatusLogin, changeNews,setVnExpress } = newsSlice.actions
+export const { addNews, addMail, changeCate, changeStatusLogin, changeNews,setVnExpress ,removeBookmarkApp} = newsSlice.actions
 
 export default newsSlice.reducer

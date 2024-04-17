@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { auth } from '../../../../App';
 import { Text } from '../../../components/Text';
@@ -9,6 +9,9 @@ import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
 import moment from 'moment';
 import { Bookmark } from '../../../database';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { useIsFocused } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
@@ -29,6 +32,7 @@ interface IItemNews {
 
 export const ItemNews = (props: IItemNews) => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+    const [showBookmarked, setShowBookmarked] = React.useState(undefined);
     const newRef = useRef<TouchableOpacity>(null);
     const [isVisible, setIsVisible] = useState({
         id: 0,
@@ -52,20 +56,37 @@ export const ItemNews = (props: IItemNews) => {
     // console.log('render');
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
+    const isFocused = useIsFocused()
+    const isExistItem = Bookmark.get({ title: title, email: email });
+    const check = useCallback(() => {
+        const isBookmarked = Bookmark.get({ title: title, email: email });
+        setShowBookmarked(isBookmarked)
+    }, [title])
+    // Bookmark.onInsert(()=>{
+            //     console.log('Bookmark.onInsert');
+                
+            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            //     setData(data)
+            // })
+    useEffect(() => {
+        check()
+    }, [isBookmark, isFocused])
+
+
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
-            // console.log(x, y, 'height -', height, tabBarHeight, height - tabBarHeight - 98);
             setOffset({ x, y });
         })
         setIsVisible({
             id: id,
             visible: true
         })
-        const item1 =  Bookmark.get({ title: title, email: email });
+        const item1 = Bookmark.get({ title: title, email: email });
         console.log('ITEM', item1);
         if (item1) {
             setIsBookmark(true)
-        }else{
+        } else {
             setIsBookmark(false)
         }
     }
@@ -89,9 +110,19 @@ export const ItemNews = (props: IItemNews) => {
                         style={styles.textTitle}>
                         {title}
                     </TextRn>
-                    <TextRn style={styles.textAuthor}>
-                        {author}
-                    </TextRn>
+                    <View style={{
+                        flexDirection: 'row',
+                        flex: 2,
+                        justifyContent: 'space-between'
+                    }}>
+                        <TextRn style={styles.textAuthor}>
+                            {author}
+                        </TextRn>
+                        {
+                            (isExistItem || showBookmarked) && <BookMarkIcon width={15} height={15} fill={'#180E19'} />
+                        }
+
+                    </View>
                     <View style={styles.rowContent}>
                         <View style={styles.viewRowContent}>
                             <Text text={titleNews} style={styles.titleNews} />
@@ -164,18 +195,25 @@ export const ItemNews = (props: IItemNews) => {
                                                 onPress={
                                                     isRemoveBookMark ? handleRemoveBookmark :
                                                         () => {
+                                                            console.log('time', time);
+                                                            
                                                             const newStr = time?.replace(/GMT\+\d+/, "")
                                                             const formattedTime = moment(newStr).format('YYYY-MM-DD');
-                                                            handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
+                                                            const isInsert = handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
+                                                            if (isInsert) {
+                                                                setIsBookmark(true)
+                                                            }
+                                                            handleToggleVisible(-1)
                                                         }
                                                 }
                                                 style={{
                                                     flexDirection: 'row',
                                                     marginTop: isRemoveBookMark ? 5 : 10,
                                                     marginLeft: 8,
+                                                    paddingRight: 20
                                                 }}>
                                                 <View style={{ justifyContent: 'center' }}>
-                                                   {isBookmark ? <BookMarkIcon fill={ '#180E19'} /> : <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />}
+                                                    {isBookmark ? <BookMarkIcon fill={'#180E19'} /> : <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />}
                                                 </View>
                                                 <TextRn
                                                     style={{
@@ -230,7 +268,7 @@ const styles = StyleSheet.create({
         color: COLOR.focusColor
     },
     textAuthor: {
-        flex: 2,
+
         fontWeight: '500',
         fontFamily: 'SF Pro',
         color: COLOR.authorColor
@@ -264,7 +302,7 @@ const styles = StyleSheet.create({
     },
     viewPopOver: {
         backgroundColor: COLOR.backgroundColor,
-        width: 121,
+        // width: 121,
         height: 78,
         shadowColor: COLOR.black,
         shadowOffset: { width: -2, height: 4 },
@@ -276,6 +314,7 @@ const styles = StyleSheet.create({
         // bottom: -55,
         zIndex: 10,
         right: 15,
+
     },
     popOverLine: {
         height: 1,

@@ -12,155 +12,106 @@ import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
 import { Category, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
-import { getEmailApp } from '../../utils/storage';
+import { getEmailApp, getNews, setNews } from '../../utils/storage';
 import { extractContentTuoiTre } from '../../utils/validate';
 import { Header } from './component/header';
 import { ItemNews } from './component/item-news';
 const { width } = Dimensions.get('window')
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 const HomeScreen = () => {
+
+
     const navigation = useNavigation<NavigationProps>()
     const [indexItem, setIndexItem] = useState(0)
     const [titleNews, setTitleNews] = useState('forYou')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
-    const [domain, setDomain] = useState('vnexpress.net')
+    const [domain, setDomain] = useState('')
     const [endpoint, setEndpoint] = useState('')
     const [refresh, setRefresh] = useState(false)
-    const [newsName, setNewsName] = useState('VnExpress')
+    const [newsName, setNewsName] = useState('')
     const [dataCategory, setDataCategory] = useState<Category[]>([])
     const dispatch = useDispatch()
     const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
     const textRef = useRef<string>('')
-
+    const news = useSelector((state: RootState) => state.newsReducer.newsName)
+    const domainA = useSelector((state: RootState) => state.newsReducer.domain)
     // useEffect(() => {
     //     getDataCategory()
     // }, [domain])
     useEffect(() => {
         handleGetDataWhenCategoryChange()
     }, [cate, domain])
-
-
-    const getDataCategory = async () => {
-        setFeedItems([])
-        // ItemCategory.onChange(() => {
-        //     ItemCategory.perform(async function (db: any) {
-        //         const mail = await getEmailApp()
-        //         console.log('----', ItemCategory.data());
-        //         setTimeout(() => {
-        //             const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
-        //             if (data) {
-        //                 console.log('data-origin', data);
-        //                 const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-        //                 console.log('dataFilter', dataFilter);
-        //                 setDataCategory(dataFilter)
-        //                 handleGetDataByTitle(dataFilter[0].endpoint)
-        //                 setIndexItem(0)
-        //                 setTitleNews(dataFilter[0].text)
-        //             }
-        //         }, 100);
-        //     })
-        // })
-        // ItemCategory.perform(async function (db: any) {
-        //     const mail = await getEmailApp()
-        //     console.log('mail', mail);
-        //     const dataC = ItemCategory.data()
-        //     console.log('dataC==',dataC);
-        //     const data = ItemCategory.data().filter((item: Category) => item.mail === mail)
-        //     if (data) {
-        //         console.log('data==',data);
-
-        //         const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-        //         const firstItem = dataFilter.find((item: Category) => true);
-        //         console.log(firstItem);
-
-        //         setDataCategory(dataFilter)
-        //         await handleGetDataByTitle(firstItem.endpoint)
-        //         setIndexItem(0)
-        //         setTitleNews(firstItem.text)
-        //     }
-        // })
-        const mail = await getEmailApp()
-        console.log('mail', mail);
-        const getData = CategoryManagementModel.get({ email: mail })
-        // CategoryManagementModel.update(getData,{listCategory:''})
-
-        // const listCategory = JSON.parse(getData.listCategory)
-        // console.log('Data==== ', getData);
-        // console.log('HERE', CategoryManagementModel.get({ email: mail, tuoiTre: 'the-gioi' }));
-
-        if (newsName === 'VnExpress') {
-            const data = JSON.parse(getData.vnExpress)
-            // console.log('data ==', getData);
-
-            setDataCategory(data)
-            const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-            const firstItem = dataFilter.find((item: Category) => true);
-            setDataCategory(dataFilter)
-            await handleGetDataByTitle(firstItem.endpoint)
-            textRef.current = firstItem.text
-            setIndexItem(0)
-            setTitleNews(firstItem.text)
-
-
-        } else {
-            const data = JSON.parse(getData.tuoiTre)
-            setDataCategory(data)
-            const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-            const firstItem = dataFilter.find((item: Category) => true);
-            setDataCategory(dataFilter)
-            await handleGetDataByTitle(firstItem.endpoint)
-            textRef.current = firstItem.text
-            setIndexItem(0)
-            setTitleNews(firstItem.text)
-
+    useEffect(() => {
+        console.log('RUn', news);
+        if (news) {
+            if (news == 'VnExpress') {
+                handleChangeVnE()
+            } else {
+                handleChangeTt()
+            }
         }
 
+    }, [news])
+    useEffect(() => {
+        getNewsApp()
+    }, [newsName])
+    const getNewsApp = async () => {
+        const newsName = await getNews()
+        console.log('NEWSSSSS', newsName);
 
-
-
-        // ItemCategory.onLoaded(async () => {
-        //     setTimeout(async () => {
-        //         const dataC = await ItemCategory.data()
-        //         console.log('dataC==', dataC);
-        //         const data = await ItemCategory.data().filter((item: Category) => item.mail === mail)
-        //         if (data) {
-        //             console.log('data==', data);
-        //             const dataFilter = data.filter((item: Category) => item.isShow == true || item.isShow == 1)
-        //             const firstItem = dataFilter.find((item: Category) => true);
-        //             setDataCategory(dataFilter)
-        //             await handleGetDataByTitle(firstItem.endpoint)
-        //             setIndexItem(0)
-        //             setTitleNews(firstItem.text)
-        //         }
-        //     }, 100);
-
-        // })
-
+        setNewsName(newsName)
     }
     const handleGetDataWhenCategoryChange = async () => {
         const mail = await getEmailApp();
+        const newsName = await getNews()
+        console.log('newsName', newsName);
+
         let newsData;
         let dataFilter;
         let firstItem;
         if (newsName === 'VnExpress') {
+
             newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).vnExpress);
-            dispatch(setVnExpress(newsData))
+            console.log('VnExpress Data', newsData);
         } else {
+
             newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).tuoiTre);
+            console.log('TT Data', newsData);
         }
         dataFilter = newsData.filter((item: Category) => item.isShow);
         firstItem = dataFilter.find(() => true);
         const isExistItem = dataFilter.find((item: Category) => item.text === textRef.current);
         if (isExistItem === undefined) {
-            await handleGetDataByTitle(firstItem.endpoint);
-            textRef.current = firstItem.text;
-            setIndexItem(0);
-            setTitleNews(firstItem.text);
+            if (newsName == 'VnExpress') {
+                await handleGetDataByTitle(firstItem.endpoint, 'vnexpress.net');
+                textRef.current = firstItem.text;
+                setIndexItem(0);
+                setTitleNews(firstItem.text);
+                setDomain('vnexpress.net')
+                setEndpoint(firstItem.endpoint)
+            } else {
+                await handleGetDataByTitle(firstItem.endpoint, 'tuoitre.vn');
+                textRef.current = firstItem.text;
+                setIndexItem(0);
+                setTitleNews(firstItem.text);
+                setDomain('tuoitre.vn')
+                setEndpoint(firstItem.endpoint)
+            }
+
         }
         setDataCategory(dataFilter);
     };
 
-    const handleGetDataByTitle = async (endpoint: string) => {
+    const handleGetDataByTitleTest = async (endpoint: string) => {
+        setFeedItems([])
+        try {
+            const parsedItems = await getDataRssByTitle(domain, endpoint)
+            setFeedItems(parsedItems);
+        } catch (error) {
+            console.error('Error fetching RSS feed:', error);
+        }
+    }
+    const handleGetDataByTitle = async (endpoint: string, domain: string) => {
         setFeedItems([])
         try {
             const parsedItems = await getDataRssByTitle(domain, endpoint)
@@ -170,7 +121,7 @@ const HomeScreen = () => {
         }
     }
     const handleRefresh = async () => {
-        await handleGetDataByTitle(endpoint)
+        await handleGetDataByTitle(endpoint, domain)
     }
 
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
@@ -180,24 +131,37 @@ const HomeScreen = () => {
         handleSaveHistory(type, title, author, formattedTime, url, image, mail)
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
     }
-    const handleChangeVnE = () => {
-        setDataCategory([])
-        setNewsName('VnExpress');
+    const handleChangeVnE = async () => {
+        // setDataCategory([])
+        console.log(news);
+        if (news == 'VnExpress')
+            return
+        else
+            setNewsName('VnExpress')
         setDomain('vnexpress.net')
         setIndexItem(0)
         setTitleNews('forYou')
         dispatch(changeNews('VnExpress'))
-        textRef.current = ''
+        !(newsName == 'VnExpress') ? textRef.current = '' : null
+        !(newsName == 'VnExpress') ? setDataCategory([]) : null
+        await setNews('VnExpress')
+        // setDataCategory([])
     }
 
-    const handleChangeTt = () => {
-        setDataCategory([])
-        setNewsName('Tuổi Trẻ');
+    const handleChangeTt = async () => {
+        console.log(news);
+        if (news == 'tuoitre')
+            return
+        else
+            setNewsName('Tuổi Trẻ');
         setDomain('tuoitre.vn')
         setIndexItem(0)
         setTitleNews('forYou')
         dispatch(changeNews('tuoitre'))
         textRef.current = ''
+        newsName == 'Tuổi Trẻ' ? textRef.current = '' : null
+        newsName == 'Tuổi Trẻ' ? null : setDataCategory([])
+        await setNews('Tuổi Trẻ')
     }
 
     const renderItem = ({ item, index }: { item: NewsType, index: number }) => {
@@ -211,7 +175,7 @@ const HomeScreen = () => {
         const relativeTime = moment(newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate), 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         const title = newsName === 'VnExpress' ? item.title : extractContentTuoiTre(item.title)
         const link = newsName === 'VnExpress' ? item.link : extractContentTuoiTre(item.link)
-        const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'        
+        const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
         return (
             <ItemNews
                 index={index}
@@ -250,7 +214,7 @@ const HomeScreen = () => {
                                     onPress={() => {
                                         setIndexItem(index);
                                         setTitleNews(item.text);
-                                        handleGetDataByTitle(item.endpoint);
+                                        handleGetDataByTitle(item.endpoint, domain);
                                         setEndpoint(item.endpoint)
                                         textRef.current = item.text
                                     }}

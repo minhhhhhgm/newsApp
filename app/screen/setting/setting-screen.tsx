@@ -15,7 +15,7 @@ import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR } from '../../utils/color';
 import { removeAccessToken, setLanguage } from '../../utils/storage';
 import { useDispatch } from 'react-redux';
-import { changeStatusLogin } from '../../store/newsSlice';
+import { changeNews, changeStatusLogin } from '../../store/newsSlice';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
@@ -56,6 +56,7 @@ const SettingScreen = () => {
             name: 'logOut',
             onPress: async () => {
                 await removeAccessToken()
+                dispatch(changeNews('VnExpress'))
                 // navigation.replace('SignIn')
                 dispatch(changeStatusLogin(false))
             },

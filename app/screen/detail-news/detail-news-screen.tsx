@@ -7,7 +7,7 @@ import Share from "react-native-share";
 import Toast from 'react-native-simple-toast';
 import WebView from 'react-native-webview';
 import { ParamsList } from '../../../App';
-import { Bookmark } from '../../database';
+import { Bookmark, Viewed } from '../../database';
 import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
@@ -25,6 +25,12 @@ const DetailScreen = () => {
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
     const { link, author, time, imageUrl, type, title, email } = route.params;
     useEffect(() => {
+        const isViewed = Viewed.get({ title: title, email: email });
+        if (isViewed) {
+            const now = moment();
+            const formattedTime = moment(now).format('YYYY-MM-DD HH:mm:ss');
+            Viewed.update(isViewed, { timeWatched: formattedTime })
+        }
         handleCheckIsSave()
     }, [])
 
@@ -45,6 +51,7 @@ const DetailScreen = () => {
         console.log('ITEM', item1);
 
         if (item1) {
+           
             setIsSaveBookMark(true)
             return item1;
         } else {
@@ -52,7 +59,7 @@ const DetailScreen = () => {
         }
     }
     const onSave = async () => {
-        
+
         handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string)
         setIsSaveBookMark(true)
     }

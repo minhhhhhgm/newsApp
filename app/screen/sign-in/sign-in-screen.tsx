@@ -16,7 +16,7 @@ import LineIcon from '../../icons/svg-component/lineIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
 import { COLOR, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
-import { setAccessToken, setEmailApp } from '../../utils/storage';
+import { setAccessToken, setEmailApp, setNews } from '../../utils/storage';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
 import { } from '../../i18n/en';
@@ -49,6 +49,7 @@ const SignInScreen = () => {
         console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
         await setEmailApp(email)
+        await setNews('VnExpress')
         dispatch(addMail(email))
         handleSaveCategory(dataVnE, dataTt, email)
         dispatch(changeStatusLogin(true))

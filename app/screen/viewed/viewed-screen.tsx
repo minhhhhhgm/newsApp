@@ -35,6 +35,21 @@ const ViewedScreen = () => {
                 return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
             });
             setData(data)
+            // Viewed.onLoaded(() => {
+            //     const data = Viewed.filter((item: IViewed) => item.email === email).data();
+            //     data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
+            //         return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
+            //     });
+            //     setData(data)
+            // })
+            // Viewed.onInsert(() => {
+            //     const data = Viewed.filter((item: IViewed) => item.email === email).data();
+            //     data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
+            //         return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
+            //     });
+            //     setData(data)
+            // })
+
         }
     }
 

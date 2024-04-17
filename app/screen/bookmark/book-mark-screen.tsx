@@ -12,7 +12,7 @@ import { ItemNews } from '../home/component/item-news';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import BellIcon from '../../icons/svg-component/BellIcon';
-import { changeNews } from '../../store/newsSlice';
+import { changeNews, removeBookmarkApp } from '../../store/newsSlice';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -38,14 +38,14 @@ const BookMarkScreen = () => {
     const email = useSelector((state: RootState) => state.newsReducer.mail)
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
     const dispatch = useDispatch()
-
-    console.log(news);
-
     const ref = useRef<TouchableOpacity>(null);
-
     useEffect(() => {
-        getdataByType()
-    }, [isFocused, news])
+        // getdataByType()
+        // Bookmark.removeAllRecords()
+        const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+        const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+        setData(data)
+    }, [isFocused, type, news])
     const onPress = () => {
         setIsVisible(!isVisible)
         ref.current?.measureInWindow((x, y) => {
@@ -56,22 +56,47 @@ const BookMarkScreen = () => {
 
     const getdataByType = () => {
         if (email) {
+            // Bookmark.removeAllRecords()
+            // Bookmark.onLoaded(()=>{
+            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            //     setData(data)
+            // })
+            // Bookmark.onInsert(()=>{
+            //     console.log('Bookmark.onInsert');
+
+            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            //     setData(data)
+            // })
+
             const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            console.log(data);
-            
             setData(data)
+            // Bookmark.onChange(()=>{
+            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            //     setData(data)
+            // })
         }
     }
     const removeBookmark = (id: string, type: string, index: number) => {
         const item1 = Bookmark.get({ id: id });
+        console.log(id);
+
+        
+
         Bookmark.remove(item1)
         // setTimeout(() => {
         //     getdataByType(type)
         // }, 100);
-        Bookmark.onChange(() => {
+        // const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+        // const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+        // setData(data)
+        Bookmark.onRemove(() => {
             getdataByType()
         })
+        // dispatch(removeBookmarkApp(id))
     }
 
     const handleNavigate = async (title: string, link: string, author: string, time: string, image: string, type: string) => {
@@ -154,7 +179,9 @@ const BookMarkScreen = () => {
                             }}>
                                 <TouchableOpacity
                                     onPress={() => {
+                                        setIsVisible(false)
                                         dispatch(changeNews('VnExpress'))
+                                        setType('VnExpress')
                                     }}
                                     style={styles.btnVnE}>
                                     <TextRn style={styles.textVnE}>VnExpress</TextRn>
@@ -164,7 +191,9 @@ const BookMarkScreen = () => {
                                 <View>
                                     <TouchableOpacity
                                         onPress={() => {
+                                            setIsVisible(false)
                                             dispatch(changeNews('tuoitre'))
+                                            setType('tuoitre')
                                         }}
                                         style={styles.btnTt}>
                                         <TextRn

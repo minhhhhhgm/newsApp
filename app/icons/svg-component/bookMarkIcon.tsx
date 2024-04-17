@@ -1,9 +1,9 @@
 import * as React from "react";
 import Svg, { G, Path } from "react-native-svg";
-const BookMarkIcon = (props : any) => (
+const BookMarkIcon = (props: any) => (
   <Svg
-    width={21}
-    height={20}
+    width={props.width ? props.width : 21}
+    height={props.height ? props.height : 20}
     viewBox="0 0 21 20"
     fill={props.fill ? props.fill : "none"}
     xmlns="http://www.w3.org/2000/svg"
@@ -20,6 +20,6 @@ const BookMarkIcon = (props : any) => (
         strokeLinejoin="round"
       />
     </G>
-  </Svg>
+  </Svg >
 );
 export default BookMarkIcon;

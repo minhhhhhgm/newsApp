@@ -7,9 +7,9 @@ import { auth } from "../../App";
 import moment from "moment";
 
 
-export const handleSaveBookMark = async (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
+export const handleSaveBookMark = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
     console.log('OK');
-    const item1 = await Bookmark.get({ title: title, email: email });
+    const item1 = Bookmark.get({ title: title, email: email });
     if (item1) {
 
         Toast.show('The post has been saved', Toast.LONG);
@@ -24,8 +24,10 @@ export const handleSaveBookMark = async (type: string, title: string, author: st
         url: url,
         email: email
     }
-    Bookmark.insert(params)
+    const isInsert = Bookmark.insert(params)
     Toast.show('Saved to bookmark', Toast.SHORT);
+    return isInsert
+
 }
 
 export type Category = {

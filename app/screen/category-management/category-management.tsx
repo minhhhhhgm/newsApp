@@ -51,18 +51,18 @@ const CategoryManagementScreen = () => {
     }, [])
 
     const getDataCategory = () => {
-        setData([])
+        // setData([])
         const getData = CategoryManagementModel.get({ email: mail })
-
+        console.log(news);
+        
         if (news == 'VnExpress') {
             const data = JSON.parse(getData.vnExpress)
             console.log(data);
-
             setData(data)
         }
         else {
             const data = JSON.parse(getData.tuoiTre)
-            setData(data)
+            setData(data)            
         }
     }
 
@@ -99,28 +99,30 @@ const CategoryManagementScreen = () => {
     }
 
     const handleShowCategory = (item: DataInterests, index: number) => {
-        ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
-            db.update(newItem, { isShow: 0 })
-            dispatch(changeCate(nanoid()))
-        })
+        // ItemCategory.perform(function (db: any) {
+        //     const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
+        //     db.update(newItem, { isShow: 0 })
+        //     dispatch(changeCate(nanoid()))
+        // })
         swipeableRef.current?.[index].close()
-        const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
-        if (item1) {
-            setData(item1)
-        }
+        // const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
+        // if (item1) {
+        //     setData(item1)
+        // }
     }
     const handleHideCategory = (item: DataInterests, index: number) => {
-        ItemCategory.perform(function (db: any) {
-            const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
-            db.update(newItem, { isShow: 1 })
-            dispatch(changeCate(nanoid()))
-        })
+        // ItemCategory.perform(function (db: any) {
+        //     const newItem = ItemCategory.get({ endpoint: item.endpoint, mail: mail });
+        //     db.update(newItem, { isShow: 1 })
+        //     dispatch(changeCate(nanoid()))
+        // })
+        console.log('OKOKOKs');
+
         swipeableRef.current?.[index].close()
-        const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
-        if (item1) {
-            setData(item1)
-        }
+        // const item1 = ItemCategory.data().filter((item: ICategory) => item.mail === mail);
+        // if (item1) {
+        //     setData(item1)
+        // }
     }
     const LeftSwipeActions = (item: DataInterests, index: number) => {
         return (
@@ -167,16 +169,17 @@ const CategoryManagementScreen = () => {
             if (news == 'VnExpress') {
                 const isUpdate = CategoryManagementModel.update(getData, { vnExpress: stringData })
                 if (isUpdate) {
+                    swipeableRef.current?.[index].close()
                     dispatch(changeCate(nanoid()))
                 }
             } else {
                 const isUpdate = CategoryManagementModel.update(getData, { tuoiTre: stringData })
                 if (isUpdate) {
+                    swipeableRef.current?.[index].close()
                     dispatch(changeCate(nanoid()))
                 }
             }
             getDataCategory()
-
         } else {
             const updatedArray = data.map((item, indexs) => {
                 if (indexs === index) {
@@ -188,11 +191,13 @@ const CategoryManagementScreen = () => {
             if (news == 'VnExpress') {
                 const isUpdate = CategoryManagementModel.update(getData, { vnExpress: stringData })
                 if (isUpdate) {
+                    swipeableRef.current?.[index].close()
                     dispatch(changeCate(nanoid()))
                 }
             } else {
                 const isUpdate = CategoryManagementModel.update(getData, { tuoiTre: stringData })
                 if (isUpdate) {
+                    swipeableRef.current?.[index].close()
                     dispatch(changeCate(nanoid()))
                 }
             }

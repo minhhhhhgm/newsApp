@@ -125,11 +125,11 @@ export async function getInterest() {
     }
 }
 
-export async function setNews(token: any) {
+export async function setNews(news: string) {
     try {
         await AsyncStorage.setItem(
             UserStatus.News,
-            JSON.stringify(token),
+            JSON.stringify(news),
         );
     } catch (err) {
         console.log(err);
