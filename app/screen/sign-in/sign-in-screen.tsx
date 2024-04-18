@@ -22,9 +22,10 @@ import { Righticon } from './component/eye-icon';
 import { } from '../../i18n/en';
 import Loading from '../../components/loading';
 import { Category } from '../../database';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addMail, changeStatusLogin } from '../../store/newsSlice';
 import { dataCategoryTuoiTre, dataCategoryVnEpress, handleSaveCategory } from '../../utils/categoryManagement';
+import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 
 const SignInScreen = () => {
@@ -36,6 +37,9 @@ const SignInScreen = () => {
   const [passwordError, setPasswordError] = useState('')
   const navigation = useNavigation<NavigationProps>()
   const [isLoading, setIsLoading] = useState(false)
+  const news = useSelector((state: RootState) => state.newsReducer.newsName)
+  console.log('news', news);
+  
   const dispatch = useDispatch()
   const { t } = useTranslation();
   // const dataInterest = dataInterests(email)

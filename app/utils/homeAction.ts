@@ -5,6 +5,9 @@ import { Bookmark, Category, ItemCategory, Viewed } from "../database";
 import { extractImageUrl, extractString } from "./validate";
 import { auth } from "../../App";
 import moment from "moment";
+import { store } from "../store/store";
+import { addBookmarkApp, addMail } from "../store/newsSlice";
+import { nanoid } from "@reduxjs/toolkit";
 
 
 export const handleSaveBookMark = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
@@ -25,6 +28,9 @@ export const handleSaveBookMark = (type: string, title: string, author: string, 
         email: email
     }
     const isInsert = Bookmark.insert(params)
+    if(isInsert){
+        store.dispatch(addBookmarkApp(nanoid()))
+    }
     Toast.show('Saved to bookmark', Toast.SHORT);
     return isInsert
 

@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import BellIcon from '../../icons/svg-component/BellIcon';
 import { changeNews, removeBookmarkApp } from '../../store/newsSlice';
+import { ItemNewsBookmark } from './component/item-news';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -37,15 +38,13 @@ const BookMarkScreen = () => {
     const [isVisible, setIsVisible] = useState(false)
     const email = useSelector((state: RootState) => state.newsReducer.mail)
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
+    const bookmarkChange = useSelector((state: RootState) => state.newsReducer.bookmark)
+
     const dispatch = useDispatch()
     const ref = useRef<TouchableOpacity>(null);
     useEffect(() => {
-        // getdataByType()
-        // Bookmark.removeAllRecords()
-        const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-        const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-        setData(data)
-    }, [isFocused, type, news])
+        getdataByType()
+    }, [isFocused, type, news, bookmarkChange])
     const onPress = () => {
         setIsVisible(!isVisible)
         ref.current?.measureInWindow((x, y) => {
@@ -73,6 +72,8 @@ const BookMarkScreen = () => {
             const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
             setData(data)
+            console.log('bookmarkChange', bookmarkChange, data, author);
+
             // Bookmark.onChange(()=>{
             //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
             //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
@@ -112,7 +113,7 @@ const BookMarkScreen = () => {
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
         const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');
         return (
-            <ItemNews
+            <ItemNewsBookmark
                 handleRemoveBookmark={() => { removeBookmark(item.id, item.type, index) }}
                 isRemoveBookMark
                 style={{

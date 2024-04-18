@@ -1,17 +1,15 @@
+import { useIsFocused } from '@react-navigation/native';
+import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { auth } from '../../../../App';
 import { Text } from '../../../components/Text';
+import { Bookmark } from '../../../database';
 import ShareIcon from '../../../icons/svg-component/ShareIcon';
 import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
-import moment from 'moment';
-import { Bookmark } from '../../../database';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/store';
-import { useIsFocused } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
@@ -30,7 +28,7 @@ interface IItemNews {
     handleRemoveBookmark?: () => void
 }
 
-export const ItemNews = (props: IItemNews) => {
+export const ItemNewsBookmark = (props: IItemNews) => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [showBookmarked, setShowBookmarked] = React.useState(undefined);
     const newRef = useRef<TouchableOpacity>(null);
@@ -38,7 +36,6 @@ export const ItemNews = (props: IItemNews) => {
         id: 0,
         visible: false
     })
-    const [isBookmark, setIsBookmark] = useState(false)
     const {
         index,
         handleNavigateDetailNews,
@@ -59,7 +56,7 @@ export const ItemNews = (props: IItemNews) => {
     const isFocused = useIsFocused()
     const isExistItem = Bookmark.get({ title: title, email: email });
     // const check = useCallback(() => {
-    //     // console.log("CheckHandle");
+    //     console.log("CheckHandle");
         
     //     const isBookmarked = Bookmark.get({ title: title, email: email });
     //     setShowBookmarked(isBookmarked)
@@ -84,13 +81,13 @@ export const ItemNews = (props: IItemNews) => {
             id: id,
             visible: true
         })
-        const item1 = Bookmark.get({ title: title, email: email });
-        console.log('ITEM', item1);
-        if (item1) {
-            setIsBookmark(true)
-        } else {
-            setIsBookmark(false)
-        }
+        // const item1 = Bookmark.get({ title: title, email: email });
+        // console.log('ITEM', item1);
+        // if (item1) {
+        //     setIsBookmark(true)
+        // } else {
+        //     setIsBookmark(false)
+        // }
     }
     return (
         <TouchableOpacity
@@ -202,9 +199,9 @@ export const ItemNews = (props: IItemNews) => {
                                                             const newStr = time?.replace(/GMT\+\d+/, "")
                                                             const formattedTime = moment(newStr).format('YYYY-MM-DD');
                                                             const isInsert = handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
-                                                            if (isInsert) {
-                                                                setIsBookmark(true)
-                                                            }
+                                                            // if (isInsert) {
+                                                            //     setIsBookmark(true)
+                                                            // }
                                                             handleToggleVisible(-1)
                                                         }
                                                 }
@@ -215,7 +212,7 @@ export const ItemNews = (props: IItemNews) => {
                                                     paddingRight: 20
                                                 }}>
                                                 <View style={{ justifyContent: 'center' }}>
-                                                    {isBookmark ? <BookMarkIcon fill={'#180E19'} /> : <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />}
+                                                    <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />
                                                 </View>
                                                 <TextRn
                                                     style={{

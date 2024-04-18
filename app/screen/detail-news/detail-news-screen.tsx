@@ -48,7 +48,7 @@ const DetailScreen = () => {
     }
     const handleCheckIsSave = async () => {
         const item1 = await Bookmark.get({ title: title, email: email });
-        console.log('ITEM', item1);
+        // console.log('ITEM', item1);
 
         if (item1) {
            

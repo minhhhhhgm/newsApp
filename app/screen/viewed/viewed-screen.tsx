@@ -1,8 +1,8 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { ParamsList, auth } from '../../../App';
 import { Text } from '../../components/Text';
 import { Viewed } from '../../database';
@@ -10,6 +10,7 @@ import { COLOR } from '../../utils/color';
 import { ItemNews } from '../home/component/item-news';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { ItemNewsBookmark } from '../bookmark/component/item-news';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 interface IViewed {
     type: string,
@@ -24,43 +25,39 @@ const ViewedScreen = () => {
 
     const navigation = useNavigation<NavigationProps>()
     const isFocused = useIsFocused()
-    const [data, setData] = useState([])
+    const [data, setData] = useState<IViewed[]>([])
+    // const [loading, setLoading] = useState<boolean>(true)
     const email = useSelector((state: RootState) => state.newsReducer.mail)
-    // console.log('email', email);
+
+    // console.log('loading', loading);
+    
     const getdata = () => {
-        if (email) {
-            // Viewed.removeAllRecords()
-            const data = Viewed.filter((item: IViewed) => item.email === email).data();
-            data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
+        // setLoading(true);
+        if (email && isFocused) {
+            const newData = Viewed.filter((item: IViewed) => item.email === email).data();
+            newData.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
                 return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
             });
-            setData(data)
-            // Viewed.onLoaded(() => {
-            //     const data = Viewed.filter((item: IViewed) => item.email === email).data();
-            //     data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
-            //         return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
-            //     });
-            //     setData(data)
-            // })
-            // Viewed.onInsert(() => {
-            //     const data = Viewed.filter((item: IViewed) => item.email === email).data();
-            //     data.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
-            //         return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
-            //     });
-            //     setData(data)
-            // })
-
+            // if (newData) {
+            //     setData(newData);
+            //     setLoading(false);
+            // }
+            const isDataChanged = JSON.stringify(newData) !== JSON.stringify(data);
+            if (isDataChanged) {
+                console.log('isDataChanged', isDataChanged);
+                // setLoading(true);
+                if (newData) {
+                    setData(newData);
+                    const isDataChanged = JSON.stringify(newData) !== JSON.stringify(data);
+                    if (isDataChanged){
+                        // setLoading(false)
+                    }
+                }
+            } else {
+                // setLoading(false);
+            }
         }
-    }
-
-    // const removeBookmark = async (id: string) => {
-    //     const item1 = await Viewed.get({ id: id });
-    //     await Viewed.remove(item1)
-    //     Viewed.onChange(() => {
-    //         console.log('DATA CHANGE');
-    //         getdata()
-    //     })
-    // }
+    };
 
     const handleNavigate = (title: string, link: string, author: string, time: string, image: string, type: string) => {
         navigation.navigate('Detail', { link, author, time, imageUrl: image, type, title, email })
@@ -76,8 +73,8 @@ const ViewedScreen = () => {
         // console.log(item);
 
         return (
-            <View style={{ marginTop: 25 }}>
-                <ItemNews
+            <View key={index} style={{ marginTop: 25 }}>
+                <ItemNewsBookmark
                     style={{
                         marginTop: 0
                     }}
@@ -103,7 +100,12 @@ const ViewedScreen = () => {
                 />
             </View>
             {
-                data && <FlatList
+                <FlatList
+                    // ListHeaderComponent={() => {
+                    //     return (
+                    //         // loading ? <ActivityIndicator size={'small'} /> : null
+                    //     )
+                    // }}
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
                     data={data}
