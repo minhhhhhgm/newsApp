@@ -1,8 +1,9 @@
+import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Share from "react-native-share";
 import Toast from 'react-native-simple-toast';
 import WebView from 'react-native-webview';
@@ -12,18 +13,18 @@ import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../utils/color';
-import type { RouteProp } from '@react-navigation/native';
 import { handleSaveBookMark } from '../../utils/homeAction';
-import moment from 'moment';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Detail'>
 
 
 const DetailScreen = () => {
-    const insets = useSafeAreaInsets();
     const navigation = useNavigation<NavigationProps>()
     const route = useRoute<RouteProp<ParamsList, 'Detail'>>();
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
     const { link, author, time, imageUrl, type, title, email } = route.params;
+
+    console.log('TIME', time);
+    
     useEffect(() => {
         const isViewed = Viewed.get({ title: title, email: email });
         if (isViewed) {
@@ -48,26 +49,23 @@ const DetailScreen = () => {
     }
     const handleCheckIsSave = async () => {
         const item1 = await Bookmark.get({ title: title, email: email });
-        // console.log('ITEM', item1);
-
         if (item1) {
-           
             setIsSaveBookMark(true)
-            return item1;
-        } else {
-            return null
         }
     }
-    const onSave = async () => {
+    const onSave = () => {
 
         handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string)
         setIsSaveBookMark(true)
     }
-    const onRemove = async () => {
-        const item1 = await Bookmark.get({ title: title });
-        await Bookmark.remove(item1)
-        setIsSaveBookMark(false)
-        Toast.show('The post has been remove', Toast.SHORT);
+    const onRemove = () => {
+        const item1 = Bookmark.get({ title: title });
+        const isRemove = Bookmark.remove(item1)
+        if (isRemove) {
+            setIsSaveBookMark(false)
+            Toast.show('The post has been remove', Toast.SHORT);
+        }
+
     }
     const Header = () => {
         return (

@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import moment from 'moment';
+import React, { useRef, useState } from 'react';
 import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { auth } from '../../../../App';
 import { Text } from '../../../components/Text';
+import { Bookmark } from '../../../database';
 import ShareIcon from '../../../icons/svg-component/ShareIcon';
 import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
 import { COLOR } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
-import moment from 'moment';
-import { Bookmark } from '../../../database';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/store';
-import { useIsFocused } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 interface IItemNews {
@@ -25,19 +23,14 @@ interface IItemNews {
     visible?: boolean,
     author: string,
     time?: string,
-    style?: ViewStyle;
-    isRemoveBookMark?: boolean,
-    handleRemoveBookmark?: () => void
+
 }
 
 export const ItemNews = (props: IItemNews) => {
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [showBookmarked, setShowBookmarked] = React.useState(undefined);
     const newRef = useRef<TouchableOpacity>(null);
-    const [isVisible, setIsVisible] = useState({
-        id: 0,
-        visible: false
-    })
+    const [isVisible, setIsVisible] = useState({ id: 0, visible: false })
     const [isBookmark, setIsBookmark] = useState(false)
     const {
         index,
@@ -49,61 +42,61 @@ export const ItemNews = (props: IItemNews) => {
         titleNews,
         author,
         time,
-        style,
-        isRemoveBookMark,
-        handleRemoveBookmark
     } = props
-    // console.log('render');
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
     const isFocused = useIsFocused()
     const isExistItem = Bookmark.get({ title: title, email: email });
     // const check = useCallback(() => {
-    //     // console.log("CheckHandle");
-        
     //     const isBookmarked = Bookmark.get({ title: title, email: email });
     //     setShowBookmarked(isBookmarked)
     // }, [title])
-    // Bookmark.onInsert(()=>{
-            //     console.log('Bookmark.onInsert');
-                
-            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            //     setData(data)
-            // })
     // useEffect(() => {
     //     check()
     // }, [isBookmark, isFocused])
+
 
 
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
             setOffset({ x, y });
         })
-        setIsVisible({
-            id: id,
-            visible: true
-        })
+        setIsVisible({ id: id, visible: true })
         const item1 = Bookmark.get({ title: title, email: email });
-        console.log('ITEM', item1);
         if (item1) {
             setIsBookmark(true)
         } else {
             setIsBookmark(false)
         }
     }
+    const onSaveBookMark = () => {
+        const newStr = time?.replace(/GMT\+\d+/, "+0700")
+        const formattedTime = moment(newStr).format('YYYY-MM-DD');
+        const isInsert = handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
+        if (isInsert) {
+            setIsBookmark(true)
+        }
+        handleToggleVisible(-1)
+    }
+    const handleRemove = () => {
+        const item = Bookmark.get({ title: title });
+        const isRemove = Bookmark.remove(item)
+        if (isRemove) {
+            setIsBookmark(false)
+        }
+        handleToggleVisible(-1)
+    }
     return (
         <TouchableOpacity
             activeOpacity={1}
             key={index}
-            style={[styles.viewItem, style]}
-            onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}
+            style={[styles.viewItem]}
+            onPress={handleNavigateDetailNews}
         >
-            <View
-                style={{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row' }}>
                 <Image
-                    source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
                     style={styles.imageItem}
+                    source={{ uri: imgSrc == '' ? defaultImage : imgSrc }}
                 />
                 <View
                     style={styles.viewContent}>
@@ -112,42 +105,30 @@ export const ItemNews = (props: IItemNews) => {
                         style={styles.textTitle}>
                         {title}
                     </TextRn>
-                    <View style={{
-                        flexDirection: 'row',
-                        flex: 2,
-                        justifyContent: 'space-between'
-                    }}>
+                    <View style={styles.viewAuthor}>
                         <TextRn style={styles.textAuthor}>
                             {author}
                         </TextRn>
                         {
                             (isExistItem || showBookmarked) && <BookMarkIcon width={15} height={15} fill={'#180E19'} />
                         }
-
                     </View>
                     <View style={styles.rowContent}>
                         <View style={styles.viewRowContent}>
                             <Text text={titleNews} style={styles.titleNews} />
                             <TextRn style={styles.bigDot}>⬤</TextRn>
-                            <TextRn numberOfLines={1}
-                                style={{
-                                    flex: 1,
-                                    color: COLOR.authorColor
-                                }}>{relativeTime}</TextRn>
+                            <TextRn
+                                numberOfLines={1}
+                                style={styles.time}>
+                                {relativeTime}
+                            </TextRn>
                         </View>
                         <TouchableOpacity
                             ref={newRef}
                             style={{ paddingHorizontal: 5, }}
-                            onPress={visible ? () => handleToggleVisible(-1) : () => handleToggleVisible(index)}
-                        >
-                            <TextRn
-                                style={{
-                                    fontSize: 5,
-                                    color: COLOR.focusColor,
-                                    marginTop: 7
-                                }}>●●●</TextRn>
+                            onPress={() => handleToggleVisible(index)}>
+                            <TextRn style={styles.threeDot}>●●●</TextRn>
                         </TouchableOpacity>
-                        {/* <SimplePopover link={link} item={item} saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc)} /> */}
                     </View>
                 </View>
             </View>
@@ -159,75 +140,39 @@ export const ItemNews = (props: IItemNews) => {
                         onRequestClose={() => handleToggleVisible(-1)}
                         transparent={true}
                     >
-                        <TouchableOpacity style={styles.main}
+                        <TouchableOpacity
+                            style={styles.main}
                             onPress={() => handleToggleVisible(-1)}
-                            activeOpacity={1}
-                        >
+                            activeOpacity={1}>
+
                             <View style={[styles.content, {
                                 top: offset.y > 580 ? 580 : offset.y + 10,
                                 left: offset.x + 20
                             }]}>
                                 <View
                                     style={[styles.viewPopOver]}>
-                                    <View style={{
-                                        justifyContent: 'center'
-                                    }}>
+                                    <View style={{ justifyContent: 'center' }}>
                                         <TouchableOpacity
-                                            // activeOpacity={1}
                                             onPress={() => shareImage(link)}
-                                            style={{
-                                                flexDirection: 'row',
-                                                paddingLeft: 10,
-                                                marginTop: 15,
-                                            }}>
+                                            style={styles.shareButton}>
                                             <ShareIcon />
-                                            <TextRn
-                                                style={{
-                                                    color: COLOR.focusColor,
-                                                    marginLeft: 10,
-                                                    fontSize: 12
-                                                }}
-                                            >Share</TextRn>
+                                            <TextRn style={styles.textShare}>Share</TextRn>
                                         </TouchableOpacity>
                                         <View style={styles.popOverLine}>
                                         </View>
                                         <View>
                                             <TouchableOpacity
-                                                // activeOpacity={1}
-                                                onPress={
-                                                    isRemoveBookMark ? handleRemoveBookmark :
-                                                        () => {
-                                                            console.log('time', time);
-                                                            
-                                                            const newStr = time?.replace(/GMT\+\d+/, "")
-                                                            const formattedTime = moment(newStr).format('YYYY-MM-DD');
-                                                            const isInsert = handleSaveBookMark(titleNews, title, author, formattedTime as string, link, imgSrc, email as string)
-                                                            if (isInsert) {
-                                                                setIsBookmark(true)
-                                                            }
-                                                            handleToggleVisible(-1)
-                                                        }
-                                                }
+                                                onPress={isBookmark ? handleRemove : onSaveBookMark}
                                                 style={{
                                                     flexDirection: 'row',
-                                                    marginTop: isRemoveBookMark ? 5 : 10,
+                                                    marginTop: 10,
                                                     marginLeft: 8,
                                                     paddingRight: 20
                                                 }}>
                                                 <View style={{ justifyContent: 'center' }}>
-                                                    {isBookmark ? <BookMarkIcon fill={'#180E19'} /> : <BookMarkIcon fill={isRemoveBookMark ? '#180E19' : 'none'} />}
+                                                    {<BookMarkIcon fill={isBookmark ? '#180E19' : 'none'} />}
                                                 </View>
-                                                <TextRn
-                                                    style={{
-                                                        flex: 1,
-                                                        color: COLOR.focusColor,
-                                                        marginLeft: 5,
-                                                        fontSize: 12,
-                                                        alignSelf: 'center',
-                                                        //    backgroundColor:'red'
-                                                        //    marginBottom: 15
-                                                    }}
-                                                >{isRemoveBookMark ? 'Remove bookmark' : 'Bookmark'}</TextRn>
+                                                <TextRn style={styles.textBookmark}>{isBookmark ? 'Remove bookmark' : 'Bookmark'}</TextRn>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
@@ -250,9 +195,6 @@ const styles = StyleSheet.create({
     viewItem: {
         paddingHorizontal: 16,
         marginTop: 15,
-        // zIndex: 100,
-        // position: 'relative',
-        // overflow: 'scroll',
     },
     imageItem: {
         width: 137,
@@ -261,7 +203,6 @@ const styles = StyleSheet.create({
     viewContent: {
         flex: 1,
         marginLeft: 10,
-        // zIndex: -100
     },
     textTitle: {
         flex: 3,
@@ -354,5 +295,36 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginHorizontal: 16,
     },
+    viewAuthor: {
+        flexDirection: 'row',
+        flex: 2,
+        justifyContent: 'space-between'
+    },
+    time: {
+        flex: 1,
+        color: COLOR.authorColor
+    },
+    threeDot: {
+        fontSize: 5,
+        color: COLOR.focusColor,
+        marginTop: 7
+    },
+    shareButton: {
+        flexDirection: 'row',
+        paddingLeft: 10,
+        marginTop: 15,
+    },
+    textShare: {
+        color: COLOR.focusColor,
+        marginLeft: 10,
+        fontSize: 12
+    },
+    textBookmark: {
+        flex: 1,
+        color: COLOR.focusColor,
+        marginLeft: 5,
+        fontSize: 12,
+        alignSelf: 'center',
+    }
 
 });

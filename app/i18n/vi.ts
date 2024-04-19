@@ -100,5 +100,15 @@
     save : 'LƯU',
     changePass :'Đổi mật khẩu',
     viewed : 'Đã xem',
-    category: 'Danh mục'
+    category: 'Danh mục',
+    thethao: 'Thể thao',
+    giaoduc: 'Giáo dục',
+    suckhoe: 'Sức khoẻ',
+    doisong: 'Đời sống',
+    dulich: 'Du lịch',
+    xe: 'Xe',
+    ykien: 'Ý kiến',
+    tamsu: 'Tâm sự',
+    thugian:'Thư giãn',
+    giathat:'Giả thật'
 }

@@ -19,6 +19,7 @@ import { changeCate } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { COLOR } from '../../utils/color';
 import { dataInterests } from '../../utils/homeAction';
+import { VNEXPRESS } from '../../utils/const';
 
 
 export interface DataInterests {
@@ -48,21 +49,21 @@ const CategoryManagementScreen = () => {
 
     useEffect(() => {
         getDataCategory()
-    }, [])
+    }, [news])
 
     const getDataCategory = () => {
         // setData([])
         const getData = CategoryManagementModel.get({ email: mail })
         console.log(news);
-        
-        if (news == 'VnExpress') {
+
+        if (news == VNEXPRESS) {
             const data = JSON.parse(getData.vnExpress)
             console.log(data);
             setData(data)
         }
         else {
             const data = JSON.parse(getData.tuoiTre)
-            setData(data)            
+            setData(data)
         }
     }
 

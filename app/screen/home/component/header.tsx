@@ -4,7 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import BellIcon from '../../../icons/svg-component/BellIcon';
 import { COLOR } from '../../../utils/color';
-import { logoLogin } from '../../../utils/const';
+import { TUOITRE, VNEXPRESS, logoLogin } from '../../../utils/const';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 const { width, height } = Dimensions.get('screen');
 
 interface IHeader {
@@ -19,7 +21,6 @@ export const Header = (props: IHeader) => {
     const [isVisible, setIsVisible] = useState(false)
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const ref = useRef<TouchableOpacity>(null);
-
     const { newsName, onChangeTt, onChangeVnE } = props
     const onPress = () => {
         setIsVisible(!isVisible)
@@ -28,11 +29,11 @@ export const Header = (props: IHeader) => {
             setOffset({ x, y });
         })
     }
-    const handleTt=()=>{
+    const handleTt = () => {
         onChangeTt()
         setIsVisible(false)
     }
-    const handleVnE=()=>{
+    const handleVnE = () => {
         onChangeVnE()
         setIsVisible(false)
     }
@@ -62,7 +63,7 @@ export const Header = (props: IHeader) => {
                         fontWeight: '700',
                         fontSize: 15,
                         color: COLOR.focusColor,
-                        marginLeft: 10
+                        marginLeft: 10,
                     }}
                 />
             </View>
@@ -96,8 +97,8 @@ export const Header = (props: IHeader) => {
                             }}>
                                 <TouchableOpacity
                                     onPress={handleVnE}
-                                    style={styles.btnVnE}>
-                                    <TextRn style={styles.textVnE}>VnExpress</TextRn>
+                                    style={[styles.btnVnE]}>
+                                    <Text text='VnExpress' style={[styles.textVnE, { fontWeight: newsName == VNEXPRESS ? '700' : 'normal' }]} />
                                 </TouchableOpacity>
                                 <View style={styles.popOverLine}>
                                 </View>
@@ -105,9 +106,10 @@ export const Header = (props: IHeader) => {
                                     <TouchableOpacity
                                         onPress={handleTt}
                                         style={styles.btnTt}>
-                                        <TextRn
-                                            style={styles.textTt}
-                                        >Tuổi Trẻ</TextRn>
+                                        <Text
+                                            text='Tuổi Trẻ'
+                                            style={[styles.textTt, { fontWeight: newsName == TUOITRE ? '700' : '100' }]}
+                                        />
                                     </TouchableOpacity>
                                 </View>
                             </View>

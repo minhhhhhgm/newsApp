@@ -43,6 +43,8 @@ const AccountScreen = () => {
       }
     }
   }, [newPassword, password])
+
+
   useEffect(() => {
     if (reNewPassword && newPassword) {
       if (reNewPassword !== newPassword) {
@@ -52,6 +54,8 @@ const AccountScreen = () => {
       }
     }
   }, [reNewPassword, newPassword])
+
+  
   const onChangePass = (value: string) => {
     const passValidate = handleValidatePass(value)
     if (passValidate) {

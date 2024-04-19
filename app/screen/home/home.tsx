@@ -1,28 +1,24 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { ParamsList, auth } from '../../../App';
+import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
 import { CategoryManagementModel } from '../../database';
-import { changeNews, setVnExpress } from '../../store/newsSlice';
+import { changeNews } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
 import { COLOR } from '../../utils/color';
-import { Category, getDataRssByTitle, handleSaveHistory } from '../../utils/homeAction';
+import { CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS, tuoiTreDomain, vnExpressDomain } from '../../utils/const';
+import { Category, getDataRssByTitle } from '../../utils/homeAction';
 import { getEmailApp, getNews, setNews } from '../../utils/storage';
-import { extractContentTuoiTre } from '../../utils/validate';
 import { Header } from './component/header';
-import { ItemNews } from './component/item-news';
+import NewsList from './component/news-list';
 const { width } = Dimensions.get('window')
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 const HomeScreen = () => {
-
-
     const navigation = useNavigation<NavigationProps>()
-    const [indexItem, setIndexItem] = useState(0)
     const [titleNews, setTitleNews] = useState('forYou')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
     const [domain, setDomain] = useState('')
@@ -30,231 +26,165 @@ const HomeScreen = () => {
     const [refresh, setRefresh] = useState(false)
     const [newsName, setNewsName] = useState('')
     const [dataCategory, setDataCategory] = useState<Category[]>([])
+    const textRef = useRef<string>('')
     const dispatch = useDispatch()
     const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
-    const textRef = useRef<string>('')
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
-    const domainA = useSelector((state: RootState) => state.newsReducer.domain)
-    // useEffect(() => {
-    //     getDataCategory()
-    // }, [domain])
+    const nameNewsChange = useSelector((state: RootState) => state.newsReducer.nameNewsChange)
+
     useEffect(() => {
         handleGetDataWhenCategoryChange()
     }, [cate, domain])
-    useEffect(() => {
-        console.log('RUn', news);
-        if (news) {
-            if (news == 'VnExpress') {
-                handleChangeVnE()
-            } else {
-                handleChangeTt()
-            }
-        }
 
-    }, [news])
     useEffect(() => {
+        const getNewsApp = async () => {
+            const newsName = await getNews()
+            setNewsName(newsName)
+        }
         getNewsApp()
     }, [newsName])
-    const getNewsApp = async () => {
-        const newsName = await getNews()
-        console.log('NEWSSSSS', newsName);
 
-        setNewsName(newsName)
-    }
+    useEffect(() => {
+        if (nameNewsChange) {
+            if (nameNewsChange == CHANGE_BOOKMARK_VN_EXPRESS) {
+                handleChangeVnExpress()
+            } else {
+                handleChangeTuoiTre()
+            }
+        }
+    }, [nameNewsChange])
+
+
     const handleGetDataWhenCategoryChange = async () => {
-        const mail = await getEmailApp();
+        const mail = await getEmailApp()
         const newsName = await getNews()
-        console.log('newsName', newsName);
-
         let newsData;
         let dataFilter;
         let firstItem;
-        if (newsName === 'VnExpress') {
-
-            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).vnExpress);
-            console.log('VnExpress Data', newsData);
+        if (newsName === VNEXPRESS) {
+            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).vnExpress)
         } else {
-
-            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).tuoiTre);
-            console.log('TT Data', newsData);
+            newsData = JSON.parse(CategoryManagementModel.get({ email: mail }).tuoiTre)
         }
-        dataFilter = newsData.filter((item: Category) => item.isShow);
-        firstItem = dataFilter.find(() => true);
-        const isExistItem = dataFilter.find((item: Category) => item.text === textRef.current);
-        if (isExistItem === undefined) {
-            if (newsName == 'VnExpress') {
-                await handleGetDataByTitle(firstItem.endpoint, 'vnexpress.net');
-                textRef.current = firstItem.text;
-                setIndexItem(0);
-                setTitleNews(firstItem.text);
-                setDomain('vnexpress.net')
-                setEndpoint(firstItem.endpoint)
+        dataFilter = newsData.filter((item: Category) => item.isShow)
+        firstItem = dataFilter.find(() => true)
+        const isExistItem = dataFilter.find((item: Category) => item.text === textRef.current)
+        if (!isExistItem) {
+            if (newsName == VNEXPRESS) {
+                await handleGetData(firstItem.endpoint, vnExpressDomain)
+                setDomain(vnExpressDomain)
             } else {
-                await handleGetDataByTitle(firstItem.endpoint, 'tuoitre.vn');
-                textRef.current = firstItem.text;
-                setIndexItem(0);
-                setTitleNews(firstItem.text);
-                setDomain('tuoitre.vn')
-                setEndpoint(firstItem.endpoint)
+                await handleGetData(firstItem.endpoint, tuoiTreDomain)
+                setDomain(tuoiTreDomain)
             }
-
+            textRef.current = firstItem.text
+            setTitleNews(firstItem.text)
+            setEndpoint(firstItem.endpoint)
         }
-        setDataCategory(dataFilter);
+        setDataCategory(dataFilter)
     };
 
-    const handleGetDataByTitleTest = async (endpoint: string) => {
+    const handleGetData = async (endpoint: string, domain: string) => {
         setFeedItems([])
         try {
             const parsedItems = await getDataRssByTitle(domain, endpoint)
             setFeedItems(parsedItems);
         } catch (error) {
-            console.error('Error fetching RSS feed:', error);
-        }
-    }
-    const handleGetDataByTitle = async (endpoint: string, domain: string) => {
-        setFeedItems([])
-        try {
-            const parsedItems = await getDataRssByTitle(domain, endpoint)
-            setFeedItems(parsedItems);
-        } catch (error) {
-            console.error('Error fetching RSS feed:', error);
+            console.error('Error fetching RSS feed:', error)
         }
     }
     const handleRefresh = async () => {
-        await handleGetDataByTitle(endpoint, domain)
+        await handleGetData(endpoint, domain)
     }
 
-    const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
-        const now = moment();
-        const formattedTime = moment(now).format('YYYY-MM-DD HH:mm:ss');
-        const mail = auth.currentUser?.email as string
-        handleSaveHistory(type, title, author, formattedTime, url, image, mail)
-        navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
-    }
-    const handleChangeVnE = async () => {
-        // setDataCategory([])
-        console.log(news);
-        if (news == 'VnExpress')
+    const onClickVnExpress = async () => {
+        if (news == VNEXPRESS) {
             return
-        else
-            setNewsName('VnExpress')
-        setDomain('vnexpress.net')
-        setIndexItem(0)
-        setTitleNews('forYou')
-        dispatch(changeNews('VnExpress'))
-        !(newsName == 'VnExpress') ? textRef.current = '' : null
-        !(newsName == 'VnExpress') ? setDataCategory([]) : null
-        await setNews('VnExpress')
-        // setDataCategory([])
-    }
-
-    const handleChangeTt = async () => {
-        console.log(news);
-        if (news == 'tuoitre')
-            return
-        else
-            setNewsName('Tuổi Trẻ');
-        setDomain('tuoitre.vn')
-        setIndexItem(0)
-        setTitleNews('forYou')
-        dispatch(changeNews('tuoitre'))
-        textRef.current = ''
-        newsName == 'Tuổi Trẻ' ? textRef.current = '' : null
-        newsName == 'Tuổi Trẻ' ? null : setDataCategory([])
-        await setNews('Tuổi Trẻ')
-    }
-
-    const renderItem = ({ item, index }: { item: NewsType, index: number }) => {
-        const imgSrcRegex = /<img src="([^"]+)"/;
-        const imgSrcMatch = item.description.match(imgSrcRegex);
-        let imgSrc = '';
-        if (imgSrcMatch && imgSrcMatch[1]) {
-            imgSrc = imgSrcMatch[1];
         }
-        const time = newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate)
-        const relativeTime = moment(newsName === 'VnExpress' ? item.pubDate : extractContentTuoiTre(item.pubDate), 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
-        const title = newsName === 'VnExpress' ? item.title : extractContentTuoiTre(item.title)
-        const link = newsName === 'VnExpress' ? item.link : extractContentTuoiTre(item.link)
-        const author = newsName === 'Tuổi Trẻ' ? 'Tuổi Trẻ' : 'VnExpress'
-        return (
-            <ItemNews
-                index={index}
-                handleNavigateDetailNews={() => { handleNavigateDetailNews(titleNews, title, author, time, link, imgSrc) }}
-                imgSrc={imgSrc}
-                title={title}
-                relativeTime={relativeTime}
-                link={link}
-                titleNews={titleNews}
-                time={time}
-                author={author}
-            />
-        )
-    };
+        else {
+            handleChangeVnExpress()
+        }
+    }
+
+    const onClickTuoiTre = async () => {
+        if (news == TUOITRE)
+            return
+        else {
+            handleChangeTuoiTre()
+        }
+    }
+
+
+    const handleChangeVnExpress = async () => {
+        setFeedItems([])
+        dispatch(changeNews(VNEXPRESS))
+        setNewsName(VNEXPRESS)
+        setDomain(vnExpressDomain)
+        setTitleNews('forYou')
+        !(newsName == VNEXPRESS) ? textRef.current = '' : null
+        !(newsName == VNEXPRESS) ? setDataCategory([]) : null
+        await setNews(VNEXPRESS)
+    }
+
+
+    const handleChangeTuoiTre = async () => {
+        setFeedItems([])
+        dispatch(changeNews(TUOITRE))
+        setNewsName(TUOITRE);
+        setDomain(tuoiTreDomain)
+        setTitleNews('forYou')
+        textRef.current = ''
+        newsName == TUOITRE ? textRef.current = '' : null
+        newsName == TUOITRE ? null : setDataCategory([])
+        await setNews(TUOITRE)
+    }
+
+    const onClickCategory = (title: string, endpoint: string) => {
+        setTitleNews(title);
+        setEndpoint(endpoint)
+        textRef.current = title
+        handleGetData(endpoint, domain);
+    }
+
+   
     return (
         <View style={styles.body} >
             <Header
                 newsName={newsName}
-                onChangeVnE={handleChangeVnE}
-                onChangeTt={handleChangeTt} />
-            {
-                dataCategory &&
-                <FlatList
-                    style={{ minHeight: 70 }}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
-                    data={dataCategory}
-                    renderItem={({ item, index }) => {
-                        return (
-
-                            item.isShow == 1 || item.isShow == true ?
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    key={index}
-                                    onPress={() => {
-                                        setIndexItem(index);
-                                        setTitleNews(item.text);
-                                        handleGetDataByTitle(item.endpoint, domain);
-                                        setEndpoint(item.endpoint)
-                                        textRef.current = item.text
-                                    }}
-                                    style={[styles.button, {
-                                        backgroundColor: item.text == textRef.current ? COLOR.focusColor : COLOR.buttonColorInactive,
-                                        marginLeft: index === 0 ? 16 : 0,
-                                    }]}>
-                                    <Text
-                                        text={item.text}
-                                        style={{
-                                            color: item.text == textRef.current ? COLOR.white : COLOR.authorColor
-                                        }} />
-                                </TouchableOpacity>
-                                : null
-
-                        )
-                    }}
-                    ListEmptyComponent={() => {
-                        return (
-                            <View style={{ alignSelf: 'center', width: width }}>
-                                {/* <ActivityIndicator /> */}
-                            </View>
-                        )
-                    }}
-                />
-            }
+                onChangeVnE={onClickVnExpress}
+                onChangeTt={onClickTuoiTre} />
             <FlatList
-                showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={refresh} onRefresh={handleRefresh} />}
-                data={feedItems}
-                renderItem={renderItem}
-                ListEmptyComponent={() => {
+                style={{ minHeight: 70 }}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={dataCategory}
+                renderItem={({ item, index }) => {
                     return (
-                        <View>
-                            <ActivityIndicator size={'large'} />
-                        </View>
+                        item.isShow == true ?
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                key={index}
+                                onPress={() => { onClickCategory(item.text, item.endpoint) }}
+                                style={[styles.button, {
+                                    backgroundColor: item.text == textRef.current ? COLOR.focusColor : COLOR.buttonColorInactive,
+                                    marginLeft: index === 0 ? 16 : 0,
+                                }]}>
+                                <Text
+                                    text={item.text}
+                                    style={{
+                                        color: item.text == textRef.current ? COLOR.white : COLOR.authorColor
+                                    }} />
+                            </TouchableOpacity>
+                            : null
                     )
                 }}
             />
-
+            <NewsList
+                feedItems={feedItems}
+                refresh={refresh}
+                handleRefresh={handleRefresh}
+                newsName={newsName}
+                titleNews={titleNews} />
         </View>
 
     )

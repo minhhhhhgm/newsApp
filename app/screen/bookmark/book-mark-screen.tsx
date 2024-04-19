@@ -12,8 +12,9 @@ import { ItemNews } from '../home/component/item-news';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import BellIcon from '../../icons/svg-component/BellIcon';
-import { changeNews, removeBookmarkApp } from '../../store/newsSlice';
+import { changeNews, changeNewsBookmark, removeBookmarkApp } from '../../store/newsSlice';
 import { ItemNewsBookmark } from './component/item-news';
+import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS } from '../../utils/const';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -32,19 +33,21 @@ const BookMarkScreen = () => {
     const navigation = useNavigation<NavigationProps>()
     const isFocused = useIsFocused()
     const [data, setData] = useState([])
-    const [indexItem, setIndexItem] = useState(0)
     const [type, setType] = useState('forYou')
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [isVisible, setIsVisible] = useState(false)
     const email = useSelector((state: RootState) => state.newsReducer.mail)
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
     const bookmarkChange = useSelector((state: RootState) => state.newsReducer.bookmark)
-
     const dispatch = useDispatch()
     const ref = useRef<TouchableOpacity>(null);
+
     useEffect(() => {
         getdataByType()
     }, [isFocused, type, news, bookmarkChange])
+
+
+
     const onPress = () => {
         setIsVisible(!isVisible)
         ref.current?.measureInWindow((x, y) => {
@@ -53,52 +56,27 @@ const BookMarkScreen = () => {
         })
     }
 
+
+
     const getdataByType = () => {
         if (email) {
-            // Bookmark.removeAllRecords()
-            // Bookmark.onLoaded(()=>{
-            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            //     setData(data)
-            // })
-            // Bookmark.onInsert(()=>{
-            //     console.log('Bookmark.onInsert');
-
-            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            //     setData(data)
-            // })
-
-            const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
+            const author = news == TUOITRE ? TUOITRE : VNEXPRESS
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
             setData(data)
             console.log('bookmarkChange', bookmarkChange, data, author);
-
-            // Bookmark.onChange(()=>{
-            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            //     setData(data)
-            // })
         }
     }
+
+
     const removeBookmark = (id: string, type: string, index: number) => {
         const item1 = Bookmark.get({ id: id });
-        console.log(id);
-
-        
-
         Bookmark.remove(item1)
-        // setTimeout(() => {
-        //     getdataByType(type)
-        // }, 100);
-        // const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-        // const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-        // setData(data)
         Bookmark.onRemove(() => {
             getdataByType()
         })
-        // dispatch(removeBookmarkApp(id))
     }
+
+
 
     const handleNavigate = async (title: string, link: string, author: string, time: string, image: string, type: string) => {
         const email = auth.currentUser?.email as string
@@ -109,7 +87,6 @@ const BookMarkScreen = () => {
 
 
     const renderItem = ({ item, index }: { item: IBookmark, index: number }) => {
-        const relativeTime = moment(item.time, 'ddd, DD MMM YYYY HH:mm:ss Z').fromNow();
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
         const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');
         return (
@@ -120,7 +97,7 @@ const BookMarkScreen = () => {
                     marginTop: 0
                 }}
                 index={index}
-                handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, time, item.image, item.type) }}
+                handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, formattedTime, item.image, item.type) }}
                 imgSrc={item.image}
                 title={item.title}
                 relativeTime={formattedTime}
@@ -181,8 +158,9 @@ const BookMarkScreen = () => {
                                 <TouchableOpacity
                                     onPress={() => {
                                         setIsVisible(false)
-                                        dispatch(changeNews('VnExpress'))
-                                        setType('VnExpress')
+                                        dispatch(changeNews(VNEXPRESS))
+                                        dispatch(changeNewsBookmark(CHANGE_BOOKMARK_VN_EXPRESS))
+                                        setType(VNEXPRESS)
                                     }}
                                     style={styles.btnVnE}>
                                     <TextRn style={styles.textVnE}>VnExpress</TextRn>
@@ -193,8 +171,9 @@ const BookMarkScreen = () => {
                                     <TouchableOpacity
                                         onPress={() => {
                                             setIsVisible(false)
-                                            dispatch(changeNews('tuoitre'))
-                                            setType('tuoitre')
+                                            dispatch(changeNews(TUOITRE))
+                                            dispatch(changeNewsBookmark(CHANGE_BOOKMARK_TUOITRE))
+                                            setType(TUOITRE)
                                         }}
                                         style={styles.btnTt}>
                                         <TextRn

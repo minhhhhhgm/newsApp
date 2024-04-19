@@ -57,7 +57,6 @@ const SettingScreen = () => {
             onPress: async () => {
                 await removeAccessToken()
                 dispatch(changeNews('VnExpress'))
-                // navigation.replace('SignIn')
                 dispatch(changeStatusLogin(false))
             },
             icon: LogOutIcon

@@ -38,24 +38,7 @@ const ViewedScreen = () => {
             newData.sort((a: { timeWatched: string }, b: { timeWatched: string }) => {
                 return new Date(b.timeWatched).getTime() - new Date(a.timeWatched).getTime();
             });
-            // if (newData) {
-            //     setData(newData);
-            //     setLoading(false);
-            // }
-            const isDataChanged = JSON.stringify(newData) !== JSON.stringify(data);
-            if (isDataChanged) {
-                console.log('isDataChanged', isDataChanged);
-                // setLoading(true);
-                if (newData) {
-                    setData(newData);
-                    const isDataChanged = JSON.stringify(newData) !== JSON.stringify(data);
-                    if (isDataChanged){
-                        // setLoading(false)
-                    }
-                }
-            } else {
-                // setLoading(false);
-            }
+            setData(newData);
         }
     };
 
@@ -74,10 +57,8 @@ const ViewedScreen = () => {
 
         return (
             <View key={index} style={{ marginTop: 25 }}>
-                <ItemNewsBookmark
-                    style={{
-                        marginTop: 0
-                    }}
+                <ItemNews
+                   
                     index={index}
                     handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, formattedTime, item.image, item.type) }}
                     imgSrc={item.image}

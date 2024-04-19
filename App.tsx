@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import Loading from "./app/components/loading";
 import SettingScreen from "./app/screen/setting/setting-screen";
 import VasernDB from './app/database/db';
+import { TUOITRE, VNEXPRESS } from "./app/utils/const";
 
 export type ParamsList = {
   Detail: {
@@ -163,10 +164,10 @@ function App(): React.JSX.Element {
     const news = await getNews()
     console.log('=============', news);
     if(news){
-      if (news == 'VnExpress') {
-        store.dispatch(changeNews('VnExpress'))
+      if (news == VNEXPRESS) {
+        store.dispatch(changeNews(VNEXPRESS))
       }else{
-        store.dispatch(changeNews('tuoitre'))
+        store.dispatch(changeNews(TUOITRE))
       }
     }
     

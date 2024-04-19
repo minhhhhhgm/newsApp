@@ -1,6 +1,5 @@
-import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { auth } from '../../../../App';
 import { Text } from '../../../components/Text';
@@ -50,29 +49,9 @@ export const ItemNewsBookmark = (props: IItemNews) => {
         isRemoveBookMark,
         handleRemoveBookmark
     } = props
-    // console.log('render');
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
-    const isFocused = useIsFocused()
     const isExistItem = Bookmark.get({ title: title, email: email });
-    // const check = useCallback(() => {
-    //     console.log("CheckHandle");
-        
-    //     const isBookmarked = Bookmark.get({ title: title, email: email });
-    //     setShowBookmarked(isBookmarked)
-    // }, [title])
-    // Bookmark.onInsert(()=>{
-            //     console.log('Bookmark.onInsert');
-                
-            //     const author = news == 'tuoitre' ? 'Tuổi Trẻ' : 'VnExpress'
-            //     const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            //     setData(data)
-            // })
-    // useEffect(() => {
-    //     check()
-    // }, [isBookmark, isFocused])
-
-
     const handleToggleVisible = (id: number) => {
         newRef.current?.measureInWindow((x, y) => {
             setOffset({ x, y });
@@ -81,20 +60,13 @@ export const ItemNewsBookmark = (props: IItemNews) => {
             id: id,
             visible: true
         })
-        // const item1 = Bookmark.get({ title: title, email: email });
-        // console.log('ITEM', item1);
-        // if (item1) {
-        //     setIsBookmark(true)
-        // } else {
-        //     setIsBookmark(false)
-        // }
     }
     return (
         <TouchableOpacity
             activeOpacity={1}
             key={index}
             style={[styles.viewItem, style]}
-            onPress={visible ? () => handleToggleVisible(-1) : handleNavigateDetailNews}
+            onPress={handleNavigateDetailNews}
         >
             <View
                 style={{ flexDirection: 'row' }}>
@@ -144,7 +116,6 @@ export const ItemNewsBookmark = (props: IItemNews) => {
                                     marginTop: 7
                                 }}>●●●</TextRn>
                         </TouchableOpacity>
-                        {/* <SimplePopover link={link} item={item} saveBookMark={() => handleSaveBookMark(titleNews, title, author, time, link, imgSrc)} /> */}
                     </View>
                 </View>
             </View>

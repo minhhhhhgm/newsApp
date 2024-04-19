@@ -10,7 +10,8 @@ export interface CounterState {
     tuoiTre : [],
     removeBookmark : string,
     domain: string,
-    bookmark : string
+    bookmark : string,
+    nameNewsChange : string
 }
 
 const initialState: CounterState = {
@@ -23,7 +24,8 @@ const initialState: CounterState = {
     tuoiTre : [],
     removeBookmark:'',
     domain : '',
-    bookmark :''
+    bookmark :'',
+    nameNewsChange :''
 }
 
 export const newsSlice = createSlice({
@@ -69,10 +71,14 @@ export const newsSlice = createSlice({
             const bookmark = actions.payload
             state.bookmark = bookmark
         },
+        changeNewsBookmark: (state, actions) => {
+            const newsBookmark = actions.payload
+            state.nameNewsChange = newsBookmark
+        },
         
     },
 })
 
-export const { addNews, addMail, changeCate, changeStatusLogin, changeNews, setVnExpress, removeBookmarkApp, addBookmarkApp } = newsSlice.actions
+export const { addNews, addMail, changeCate, changeStatusLogin, changeNews, setVnExpress, removeBookmarkApp, addBookmarkApp,changeNewsBookmark} = newsSlice.actions
 
 export default newsSlice.reducer
