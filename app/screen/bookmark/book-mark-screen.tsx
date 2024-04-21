@@ -2,19 +2,18 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Modal, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View, Text as TextRn } from 'react-native';
-import { ParamsList, auth } from '../../../App';
+import { Dimensions, FlatList, Modal, RefreshControl, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
 import { Bookmark } from '../../database';
-import { COLOR } from '../../utils/color';
-import { dataInterest, handleSaveHistory } from '../../utils/homeAction';
-import { ItemNews } from '../home/component/item-news';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 import BellIcon from '../../icons/svg-component/BellIcon';
-import { changeNews, changeNewsBookmark, removeBookmarkApp } from '../../store/newsSlice';
-import { ItemNewsBookmark } from './component/item-news';
+import { changeNews, changeNewsBookmark } from '../../store/newsSlice';
+import { RootState } from '../../store/store';
+import { COLOR } from '../../utils/color';
 import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS } from '../../utils/const';
+import { handleSaveHistory } from '../../utils/homeAction';
+import { ItemNews } from '../home/component/item-news';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -30,74 +29,64 @@ interface IBookmark {
 }
 
 const BookMarkScreen = () => {
-    const navigation = useNavigation<NavigationProps>()
-    const isFocused = useIsFocused()
-    const [data, setData] = useState([])
-    const [type, setType] = useState('forYou')
-    const [offset, setOffset] = React.useState({ x: 0, y: 0 });
-    const [isVisible, setIsVisible] = useState(false)
-    const email = useSelector((state: RootState) => state.newsReducer.mail)
-    const news = useSelector((state: RootState) => state.newsReducer.newsName)
-    const bookmarkChange = useSelector((state: RootState) => state.newsReducer.bookmark)
-    const dispatch = useDispatch()
+    const navigation = useNavigation<NavigationProps>();
+    const isFocused = useIsFocused();
+    const [data, setData] = useState<IBookmark[]>([]);
+    const [type, setType] = useState('')
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const [isVisible, setIsVisible] = useState(false);
+    const email = useSelector((state: RootState) => state.newsReducer.mail);
+    const news = useSelector((state: RootState) => state.newsReducer.newsName);
+    const bookmarkChange = useSelector((state: RootState) => state.newsReducer.bookmark);
+    const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+
+    const dispatch = useDispatch();
     const ref = useRef<TouchableOpacity>(null);
-
+    const styles = useBookmarkStyles(mode)
     useEffect(() => {
-        getdataByType()
-    }, [isFocused, type, news, bookmarkChange])
+        console.log("news", news);
 
-
+        getdataByType();
+    }, [isFocused, type, news, bookmarkChange]);
 
     const onPress = () => {
         setIsVisible(!isVisible)
         ref.current?.measureInWindow((x, y) => {
-            console.log(x, y);
             setOffset({ x, y });
-        })
-    }
-
-
+        });
+    };
 
     const getdataByType = () => {
         if (email) {
-            const author = news == TUOITRE ? TUOITRE : VNEXPRESS
+            const author = news === TUOITRE ? TUOITRE : VNEXPRESS;
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
-            setData(data)
-            console.log('bookmarkChange', bookmarkChange, data, author);
+            setData(data);
         }
-    }
+    };
 
-
-    const removeBookmark = (id: string, type: string, index: number) => {
-        const item1 = Bookmark.get({ id: id });
-        Bookmark.remove(item1)
+    const removeBookmark = (id: string) => {
+        const item1 = Bookmark.get({ id });
+        Bookmark.remove(item1);
         Bookmark.onRemove(() => {
-            getdataByType()
-        })
-    }
+            getdataByType();
+        });
+    };
 
-
-
-    const handleNavigate = async (title: string, link: string, author: string, time: string, image: string, type: string) => {
-        const email = auth.currentUser?.email as string
-        const now = moment()
-        handleSaveHistory(type, title, author, now.toString(), link, image, email)
-        navigation.navigate('Detail', { link, author, time, imageUrl: image, type, title, email })
-    }
-
-
-    const renderItem = ({ item, index }: { item: IBookmark, index: number }) => {
+    const handleNavigate = async (item: IBookmark) => {
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
-        const time = moment((new Date(item.time))).format('ddd, DD MMM YYYY HH:mm:ss Z');
+        const { title, url, author, image, type } = item;
+        const now = moment();
+        handleSaveHistory(type, title, author, now.toString(), url, image, email as string);
+        navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email });
+    };
+
+    const renderItem = ({ item, index }: { item: IBookmark; index: number }) => {
+        const formattedTime = moment(item.time).format('YYYY-MM-DD');
         return (
-            <ItemNewsBookmark
-                handleRemoveBookmark={() => { removeBookmark(item.id, item.type, index) }}
-                isRemoveBookMark
-                style={{
-                    marginTop: 0
-                }}
+            <ItemNews
+                onRemove={() => removeBookmark(item.id)}
                 index={index}
-                handleNavigateDetailNews={() => { handleNavigate(item.title, item.url, item.author, formattedTime, item.image, item.type) }}
+                handleNavigateDetailNews={() => handleNavigate(item)}
                 imgSrc={item.image}
                 title={item.title}
                 relativeTime={formattedTime}
@@ -105,82 +94,60 @@ const BookMarkScreen = () => {
                 titleNews={item.type}
                 time={item.time}
                 author={item.author}
+                mode={mode}
             />
-        )
+        );
     };
+
+    const handleChangeNews = (selectedNews: string, bookmarkType: string) => {
+        if (news === selectedNews) {
+            setIsVisible(false);
+            return
+        }
+        setIsVisible(false);
+        dispatch(changeNewsBookmark(bookmarkType));
+        dispatch(changeNews(selectedNews));
+        setType(selectedNews);
+    };
+
     return (
         <View style={styles.body}>
-            <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 55,
-                marginHorizontal: 16
-            }}>
-                <Text
-                    text={'bookmarked'}
-                    style={styles.headerText}
-                />
-                <TouchableOpacity
-                    ref={ref}
-                    onPress={onPress}>
-                    <BellIcon />
+            <View style={styles.headerContainer}>
+                <Text text={'bookmarked'} style={styles.headerText} />
+                <TouchableOpacity ref={ref} onPress={onPress}>
+                    <BellIcon darkMode={mode} />
                 </TouchableOpacity>
             </View>
-
-            {
-                data && <FlatList
+            {data && (
+                <FlatList
                     style={{ marginTop: 30 }}
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={false} onRefresh={() => { }} />}
                     data={data}
                     renderItem={renderItem}
                 />
-            }
-            <Modal
-                visible={isVisible}
-                animationType='fade'
-                onRequestClose={() => setIsVisible(false)}
-                transparent={true}
-            >
-                <TouchableOpacity style={styles.main}
-                    onPress={() => setIsVisible(false)}
-                    activeOpacity={1}
-                >
-                    <View style={[styles.content, {
-                        top: offset.y + 30,
-                        left: offset.x + 30
-                    }]}>
+            )}
+            <Modal visible={isVisible} animationType='fade' onRequestClose={() => setIsVisible(false)} transparent={true}>
+                <TouchableOpacity style={styles.main} onPress={() => setIsVisible(false)} activeOpacity={1}>
+                    <View style={[styles.content, { top: offset.y + 30, left: offset.x + 30 }]}>
                         <View
                             style={[styles.viewPopOver]}>
                             <View style={{
                                 justifyContent: 'center'
                             }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setIsVisible(false)
-                                        dispatch(changeNews(VNEXPRESS))
-                                        dispatch(changeNewsBookmark(CHANGE_BOOKMARK_VN_EXPRESS))
-                                        setType(VNEXPRESS)
-                                    }}
-                                    style={styles.btnVnE}>
-                                    <TextRn style={styles.textVnE}>VnExpress</TextRn>
+                                <TouchableOpacity onPress={() => handleChangeNews(VNEXPRESS, CHANGE_BOOKMARK_VN_EXPRESS)} style={styles.btnVnE}>
+                                    <Text
+                                        style={[styles.textVnE, { fontWeight: news === VNEXPRESS ? '700' : 'normal' }]}
+                                        text='VnExpress'
+                                    />
                                 </TouchableOpacity>
-                                <View style={styles.popOverLine}>
-                                </View>
-                                <View>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setIsVisible(false)
-                                            dispatch(changeNews(TUOITRE))
-                                            dispatch(changeNewsBookmark(CHANGE_BOOKMARK_TUOITRE))
-                                            setType(TUOITRE)
-                                        }}
-                                        style={styles.btnTt}>
-                                        <TextRn
-                                            style={styles.textTt}
-                                        >Tuổi Trẻ</TextRn>
-                                    </TouchableOpacity>
-                                </View>
+                                <View style={styles.popOverLine} />
+                                <TouchableOpacity onPress={() => handleChangeNews(TUOITRE, CHANGE_BOOKMARK_TUOITRE)} style={styles.btnTt}>
+                                    <Text
+                                        style={[styles.textTt, { fontWeight: news === TUOITRE ? '700' : '100' }]}
+                                        text='Tuổi Trẻ'
+                                    />
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -190,79 +157,89 @@ const BookMarkScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    body: {
-        flex: 1,
-        backgroundColor: COLOR.backgroundColor,
-    },
-    headerText: {
-        fontWeight: '700',
-        color: COLOR.darkBlack,
-        fontSize: 15,
 
-    },
-    buttonCategory: {
-        marginTop: 30,
-        justifyContent: 'center',
-        paddingVertical: 4,
-        paddingHorizontal: 15,
-        borderRadius: 30,
-        alignSelf: 'flex-start',
-        marginRight: 10,
-        marginBottom: 20
-    }, main: {
-        backgroundColor: 'transparent',
-        width: width,
-        height: height,
-        flex: 1
-    },
-    content: {
-        position: 'absolute',
-        bottom: 22,
-        alignSelf: 'center',
-    },
-    btnVnE: {
-        flexDirection: 'row',
-        paddingLeft: 10,
-        marginTop: 15,
-    },
-    textVnE: {
-        color: COLOR.focusColor,
-        marginLeft: 5,
-        fontSize: 12
-    },
-    btnTt: {
-        flexDirection: 'row',
-        marginTop: 10,
-        marginLeft: 8,
-    },
-    textTt: {
-        flex: 1,
-        color: COLOR.focusColor,
-        marginLeft: 5,
-        fontSize: 12,
-        alignSelf: 'center',
-    },
-    popOverLine: {
-        height: 1,
-        backgroundColor: COLOR.buttonColorInactive,
-        marginTop: 7,
-    },
-    viewPopOver: {
-        backgroundColor: COLOR.backgroundColor,
-        width: 121,
-        height: 78,
-        shadowColor: COLOR.black,
-        shadowOffset: { width: -2, height: 4 },
-        shadowOpacity: 10,
-        shadowRadius: 30,
-        elevation: 5,
-        borderRadius: 10,
-        position: 'absolute',
-        zIndex: 10,
-        right: 15,
-    },
+const useBookmarkStyles = (mode: boolean) => {
+    const styles = StyleSheet.create({
+        body: {
+            flex: 1,
+            backgroundColor: !mode ? COLOR.backgroundColor : COLOR.black,
+        },
+        headerContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 55,
+            marginHorizontal: 16
+        },
+        headerText: {
+            fontWeight: '700',
+            color: mode ? COLOR.white : COLOR.darkBlack,
+            fontSize: 15,
 
-});
+        },
+        buttonCategory: {
+            marginTop: 30,
+            justifyContent: 'center',
+            paddingVertical: 4,
+            paddingHorizontal: 15,
+            borderRadius: 30,
+            alignSelf: 'flex-start',
+            marginRight: 10,
+            marginBottom: 20
+        }, main: {
+            backgroundColor: 'transparent',
+            width: width,
+            height: height,
+            flex: 1
+        },
+        content: {
+            position: 'absolute',
+            bottom: 22,
+            alignSelf: 'center',
+        },
+        btnVnE: {
+            flexDirection: 'row',
+            paddingLeft: 10,
+            marginTop: 15,
+        },
+        textVnE: {
+            color: COLOR.focusColor,
+            marginLeft: 5,
+            fontSize: 12
+        },
+        btnTt: {
+            flexDirection: 'row',
+            marginTop: 10,
+            marginLeft: 8,
+        },
+        textTt: {
+            flex: 1,
+            color: COLOR.focusColor,
+            marginLeft: 5,
+            fontSize: 12,
+            alignSelf: 'center',
+        },
+        popOverLine: {
+            height: 1,
+            backgroundColor: COLOR.buttonColorInactive,
+            marginTop: 7,
+        },
+        viewPopOver: {
+            backgroundColor: COLOR.backgroundColor,
+            width: 121,
+            height: 78,
+            shadowColor: COLOR.black,
+            shadowOffset: { width: -2, height: 4 },
+            shadowOpacity: 10,
+            shadowRadius: 30,
+            elevation: 5,
+            borderRadius: 10,
+            position: 'absolute',
+            zIndex: 10,
+            right: 15,
+        },
+    });
+    return styles;
+}
+
 
 export default BookMarkScreen;

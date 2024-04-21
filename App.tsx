@@ -20,15 +20,16 @@ import SearchScreen from './app/screen/search/search-screen';
 import SignInScreen from './app/screen/sign-in/sign-in-screen';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import ViewedScreen from './app/screen/viewed/viewed-screen';
-import { addMail, changeNews, changeStatusLogin } from './app/store/newsSlice';
+import { addMail, changeDarkMode, changeNews, changeStatusLogin } from './app/store/newsSlice';
 import { RootState, store } from './app/store/store';
-import { getAccessToken, getEmailApp, getLanguage, getNews } from './app/utils/storage';
+import { getAccessToken, getDarkMode, getEmailApp, getLanguage, getNews } from './app/utils/storage';
 import SwipeGesture from './app/screen/category-management/swipe-screen';
 import { useTranslation } from 'react-i18next';
 import Loading from "./app/components/loading";
 import SettingScreen from "./app/screen/setting/setting-screen";
 import VasernDB from './app/database/db';
 import { TUOITRE, VNEXPRESS } from "./app/utils/const";
+import AppNavigator from "./app/stacks/app-navigator";
 
 export type ParamsList = {
   Detail: {
@@ -67,20 +68,7 @@ VasernDB
 
 
 
-export const AppNavigation = () => {
-  return (
-    <NavigationContainer>
 
-      <Stack.Navigator initialRouteName='SignIn' screenOptions={{
-        headerShown: false
-      }}>
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
 
 export const SettingStack = () => {
   return (
@@ -93,68 +81,6 @@ export const SettingStack = () => {
   )
 }
 
-export const AppNavigationAuth = () => {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
-        headerShown: false
-      }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
-        <Stack.Screen name="BookMark" component={BookMarkScreen} />
-        <Stack.Screen name="Account" component={AccountScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Viewed" component={ViewedScreen} />
-        <Stack.Screen name="Category" component={CategoryManagementScreen} />
-        <Stack.Screen name="Swipe" component={SwipeGesture} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
-const AppNavigator = () => {
-  const dispatch = useDispatch()
-  const [loading, setLoading] = useState(true);
-  const isLogin = useSelector((state: RootState) => state.newsReducer.isLogin)
-  useEffect(() => {
-    loadStorageData();
-  }, [isLogin]);
-
-  async function loadStorageData() {
-    try {
-      const accessToken = await getAccessToken()
-      if (accessToken) {
-        dispatch(changeStatusLogin(true))
-      } else {
-        dispatch(changeStatusLogin(false))
-      }
-    } catch (error) {
-      dispatch(changeStatusLogin(false))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getStack = () => {
-    if (loading) {
-      return <Loading />
-    }
-    if (isLogin) {
-      return <AppNavigationAuth />
-    } else if (isLogin === false) {
-      return <AppNavigation />
-    }
-
-  }
-
-  return (
-    getStack()
-  )
-}
 function App(): React.JSX.Element {
   const { i18n } = useTranslation();
 
@@ -162,34 +88,35 @@ function App(): React.JSX.Element {
     const mail = await getEmailApp()
     const lang = await getLanguage()
     const news = await getNews()
+    const darkmode = await getDarkMode()
     console.log('=============', news);
-    if(news){
+    if (news) {
       if (news == VNEXPRESS) {
         store.dispatch(changeNews(VNEXPRESS))
-      }else{
+      } else {
         store.dispatch(changeNews(TUOITRE))
       }
     }
-    
+
     if (mail) {
       store.dispatch(addMail(mail))
     }
     if (lang) {
       i18n.changeLanguage(lang)
     }
+    if(darkmode){
+      store.dispatch(changeDarkMode(true))
+    }
   }
   useEffect(() => {
     handleGetEmailAndSetLanguage()
   }, [])
+  
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <>
-          <StatusBar
-            barStyle={'dark-content'}
-            backgroundColor={'transparent'}
-            translucent
-          />
+         
           <AppNavigator />
         </>
       </GestureHandlerRootView>

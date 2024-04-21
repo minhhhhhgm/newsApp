@@ -93,7 +93,7 @@ export async function setInterestApp(newInterest: any, mail: string) {
 
             const dataFilter = data.filter((item: any) => item.email === mail);
             console.log(dataFilter);
-            
+
             if (dataFilter) {
                 return
             }
@@ -169,5 +169,40 @@ export async function getEmailApp() {
         }
     } catch (err) {
         return null;
+    }
+}
+
+
+
+export async function setDarkMode(mode: string) {
+    try {
+        await AsyncStorage.setItem(
+            UserStatus.DARK_MODE,
+            JSON.stringify(mode),
+        );
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export async function getDarkMode() {
+    try {
+        const darkmode = await AsyncStorage.getItem(UserStatus.DARK_MODE);
+        if (darkmode !== null) {
+            return JSON.parse(darkmode);
+        } else {
+            return null;
+        }
+    } catch (err) {
+        return null;
+    }
+}
+
+
+export async function removeDarkMode() {
+    try {
+        await AsyncStorage.removeItem(UserStatus.DARK_MODE);
+    } catch (err) {
+        return false;
     }
 }

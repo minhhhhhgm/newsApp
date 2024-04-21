@@ -37,12 +37,11 @@ const SignInScreen = () => {
   const [passwordError, setPasswordError] = useState('')
   const navigation = useNavigation<NavigationProps>()
   const [isLoading, setIsLoading] = useState(false)
-  const news = useSelector((state: RootState) => state.newsReducer.newsName)
-  console.log('news', news);
-  
   const dispatch = useDispatch()
   const { t } = useTranslation();
-  // const dataInterest = dataInterests(email)
+
+
+
   const handleSignIn = async () => {
     setIsLoading(true)
     const dataVnE = JSON.stringify(dataCategoryVnEpress())
@@ -68,30 +67,20 @@ const SignInScreen = () => {
   }
 
   const onChangeEmail = (value: string) => {
-    const mailValidate = handleValidateEmail(value)
-    if (mailValidate) {
-      setEmailError(mailValidate)
-    } else {
-      setEmailError('')
-    }
-    setEmail(value)
-  }
+    const mailValidate = handleValidateEmail(value);
+    setEmailError(mailValidate ?? '');
+    setEmail(value);
+  };
 
   const onChangePass = (value: string) => {
-    const passValidate = handleValidatePass(value)
-    if (passValidate) {
-      setPasswordError(passValidate)
-    } else {
-      setPasswordError('')
-    }
-    setPassword(value)
-  }
-  const isValid = () => {
-    if (email && password && !emailError && !passwordError) {
-      return true;
-    }
-    return false;
+    const passValidate = handleValidatePass(value);
+    setPasswordError(passValidate ?? '');
+    setPassword(value);
   };
+
+
+  const isValid = () => email && password && !emailError && !passwordError;
+  
   return (
     <KeyboardAvoidingView style={styles.body} behavior='padding'>
       <Loading isVisible={isLoading} />

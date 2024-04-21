@@ -17,13 +17,17 @@ interface INewsList {
     handleRefresh: () => Promise<void>
     newsName: string
     titleNews: string
+    mode :boolean
 }
 
 
 
 const NewsList = (props: INewsList) => {
-    const { feedItems, refresh, handleRefresh, titleNews, newsName } = props
+
+    const { feedItems, refresh, handleRefresh, titleNews, newsName, mode } = props
     const navigation = useNavigation<NavigationProps>()
+
+
 
     const handleNavigateDetailNews = async (type: string, title: string, author: string, time: string, url: string, image: string) => {
         const now = moment()
@@ -32,6 +36,8 @@ const NewsList = (props: INewsList) => {
         handleSaveHistory(type, title, author, formattedTime, url, image, mail)
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email: mail })
     }
+
+
 
     const renderItem = ({ item, index }: { item: NewsType, index: number }) => {
         const imgSrcRegex = RegexImage;
@@ -56,9 +62,12 @@ const NewsList = (props: INewsList) => {
                 titleNews={titleNews}
                 time={time}
                 author={author}
+                mode={mode}
             />
         )
-    };
+    }
+
+
     return (
         <FlatList
             showsVerticalScrollIndicator={false}

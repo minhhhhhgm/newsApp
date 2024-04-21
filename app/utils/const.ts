@@ -5,7 +5,8 @@ export const UserStatus = {
     Interest: 'Interest',
     Email: 'Email',
     News: 'News',
-    LANGUAGE: 'LANGUAGE'
+    LANGUAGE: 'LANGUAGE',
+    DARK_MODE: 'DARK_MODE'
 };
 
 export const defaultImage = 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain'

@@ -22,8 +22,6 @@ const DetailScreen = () => {
     const route = useRoute<RouteProp<ParamsList, 'Detail'>>();
     const [isSaveBookMark, setIsSaveBookMark] = useState(false)
     const { link, author, time, imageUrl, type, title, email } = route.params;
-
-    console.log('TIME', time);
     
     useEffect(() => {
         const isViewed = Viewed.get({ title: title, email: email });
@@ -34,6 +32,8 @@ const DetailScreen = () => {
         }
         handleCheckIsSave()
     }, [])
+
+
 
     const handleShareNews = () => {
         const options = {
@@ -47,17 +47,24 @@ const DetailScreen = () => {
                 e && console.log(e)
             })
     }
+
+
+
     const handleCheckIsSave = async () => {
         const item1 = await Bookmark.get({ title: title, email: email });
         if (item1) {
             setIsSaveBookMark(true)
         }
     }
-    const onSave = () => {
 
+
+    const onSave = () => {
         handleSaveBookMark(type as string, title as string, author as string, time as string, link, imageUrl as string, email as string)
         setIsSaveBookMark(true)
     }
+
+
+
     const onRemove = () => {
         const item1 = Bookmark.get({ title: title });
         const isRemove = Bookmark.remove(item1)
@@ -67,6 +74,8 @@ const DetailScreen = () => {
         }
 
     }
+
+
     const Header = () => {
         return (
             <View style={{
@@ -103,6 +112,8 @@ const DetailScreen = () => {
             </View>
         )
     }
+
+    
     return (
         <View style={{
             flex: 1,

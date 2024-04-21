@@ -6,12 +6,13 @@ export interface CounterState {
     changeCategory: string,
     isLogin: boolean,
     newsName: string,
-    vnExpress : [],
-    tuoiTre : [],
-    removeBookmark : string,
+    vnExpress: [],
+    tuoiTre: [],
+    removeBookmark: string,
     domain: string,
-    bookmark : string,
-    nameNewsChange : string
+    bookmark: string,
+    nameNewsChange: string,
+    darkMode: boolean
 }
 
 const initialState: CounterState = {
@@ -20,12 +21,14 @@ const initialState: CounterState = {
     changeCategory: '',
     isLogin: false,
     newsName: '',
-    vnExpress : [],
-    tuoiTre : [],
-    removeBookmark:'',
-    domain : '',
-    bookmark :'',
-    nameNewsChange :''
+    vnExpress: [],
+    tuoiTre: [],
+    removeBookmark: '',
+    domain: '',
+    bookmark: '',
+    nameNewsChange: '',
+    darkMode: false
+
 }
 
 export const newsSlice = createSlice({
@@ -52,9 +55,9 @@ export const newsSlice = createSlice({
         },
         changeNews: (state, actions) => {
             const name = actions.payload
-            if(name =='VnExpress'){
+            if (name == 'VnExpress') {
                 state.domain = 'vnexpress.net'
-            }else{
+            } else {
                 state.domain = 'tuoitre.vn'
             }
             state.newsName = name
@@ -75,10 +78,24 @@ export const newsSlice = createSlice({
             const newsBookmark = actions.payload
             state.nameNewsChange = newsBookmark
         },
-        
+        changeDarkMode: (state, actions) => {
+            const mode = actions.payload
+            state.darkMode = mode
+        },
+
     },
 })
 
-export const { addNews, addMail, changeCate, changeStatusLogin, changeNews, setVnExpress, removeBookmarkApp, addBookmarkApp,changeNewsBookmark} = newsSlice.actions
+export const { addNews,
+    addMail,
+    changeCate,
+    changeStatusLogin,
+    changeNews,
+    setVnExpress,
+    removeBookmarkApp,
+    addBookmarkApp,
+    changeNewsBookmark ,
+    changeDarkMode
+} = newsSlice.actions
 
 export default newsSlice.reducer

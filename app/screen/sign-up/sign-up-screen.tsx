@@ -34,40 +34,26 @@ const SignUpScreen = () => {
   const navigation = useNavigation()
   const { t, i18n } = useTranslation();
 
+
   const onChangeUserName = (value: string) => {
-    if (!value) {
-      setUserNameError('Username is required')
-    } else {
-      setUserNameError('')
-    }
-    setUserName(value)
-  }
+    setUserName(value);
+    setUserNameError(value ? '' : 'Username is required');
+  };
+
+
+
   const onChangeEmail = (value: string) => {
-    const mailValidate = handleValidateEmail(value)
-    if (mailValidate) {
-      setEmailError(mailValidate)
-    } else {
-      setEmailError('')
-    }
-    setEmail(value)
-  }
+    setEmail(value);
+    setEmailError(handleValidateEmail(value) || '');
+  };
 
   const onChangePass = (value: string) => {
-    const passValidate = handleValidatePass(value)
-    if (passValidate) {
-      setPasswordError(passValidate)
-    } else {
-      setPasswordError('')
-    }
-    setPassword(value)
-  }
-
-  const isValid = () => {
-    if (email && password && userName && !emailError && !passwordError && !userNameError) {
-      return true;
-    }
-    return false;
+    setPassword(value);
+    setPasswordError(handleValidatePass(value) || '');
   };
+
+  const isValid = () => email && password && userName && !emailError && !passwordError && !userNameError;
+
   const handleSignIn = async () => {
     setIsLoading(true)
     try {
@@ -78,21 +64,19 @@ const SignUpScreen = () => {
         photoURL: 'https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg',
       };
       if (responseSignUp) {
-        const responeUpadte = await updateProfile(responseSignUp.user, update);
+        await updateProfile(responseSignUp.user, update);
         Toast.show('Create account success', Toast.LONG);
         setIsLoading(false)
-
       }
     } catch (err) {
       console.log(err);
       Toast.show('Error !', Toast.LONG);
       setIsLoading(false)
-
     }
   }
   return (
     <View style={styles.body}>
-      <Loading isVisible={isLoading}/>
+      <Loading isVisible={isLoading} />
       <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
         <Image
           source={logoLogin}
@@ -142,7 +126,7 @@ const SignUpScreen = () => {
           label={'password'}
           placeholder={'password'}
           secureTextEntry={!isShowPassword}
-          RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword)}} isShowPassword={isShowPassword}/>}//Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })
+          RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} />}//Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })
           helper={passwordError}
         />
 
@@ -161,14 +145,14 @@ const SignUpScreen = () => {
           />
         </TouchableOpacity>
         <View style={styles.rowLine}>
-            <View style={styles.line}></View>
-            <Text text={'orSignInWith'}
-              style={{
-                marginHorizontal: 10,
-                color: COLOR.darkBlack,
-              }} />
-            <View style={styles.line}></View>
-          </View>
+          <View style={styles.line}></View>
+          <Text text={'orSignInWith'}
+            style={{
+              marginHorizontal: 10,
+              color: COLOR.darkBlack,
+            }} />
+          <View style={styles.line}></View>
+        </View>
         <View style={styles.lineView}>
           <TouchableOpacity onPress={() => navigation.navigate('SignIn' as never)}>
             <GmailIcon />
@@ -230,14 +214,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 50
   },
-  rowLine :{
+  rowLine: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     marginTop: 50,
     marginHorizontal: 46
   },
-  line:{
+  line: {
     backgroundColor: COLOR.black,
     height: 1.1,
     flex: 1,

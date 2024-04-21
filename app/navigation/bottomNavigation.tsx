@@ -10,6 +10,9 @@ import SettingScreen from '../screen/setting/setting-screen';
 import { COLOR } from '../utils/color';
 import ViewedScreen from '../screen/viewed/viewed-screen';
 import { SettingStack } from '../../App';
+import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 export type ParamsListBottomNav = {
     Home: undefined,
@@ -20,6 +23,11 @@ export type ParamsListBottomNav = {
 const Tab = createBottomTabNavigator<ParamsListBottomNav>();
 
 export default function BottomNavigation() {
+    const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+    const color = mode ? COLOR.white : COLOR.focusColor
+    const stroke = mode ? COLOR.white : null
+
+    const styles = useBottomStyles(mode)
     return (
         <Tab.Navigator
             initialRouteName="Home"
@@ -27,19 +35,14 @@ export default function BottomNavigation() {
                 headerShown: false,
                 tabBarShowLabel: false,
                 tabBarHideOnKeyboard: true,
-                tabBarStyle: {
-                    borderColor: 'transparent',
-                    backgroundColor: COLOR.backgroundColor,
-                    borderTopWidth: 0,
-                    elevation: 0
-                }
+                tabBarStyle: styles.tabBarStyle
             }}>
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <HomeSelectedIcon fill={focused ? COLOR.focusColor : 'none'} />
+                        <HomeSelectedIcon fill={focused ? color : 'none'} stroke={stroke}/>
                     )
                 }} />
             <Tab.Screen
@@ -48,7 +51,7 @@ export default function BottomNavigation() {
                 options={{
                     // unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
-                        <SearchIcons fill={focused ? COLOR.focusColor : 'none'} />
+                        <SearchIcons fill={focused ? color : 'none'} stroke={stroke} />
                     )
                 }} />
             <Tab.Screen
@@ -57,7 +60,7 @@ export default function BottomNavigation() {
                 options={{
                     // unmountOnBlur: true,
                     tabBarIcon: ({ focused }) => (
-                        <BookMarkIcon fill={focused ? COLOR.focusColor : 'none'} />
+                        <BookMarkIcon fill={focused ? color : 'none'} stroke={stroke} />
                     )
                 }} />
             <Tab.Screen
@@ -65,10 +68,23 @@ export default function BottomNavigation() {
                 component={SettingStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <SettingIcon fill={focused ? COLOR.focusColor : 'none'} />
+                        <SettingIcon fill={focused ? color : 'none'} stroke={stroke} />
                     )
                 }} />
 
         </Tab.Navigator>
     );
+}
+
+const useBottomStyles = (mode : boolean) => {
+    
+    const styles = StyleSheet.create({
+        tabBarStyle: {
+            borderColor: 'transparent',
+            backgroundColor: mode ? COLOR.black :COLOR.backgroundColor,
+            borderTopWidth: 0,
+            elevation: 0
+        }
+    });
+    return styles;
 }

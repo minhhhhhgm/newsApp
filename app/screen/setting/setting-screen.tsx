@@ -13,19 +13,21 @@ import Noti from '../../icons/svg-component/noti';
 import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR } from '../../utils/color';
-import { removeAccessToken, setLanguage } from '../../utils/storage';
-import { useDispatch } from 'react-redux';
-import { changeNews, changeStatusLogin } from '../../store/newsSlice';
+import { removeAccessToken, removeDarkMode, setDarkMode, setLanguage } from '../../utils/storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
+import { RootState } from '../../store/store';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const SettingScreen = () => {
-    const [darkmode, setDarkMode] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
     const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
-    const dispatch = useDispatch()
+    const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
 
+    const dispatch = useDispatch()
+    const styles = useSettingStyles(mode)
 
     const data = [
         {
@@ -34,7 +36,7 @@ const SettingScreen = () => {
             onPress: () => {
                 navigation.navigate('Account')
             },
-            icon: ProfileIcon
+            icon: ProfileIcon({ darkMode: mode })
         },
         {
             index: 2,
@@ -42,13 +44,25 @@ const SettingScreen = () => {
             onPress: () => {
                 navigation.navigate('Category')
             },
-            icon: InterRestIcon
+            icon: InterRestIcon({ darkMode: mode })
         },
         {
             index: 3,
             name: 'changeLanguage',
             onPress: () => { setIsChoosLanguage(!isChoosLanguage) },
-            icon: SettingIconProfile
+            icon: SettingIconProfile({ darkMode: mode })
+        },
+        {
+            index: 3,
+            name: 'Dark Mode',
+            onPress: async () => {
+                dispatch(changeDarkMode(!mode))
+                await setDarkMode('dark')
+                if(mode){
+                    await removeDarkMode()
+                }
+            },
+            icon: SettingIconProfile({ darkMode: mode })
         },
 
         {
@@ -59,7 +73,7 @@ const SettingScreen = () => {
                 dispatch(changeNews('VnExpress'))
                 dispatch(changeStatusLogin(false))
             },
-            icon: LogOutIcon
+            icon: LogOutIcon({ darkMode: mode })
         },
 
     ]
@@ -76,26 +90,16 @@ const SettingScreen = () => {
                         flexDirection: 'row'
                     }}>
                         {
-                            <View style={{ alignSelf: "center" }}>{item.icon()}</View>
+                            <View style={{ alignSelf: "center" }}>{item.icon}</View>
                         }
                         <TouchableOpacity onPress={item.onPress}>
-                            <Text text={item.name} style={{
-                                fontSize: 14,
-                                fontWeight: '500',
-                                color: COLOR.darkBlack,
-                                marginLeft: 10
-                            }} />
+                            <Text text={item.name} style={styles.textAction} />
                         </TouchableOpacity>
 
                     </View>
                     <RightChvron />
                 </View>
-                <View style={{
-                    height: 1,
-                    backgroundColor: COLOR.buttonColorInactive,
-                    marginLeft: 32,
-                    marginVertical: 20
-                }}></View>
+                <View style={styles.line}></View>
             </View>
 
         )
@@ -104,13 +108,7 @@ const SettingScreen = () => {
         <View style={styles.body}>
             <Text
                 text={'settings'}
-                style={{
-                    marginTop: 60,
-                    fontSize: 15,
-                    fontWeight: '700',
-                    color: COLOR.buttonColorActive,
-                    marginLeft: 16
-                }}
+                style={styles.textHeader}
             />
             <View style={{
                 marginTop: 30,
@@ -186,76 +184,98 @@ const SettingScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    body: {
-        flex: 1,
-        backgroundColor: COLOR.backgroundColor,
-    },
-    logo: {
-        alignItems: 'center',
-    },
-    main: {
-        backgroundColor: 'rgba(0, 0, 0, 0.65)',
-        width: width,
-        height: height,
-        flex: 1
-    },
-    content: {
-        position: 'absolute',
-        bottom: 22,
-        alignSelf: 'center',
-    },
-    background: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-    },
-    centeredView: {
-        width: width - 16,
-        alignSelf: 'center',
-        justifyContent: 'flex-end',
-    },
-    modalView: {
-        width: width - 32,
-        // height: 279,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        marginHorizontal: 16,
+const useSettingStyles = (mode: boolean) => {
+    const styles = StyleSheet.create({
+        body: {
+            flex: 1,
+            backgroundColor: !mode ? COLOR.backgroundColor : COLOR.black,
+        },
+        textHeader: {
+            marginTop: 60,
+            fontSize: 15,
+            fontWeight: '700',
+            color: mode ? COLOR.white : COLOR.buttonColorActive,
+            marginLeft: 16
+        },
+        textAction: {
+            fontSize: 14,
+            fontWeight: '500',
+            color: mode ? COLOR.white : COLOR.darkBlack,
+            marginLeft: 10
+        },
+        line: {
+            height: 1,
+            backgroundColor: mode ? COLOR.authorColor : COLOR.buttonColorInactive,
+            marginLeft: 32,
+            marginVertical: 20
+        },
+        logo: {
+            alignItems: 'center',
+        },
+        main: {
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
+            width: width,
+            height: height,
+            flex: 1
+        },
+        content: {
+            position: 'absolute',
+            bottom: 22,
+            alignSelf: 'center',
+        },
+        background: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+        },
+        centeredView: {
+            width: width - 16,
+            alignSelf: 'center',
+            justifyContent: 'flex-end',
+        },
+        modalView: {
+            width: width - 32,
+            // height: 279,
+            backgroundColor: 'white',
+            borderRadius: 8,
+            marginHorizontal: 16,
 
-    },
-    button: {
-        marginHorizontal: 14,
-        marginBottom: 23,
-        height: 48,
-        borderRadius: 8,
-        backgroundColor: '#F4AD22'
-    },
-    textButton: {
-        fontSize: 14,
-        color: 'white',
-        paddingVertical: 12,
-        alignSelf: 'center'
-    },
-    buttonClose: {
-        backgroundColor: '#2196F3',
-    },
-    textStyle: {
-        color: 'white',
-        textAlign: 'center',
-    },
-    modalText: {
-        marginTop: 10,
-        textAlign: 'center',
-        width: 68,
-        height: 5,
-        backgroundColor: '#C7C7C7',
-        borderRadius: 8,
-        alignSelf: 'center'
-    },
+        },
+        button: {
+            marginHorizontal: 14,
+            marginBottom: 23,
+            height: 48,
+            borderRadius: 8,
+            backgroundColor: '#F4AD22'
+        },
+        textButton: {
+            fontSize: 14,
+            color: 'white',
+            paddingVertical: 12,
+            alignSelf: 'center'
+        },
+        buttonClose: {
+            backgroundColor: '#2196F3',
+        },
+        textStyle: {
+            color: 'white',
+            textAlign: 'center',
+        },
+        modalText: {
+            marginTop: 10,
+            textAlign: 'center',
+            width: 68,
+            height: 5,
+            backgroundColor: '#C7C7C7',
+            borderRadius: 8,
+            alignSelf: 'center'
+        },
+    });
+    return styles;
+}
 
 
-});
 
 export default SettingScreen;
