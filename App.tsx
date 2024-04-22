@@ -64,7 +64,7 @@ VasernDB
 
 
 
-const AppNavigation = () => {
+const AuthStacks = () => {
   const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
   return (
     <>
@@ -99,7 +99,7 @@ export const SettingStack = () => {
   )
 }
 
-const AppNavigationAuth = () => {
+const AppStacks = () => {
   const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
   return (
     <>
@@ -155,9 +155,9 @@ const AppNavigator = () => {
       return <Loading />
     }
     if (isLogin) {
-      return <AppNavigationAuth />
+      return <AppStacks />
     } else {
-      return <AppNavigation />
+      return <AuthStacks />
     }
 
   }

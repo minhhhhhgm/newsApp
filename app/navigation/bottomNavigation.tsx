@@ -5,7 +5,7 @@ import SearchIcons from '../icons/svg-component/searchIcon';
 import SettingIcon from '../icons/svg-component/settingIcon';
 import HomeScreen from '../screen/home/home';
 import BookMarkScreen from '../screen/bookmark/book-mark-screen';
-import { COLOR } from '../utils/color';
+import { COLOR, COLOR_MODE } from '../utils/color';
 import ViewedScreen from '../screen/viewed/viewed-screen';
 import { SettingStack } from '../../App';
 import { StyleSheet } from 'react-native';
@@ -77,7 +77,7 @@ const useBottomStyles = (mode : boolean) => {
     const styles = StyleSheet.create({
         tabBarStyle: {
             borderColor: 'transparent',
-            backgroundColor: mode ? COLOR.black :COLOR.backgroundColor,
+            backgroundColor: COLOR_MODE(mode).backgroundColor,
             borderTopWidth: 0,
             elevation: 0
         }

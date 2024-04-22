@@ -14,6 +14,7 @@ import { COLOR, COLOR_MODE } from '../../utils/color';
 import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS } from '../../utils/const';
 import { handleSaveHistory } from '../../utils/homeAction';
 import { ItemNews } from '../home/component/item-news';
+import DialogChangeNews from './component/dialog-change-news';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -79,7 +80,18 @@ const BookMarkScreen = () => {
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email });
     };
 
-    
+
+    const handleChangeNews = (selectedNews: string, bookmarkType: string) => {
+        if (news === selectedNews) {
+            setIsVisible(false);
+            return
+        }
+        setIsVisible(false);
+        dispatch(changeNewsBookmark(bookmarkType));
+        dispatch(changeNews(selectedNews));
+        setType(selectedNews);
+    };
+
     const renderItem = ({ item, index }: { item: IBookmark; index: number }) => {
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
         return (
@@ -99,16 +111,7 @@ const BookMarkScreen = () => {
         );
     };
 
-    const handleChangeNews = (selectedNews: string, bookmarkType: string) => {
-        if (news === selectedNews) {
-            setIsVisible(false);
-            return
-        }
-        setIsVisible(false);
-        dispatch(changeNewsBookmark(bookmarkType));
-        dispatch(changeNews(selectedNews));
-        setType(selectedNews);
-    };
+
 
     return (
         <View style={styles.body}>
@@ -128,30 +131,16 @@ const BookMarkScreen = () => {
                 />
             )}
             <Modal visible={isVisible} animationType='fade' onRequestClose={() => setIsVisible(false)} transparent={true}>
-                <TouchableOpacity style={styles.main} onPress={() => setIsVisible(false)} activeOpacity={1}>
-                    <View style={[styles.content, { top: offset.y + 30, left: offset.x + 30 }]}>
-                        <View
-                            style={[styles.viewPopOver]}>
-                            <View style={{
-                                justifyContent: 'center'
-                            }}>
-                                <TouchableOpacity onPress={() => handleChangeNews(VNEXPRESS, CHANGE_BOOKMARK_VN_EXPRESS)} style={styles.btnVnE}>
-                                    <Text
-                                        style={[styles.textVnE, { fontWeight: news === VNEXPRESS ? '700' : 'normal' }]}
-                                        text='VnExpress'
-                                    />
-                                </TouchableOpacity>
-                                <View style={styles.popOverLine} />
-                                <TouchableOpacity onPress={() => handleChangeNews(TUOITRE, CHANGE_BOOKMARK_TUOITRE)} style={styles.btnTt}>
-                                    <Text
-                                        style={[styles.textTt, { fontWeight: news === TUOITRE ? '700' : '100' }]}
-                                        text='Tuổi Trẻ'
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+
+                <DialogChangeNews
+                    left={offset.x + 30}
+                    top={offset.y + 30}
+                    onPressOut={() => setIsVisible(false)}
+                    news={news}
+                    onPressTuoiTre={() => handleChangeNews(TUOITRE, CHANGE_BOOKMARK_TUOITRE)}
+                    onPressVnExpress={() => handleChangeNews(VNEXPRESS, CHANGE_BOOKMARK_VN_EXPRESS)}
+                />
+
             </Modal>
         </View>
     );

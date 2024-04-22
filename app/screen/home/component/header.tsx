@@ -7,6 +7,7 @@ import { COLOR, COLOR_MODE } from '../../../utils/color';
 import { TUOITRE, VNEXPRESS, logoLogin } from '../../../utils/const';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
+import DialogChangeNews from '../../bookmark/component/dialog-change-news';
 const { width, height } = Dimensions.get('screen');
 
 interface IHeader {
@@ -64,29 +65,15 @@ export const Header = (props: IHeader) => {
                 onRequestClose={() => setIsVisible(false)}
                 transparent={true}
             >
-                <TouchableOpacity
-                    style={styles.main}
-                    onPress={() => setIsVisible(false)}
-                    activeOpacity={1}
-                >
-                    <View style={[styles.content, { top: offset.y + 30, left: offset.x + 30 }]}>
-                        <View style={styles.viewPopOver}>
-                            <TouchableOpacity onPress={handleVnE} style={styles.btnVnE}>
-                                <Text
-                                    style={[styles.textVnE, { fontWeight: newsName === VNEXPRESS ? '700' : '100' }]}
-                                    text='VnExpress'
-                                />
-                            </TouchableOpacity>
-                            <View style={styles.popOverLine}></View>
-                            <TouchableOpacity onPress={handleTt} style={styles.btnTt}>
-                                <Text
-                                    style={[styles.textTt, { fontWeight: newsName === TUOITRE ? '700' : '100' }]}
-                                    text='Tuổi Trẻ'
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+
+                <DialogChangeNews
+                    left={offset.x + 30}
+                    top={offset.y + 30}
+                    onPressOut={() => setIsVisible(false)}
+                    news={newsName}
+                    onPressTuoiTre={handleTt}
+                    onPressVnExpress={handleVnE}
+                />
             </Modal>
         </View>
     );

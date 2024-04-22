@@ -101,7 +101,9 @@ const DetailScreen = () => {
                 renderLoading={() =>
                     <ActivityIndicator
                         style={styles.activityIndicator}
-                        size="large" color={'blue'} />}
+                        size="large" color={'blue'}
+                    />
+                }
                 source={{ uri: link }} />
         </View>
     );

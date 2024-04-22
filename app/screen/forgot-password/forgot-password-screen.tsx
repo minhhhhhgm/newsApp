@@ -51,6 +51,8 @@ const ForgotPasswordScreen = () => {
             setIsLoading(false)
         }
     }
+
+    
     return (
         <KeyboardAvoidingView style={styles.body} behavior='padding'>
             <Loading isVisible={isLoading} />
