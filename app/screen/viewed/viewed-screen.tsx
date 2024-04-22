@@ -8,7 +8,7 @@ import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
 import { Viewed } from '../../database';
 import { RootState } from '../../store/store';
-import { COLOR } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { ItemNews } from '../home/component/item-news';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
 interface IViewed {
@@ -26,8 +26,15 @@ const ViewedScreen = () => {
     const [data, setData] = useState<IViewed[]>([]);
     const email = useSelector((state: RootState) => state.newsReducer.mail);
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
-
     const styles = useViewedStyles(mode)
+
+
+
+    useEffect(() => {
+        getdata();
+    }, [isFocused]);
+
+
     const getdata = () => {
         if (email && isFocused) {
             const newData = Viewed.filter((item: IViewed) => item.email === email).data();
@@ -37,14 +44,22 @@ const ViewedScreen = () => {
             setData(newData);
         }
     }
+
+
     const handleNavigate = (item: IViewed) => {
         const formattedTime = moment(new Date(item.timeWatched)).format('YYYY-MM-DD');
-        navigation.navigate('Detail', { link: item.url, author: item.author, time: formattedTime, imageUrl: item.image, type: item.type, title: item.title, email });
+        navigation.navigate('Detail',
+            {
+                link: item.url,
+                author: item.author,
+                time: formattedTime,
+                imageUrl: item.image,
+                type: item.type,
+                title: item.title,
+                email
+            });
     };
 
-    useEffect(() => {
-        getdata();
-    }, [isFocused]);
 
     const renderItem = ({ item, index }: { item: IViewed, index: number }) => {
         const formattedTime = moment(new Date(item.timeWatched)).format('YYYY-MM-DD');
@@ -85,11 +100,11 @@ const useViewedStyles = (mode: boolean) => {
     const styles = StyleSheet.create({
         body: {
             flex: 1,
-            backgroundColor: !mode ? COLOR.backgroundColor : COLOR.black,
+            backgroundColor: COLOR_MODE(mode).backgroundColor,
         },
         headerText: {
             fontWeight: '700',
-            color: mode ? COLOR.white : COLOR.darkBlack,
+            color: COLOR_MODE(mode).textColor,
             fontSize: 15,
             marginTop: 55,
             marginLeft: 16

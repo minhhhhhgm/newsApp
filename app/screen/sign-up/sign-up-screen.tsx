@@ -14,11 +14,13 @@ import GmailIcon from '../../icons/svg-component/gmailIcon';
 import GoogleIcon from '../../icons/svg-component/googleIcon';
 import LineIcon from '../../icons/svg-component/lineIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
-import { COLOR, headBlackColor } from '../../utils/color';
+import { COLOR, COLOR_MODE, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from '../sign-in/component/eye-icon';
 import Loading from '../../components/loading';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const SignUpScreen = () => {
   const insets = useSafeAreaInsets();
@@ -32,8 +34,10 @@ const SignUpScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const auth = FirebaseAuth
   const navigation = useNavigation()
-  const { t, i18n } = useTranslation();
-
+  const { t } = useTranslation();
+  const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+  const stroke = mode ? COLOR.white : null
+  const styles = useSignUpStyles(mode)
 
   const onChangeUserName = (value: string) => {
     setUserName(value);
@@ -47,14 +51,17 @@ const SignUpScreen = () => {
     setEmailError(handleValidateEmail(value) || '');
   };
 
+
   const onChangePass = (value: string) => {
     setPassword(value);
     setPasswordError(handleValidatePass(value) || '');
   };
 
+
   const isValid = () => email && password && userName && !emailError && !passwordError && !userNameError;
 
-  const handleSignIn = async () => {
+
+  const handleSignUp = async () => {
     setIsLoading(true)
     try {
       const responseSignUp = await createUserWithEmailAndPassword(auth, email, password)
@@ -74,20 +81,18 @@ const SignUpScreen = () => {
       setIsLoading(false)
     }
   }
+
+  
   return (
     <View style={styles.body}>
       <Loading isVisible={isLoading} />
       <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
         <Image
+          style={styles.image}
           source={logoLogin}
         />
         <Text
-          style={{
-            fontWeight: '700',
-            fontSize: 18,
-            marginTop: 20,
-            color: headBlackColor
-          }}
+          style={styles.headerText}
           text={'new24'}
         />
       </View>
@@ -95,19 +100,19 @@ const SignUpScreen = () => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}>
         <TextField
+          mode={mode}
           value={userName}
           onChangeText={onChangeUserName}
           containerStyle={{
             marginHorizontal: 46,
           }}
-          style={{
-            paddingTop: 25
-          }}
+          style={styles.inputStyle}
           label={'username'}
           placeholder={'username'}
           helper={userNameError}
         />
         <TextField
+          mode={mode}
           value={email}
           onChangeText={onChangeEmail}
           containerStyle={styles.textField}
@@ -117,30 +122,36 @@ const SignUpScreen = () => {
           helper={emailError}
         />
         <TextField
+          mode={mode}
           value={password}
           onChangeText={onChangePass}
           containerStyle={styles.textField}
-          style={{
-            paddingTop: 25
-          }}
+          style={styles.inputStyle}
           label={'password'}
           placeholder={'password'}
           secureTextEntry={!isShowPassword}
-          RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} />}//Righticon({ password: password, handleShowPass: () => { setIsShowPassword(!isShowPassword) }, isShowPassword })
+          RightIcon={
+            <Righticon
+              password={password}
+              handleShowPass={() => { setIsShowPassword(!isShowPassword) }}
+              isShowPassword={isShowPassword}
+              mode={mode}
+            />
+          }
           helper={passwordError}
         />
 
         <TouchableOpacity
           activeOpacity={1}
           disabled={!isValid()}
-          onPress={handleSignIn}
+          onPress={handleSignUp}
           style={[styles.button, {
-            backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
+            backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR_MODE(mode).titleText
           }]}>
           <Text
             text={'signUp'}
             style={{
-              color: COLOR.white
+              color: COLOR_MODE(mode).backgroundColor
             }}
           />
         </TouchableOpacity>
@@ -149,37 +160,37 @@ const SignUpScreen = () => {
           <Text text={'orSignInWith'}
             style={{
               marginHorizontal: 10,
-              color: COLOR.darkBlack,
+              color: COLOR_MODE(mode).textNewsColor
             }} />
           <View style={styles.line}></View>
         </View>
         <View style={styles.lineView}>
           <TouchableOpacity onPress={() => navigation.navigate('SignIn' as never)}>
-            <GmailIcon />
+            <GmailIcon stroke={stroke} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <GoogleIcon />
+            <GoogleIcon stroke={stroke} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <FbIcon />
+            <FbIcon stroke={stroke} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <TwitterIcon />
+            <TwitterIcon stroke={stroke} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <AppleIcon />
+            <AppleIcon stroke={stroke} />
           </TouchableOpacity>
         </View>
         <TextRn style={{
           marginHorizontal: 48,
           marginTop: 30,
           textAlign: 'center',
-          color: COLOR.darkBlack
+          color: COLOR_MODE(mode).textNewsColor
         }}>
           {t(`${'bySigningUpToNews24YouAreAcceptingOur'}`)}
           <Text text={' ' + t(`${'termsAndConditions'}`)} style={{
             fontWeight: '700',
-            color: COLOR.darkBlack
+            color: COLOR_MODE(mode).textNewsColor
           }} />
         </TextRn>
       </ScrollView>
@@ -187,45 +198,73 @@ const SignUpScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: COLOR.backgroundColor,
-  },
-  logo: {
-    alignItems: 'center',
-  },
-  textField: {
-    marginHorizontal: 46,
-    marginTop: 25
-  },
-  button: {
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 49,
-    alignSelf: 'center',
-    marginTop: 79
-  },
-  lineView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginTop: 50
-  },
-  rowLine: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 50,
-    marginHorizontal: 46
-  },
-  line: {
-    backgroundColor: COLOR.black,
-    height: 1.1,
-    flex: 1,
-  }
-});
+
+
+
+const useSignUpStyles = (mode: boolean) => {
+  const styles = StyleSheet.create({
+    body: {
+      flex: 1,
+      backgroundColor: COLOR_MODE(mode).backgroundColor
+    },
+    logo: {
+      alignItems: 'center',
+    },
+    image: {
+      tintColor: COLOR_MODE(mode).logoColor
+    },
+    headerText: {
+      fontWeight: '700',
+      fontSize: 18,
+      marginTop: 20,
+      color: COLOR_MODE(mode).textNewsColor
+    },
+    textField: {
+      marginHorizontal: 46,
+      marginTop: 25
+    },
+    button: {
+      borderRadius: 30,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 49,
+      alignSelf: 'center',
+      marginTop: 79
+    },
+    viewFogotPass: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: 46,
+      marginTop: 5,
+    },
+    rowLine: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 50,
+      marginHorizontal: 46
+    },
+    lineView: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignSelf: 'center',
+      marginTop: 50
+    },
+    line: {
+      backgroundColor: COLOR_MODE(mode).textNewsColor,
+      height: 1,
+      flex: 1,
+    },
+    viewRegister: {
+      marginBottom: 200
+    },
+    inputStyle: {
+      paddingTop: 25,
+      color: COLOR_MODE(mode).textNewsColor,
+    }
+  });
+  return styles;
+}
 
 export default SignUpScreen;

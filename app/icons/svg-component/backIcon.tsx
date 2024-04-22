@@ -1,6 +1,6 @@
 import * as React from "react";
 import Svg, { G, Path } from "react-native-svg";
-const BackIcon = (props : any) => (
+const BackIcon = (props: any) => (
   <Svg
     width={24}
     height={24}
@@ -13,7 +13,7 @@ const BackIcon = (props : any) => (
       <Path
         id="Vector"
         d="M15 18L9 12L15 6"
-        stroke="#180E19"
+        stroke={props.stroke ? props.stroke : "#180E19"}
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"

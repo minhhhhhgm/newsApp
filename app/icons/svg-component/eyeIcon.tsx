@@ -13,7 +13,7 @@ const EyeIcon = (props: any) => (
       <Path
         id="Vector"
         d="M0.666664 8C0.666664 8 3.33333 2.66667 8 2.66667C12.6667 2.66667 15.3333 8 15.3333 8C15.3333 8 12.6667 13.3333 8 13.3333C3.33333 13.3333 0.666664 8 0.666664 8Z"
-        stroke="#180E19"
+        stroke={props.stroke ? props.stroke : "#180E19"}
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -21,7 +21,7 @@ const EyeIcon = (props: any) => (
       <Path
         id="Vector_2"
         d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z"
-        stroke="#180E19"
+        stroke={props.stroke ? props.stroke : "#180E19"}
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"

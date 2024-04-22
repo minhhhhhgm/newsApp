@@ -12,16 +12,13 @@ import { TextField } from '../../components/TextField';
 import AppleIcon from '../../icons/svg-component/appleIcon';
 import FbIcon from '../../icons/svg-component/fbIcon';
 import GoogleIcon from '../../icons/svg-component/googleIcon';
-import LineIcon from '../../icons/svg-component/lineIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
-import { COLOR, headBlackColor } from '../../utils/color';
+import { COLOR, COLOR_MODE, headBlackColor } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { setAccessToken, setEmailApp, setNews } from '../../utils/storage';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
-import { } from '../../i18n/en';
 import Loading from '../../components/loading';
-import { Category } from '../../database';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMail, changeStatusLogin } from '../../store/newsSlice';
 import { dataCategoryTuoiTre, dataCategoryVnEpress, handleSaveCategory } from '../../utils/categoryManagement';
@@ -39,7 +36,26 @@ const SignInScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const dispatch = useDispatch()
   const { t } = useTranslation();
+  const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+  const stroke = mode ? COLOR.white : null
+  const styles = useSignInStyles(mode)
 
+  
+  const onChangeEmail = (value: string) => {
+    const mailValidate = handleValidateEmail(value);
+    setEmailError(mailValidate ?? '');
+    setEmail(value);
+  };
+
+
+  const onChangePass = (value: string) => {
+    const passValidate = handleValidatePass(value);
+    setPasswordError(passValidate ?? '');
+    setPassword(value);
+  };
+
+
+  const isValid = () => email && password && !emailError && !passwordError;
 
 
   const handleSignIn = async () => {
@@ -66,27 +82,15 @@ const SignInScreen = () => {
     }
   }
 
-  const onChangeEmail = (value: string) => {
-    const mailValidate = handleValidateEmail(value);
-    setEmailError(mailValidate ?? '');
-    setEmail(value);
-  };
-
-  const onChangePass = (value: string) => {
-    const passValidate = handleValidatePass(value);
-    setPasswordError(passValidate ?? '');
-    setPassword(value);
-  };
 
 
-  const isValid = () => email && password && !emailError && !passwordError;
-  
   return (
     <KeyboardAvoidingView style={styles.body} behavior='padding'>
       <Loading isVisible={isLoading} />
       <View>
         <View style={[styles.logo, { marginTop: insets.top + 32 }]}>
           <Image
+            style={styles.image}
             source={logoLogin}
           />
           <Text
@@ -98,25 +102,31 @@ const SignInScreen = () => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}>
           <TextField
+            mode={mode}
             value={email}
             onChangeText={onChangeEmail}
             containerStyle={styles.textField}
-            style={{ paddingTop: 25, }}
+            style={styles.inputStyle}
             label={'email'}
             placeholder={'email'}
             helper={emailError}
           />
           <TextField
+            mode={mode}
             value={password}
             onChangeText={onChangePass}
             containerStyle={styles.textField}
-            style={{
-              paddingTop: 25
-            }}
+            style={styles.inputStyle}
             label={'password'}
             placeholder={'password'}
             secureTextEntry={!isShowPassword}
-            RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} />}
+            RightIcon={
+              <Righticon
+                password={password}
+                handleShowPass={() => { setIsShowPassword(!isShowPassword) }}
+                isShowPassword={isShowPassword}
+                mode={mode}
+              />}
             helper={passwordError}
           />
           {
@@ -127,7 +137,7 @@ const SignInScreen = () => {
                 <Text
 
                   style={{
-                    color: COLOR.fogotPassColor,
+                    color: COLOR_MODE(mode).textNewsColor,
                     fontWeight: '500',
                   }}
                   text={'forgotPassword'}
@@ -140,12 +150,12 @@ const SignInScreen = () => {
             disabled={!isValid()}
             onPress={handleSignIn}
             style={[styles.button, {
-              backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR.buttonColorActive
+              backgroundColor: !isValid() ? COLOR.buttonColorInactive : COLOR_MODE(mode).titleText
             }]}>
             <Text
               text={'signIn'}
               style={{
-                color: COLOR.white
+                color: COLOR_MODE(mode).backgroundColor
               }}
             />
           </TouchableOpacity>
@@ -154,7 +164,7 @@ const SignInScreen = () => {
             <Text text={'orSignInWith'}
               style={{
                 marginHorizontal: 10,
-                color: COLOR.darkBlack,
+                color: COLOR_MODE(mode).textNewsColor
               }} />
             <View style={styles.line}></View>
           </View>
@@ -165,19 +175,19 @@ const SignInScreen = () => {
             marginTop: 50
           }}>
             <TouchableOpacity>
-              <GoogleIcon />
+              <GoogleIcon stroke={stroke} />
             </TouchableOpacity>
             <View style={{ width: '5%' }}></View>
             <TouchableOpacity>
-              <FbIcon />
+              <FbIcon stroke={stroke} />
             </TouchableOpacity>
             <View style={{ width: '5%' }}></View>
             <TouchableOpacity>
-              <TwitterIcon />
+              <TwitterIcon stroke={stroke} />
             </TouchableOpacity>
             <View style={{ width: '5%' }}></View>
             <TouchableOpacity>
-              <AppleIcon />
+              <AppleIcon stroke={stroke} />
             </TouchableOpacity>
           </View>
           <View style={styles.viewRegister}>
@@ -185,7 +195,7 @@ const SignInScreen = () => {
               marginHorizontal: 48,
               marginTop: 30,
               textAlign: 'center',
-              color: COLOR.darkBlack,
+              color: COLOR_MODE(mode).textNewsColor,
               marginBottom: 50
             }}>
               {t(`${'dontHaveAnAccount'}`)}
@@ -194,7 +204,7 @@ const SignInScreen = () => {
                 // text={`Register`}
                 style={{
                   fontWeight: '700',
-                  color: COLOR.darkBlack,
+                  color: COLOR_MODE(mode).textNewsColor,
                   fontFamily: '',
 
                 }} > {t(`${'register'}`)}</TextRn>
@@ -206,54 +216,66 @@ const SignInScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: COLOR.backgroundColor,
-  },
-  logo: {
-    alignItems: 'center',
-  },
-  headerText: {
-    fontWeight: '700',
-    fontSize: 18,
-    marginTop: 20,
-    color: headBlackColor
-  },
-  textField: {
-    marginHorizontal: 46,
-    marginTop: 25
-  },
-  button: {
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 49,
-    alignSelf: 'center',
-    marginTop: 79
-  },
-  viewFogotPass: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 46,
-    marginTop: 5,
-  },
-  rowLine: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 50,
-    marginHorizontal: 46
-  },
-  line: {
-    backgroundColor: COLOR.black,
-    height: 1,
-    flex: 1,
-  },
-  viewRegister: {
-    marginBottom: 200
-  }
-});
+const useSignInStyles = (mode: boolean) => {
+  const styles = StyleSheet.create({
+    body: {
+      flex: 1,
+      backgroundColor: COLOR_MODE(mode).backgroundColor
+    },
+    logo: {
+      alignItems: 'center',
+    },
+    image: {
+      tintColor: COLOR_MODE(mode).logoColor
+    },
+    headerText: {
+      fontWeight: '700',
+      fontSize: 18,
+      marginTop: 20,
+      color: COLOR_MODE(mode).textNewsColor
+    },
+    textField: {
+      marginHorizontal: 46,
+      marginTop: 25
+    },
+    button: {
+      borderRadius: 30,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 49,
+      alignSelf: 'center',
+      marginTop: 79
+    },
+    viewFogotPass: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: 46,
+      marginTop: 5,
+    },
+    rowLine: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 50,
+      marginHorizontal: 46
+    },
+    line: {
+      backgroundColor: COLOR_MODE(mode).textNewsColor,
+      height: 1,
+      flex: 1,
+    },
+    viewRegister: {
+      marginBottom: 200
+    },
+    inputStyle: {
+      paddingTop: 25,
+      color: COLOR_MODE(mode).textNewsColor,
+    }
+  });
+  return styles;
+}
+
+
 
 export default SignInScreen;

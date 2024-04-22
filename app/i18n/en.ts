@@ -109,6 +109,8 @@ export const enTrsl = {
   ykien: 'Opinion',
   tamsu: 'Confide',
   thugian:'Relax',
-  giathat:'Fake-Real'
+  giathat:'Fake-Real',
 
+  bookmark :'Bookmark',
+  share:'Share'
 }

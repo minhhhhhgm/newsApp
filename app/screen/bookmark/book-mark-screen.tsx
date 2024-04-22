@@ -10,7 +10,7 @@ import { Bookmark } from '../../database';
 import BellIcon from '../../icons/svg-component/BellIcon';
 import { changeNews, changeNewsBookmark } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
-import { COLOR } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS } from '../../utils/const';
 import { handleSaveHistory } from '../../utils/homeAction';
 import { ItemNews } from '../home/component/item-news';
@@ -39,14 +39,12 @@ const BookMarkScreen = () => {
     const news = useSelector((state: RootState) => state.newsReducer.newsName);
     const bookmarkChange = useSelector((state: RootState) => state.newsReducer.bookmark);
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
-
     const dispatch = useDispatch();
     const ref = useRef<TouchableOpacity>(null);
     const styles = useBookmarkStyles(mode)
-    useEffect(() => {
-        console.log("news", news);
 
-        getdataByType();
+    useEffect(() => {
+        getBookmarkData();
     }, [isFocused, type, news, bookmarkChange]);
 
     const onPress = () => {
@@ -56,7 +54,7 @@ const BookMarkScreen = () => {
         });
     };
 
-    const getdataByType = () => {
+    const getBookmarkData = () => {
         if (email) {
             const author = news === TUOITRE ? TUOITRE : VNEXPRESS;
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
@@ -65,12 +63,13 @@ const BookMarkScreen = () => {
     };
 
     const removeBookmark = (id: string) => {
-        const item1 = Bookmark.get({ id });
-        Bookmark.remove(item1);
+        const item = Bookmark.get({ id });
+        Bookmark.remove(item);
         Bookmark.onRemove(() => {
-            getdataByType();
+            getBookmarkData();
         });
     };
+
 
     const handleNavigate = async (item: IBookmark) => {
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
@@ -80,6 +79,7 @@ const BookMarkScreen = () => {
         navigation.navigate('Detail', { link: url, author, time: formattedTime, imageUrl: image, type, title, email });
     };
 
+    
     const renderItem = ({ item, index }: { item: IBookmark; index: number }) => {
         const formattedTime = moment(item.time).format('YYYY-MM-DD');
         return (
@@ -162,7 +162,7 @@ const useBookmarkStyles = (mode: boolean) => {
     const styles = StyleSheet.create({
         body: {
             flex: 1,
-            backgroundColor: !mode ? COLOR.backgroundColor : COLOR.black,
+            backgroundColor: COLOR_MODE(mode).backgroundColor,
         },
         headerContainer: {
             flexDirection: 'row',
@@ -172,7 +172,7 @@ const useBookmarkStyles = (mode: boolean) => {
         },
         headerText: {
             fontWeight: '700',
-            color: mode ? COLOR.white : COLOR.darkBlack,
+            color: COLOR_MODE(mode).textColor,
             fontSize: 15,
 
         },

@@ -11,10 +11,12 @@ import { TextField } from '../../components/TextField';
 import LockIcon from '../../icons/svg-component/LockIcon';
 import RightChvron from '../../icons/svg-component/RightChvron';
 import BackIcon from '../../icons/svg-component/backIcon';
-import { COLOR } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { handleValidatePass } from '../../utils/validate';
 import { Righticon } from '../sign-in/component/eye-icon';
 import Loading from '../../components/loading';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Account'>
 
 
@@ -33,12 +35,16 @@ const AccountScreen = () => {
   const [reNewPasswordError, setReNewPasswordError] = useState('')
   const [isLoading, setIsLoading] = useState(false);
   const insets = useSafeAreaInsets();
+  const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+  const styles = useAccountStyles(mode)
+  const stroke = mode ? COLOR.white : null
+
 
   useEffect(() => {
     if (newPassword && password) {
       if (newPassword === password) {
         setNewPasswordError('The new password matches the current password')
-      } else if (newPassword.length > 6 && newPassword !== password) {
+      } else if (newPassword.length >= 6) {
         setNewPasswordError('')
       }
     }
@@ -49,53 +55,40 @@ const AccountScreen = () => {
     if (reNewPassword && newPassword) {
       if (reNewPassword !== newPassword) {
         setReNewPasswordError('The confirm password not matches the new password')
-      } else if(reNewPassword.length > 6 &&reNewPassword == newPassword) {
+      } else if (reNewPassword.length >= 6) {
         setReNewPasswordError('')
       }
     }
   }, [reNewPassword, newPassword])
 
-  
+
   const onChangePass = (value: string) => {
-    const passValidate = handleValidatePass(value)
-    if (passValidate) {
-      setPasswordError(passValidate)
-    } else {
-      setPasswordError('')
-    }
-    setPassword(value)
-  }
+    const passValidate = handleValidatePass(value);
+    setPasswordError(passValidate || '');
+    setPassword(value);
+  };
+
+
   const onChangeNewPass = (value: string) => {
-    const passValidate = handleValidatePass(value)
-    if (passValidate) {
-      setNewPasswordError(passValidate)
-    } else {
-      setNewPasswordError('')
-    }
+    const passValidate = handleValidatePass(value);
+    setNewPasswordError(passValidate || '');
     if (value === password) {
-      setNewPasswordError('The new password matches the current password')
+      setNewPasswordError('The new password matches the current password');
     }
-    setNewPassword(value)
-  }
+    setNewPassword(value);
+  };
+
 
   const onChangeReNewPass = (value: string) => {
-    const passValidate = handleValidatePass(value)
-    if (passValidate) {
-      setReNewPasswordError(passValidate)
-    } else {
-      setReNewPasswordError('')
+    if (!value) {
+      setReNewPasswordError('Password is required');
     }
-    if (value !== newPassword) {
-      setReNewPasswordError('The confirm password not matches the new password')
-    }
-    setReNewPassword(value)
-  }
+    setReNewPassword(value);
+  };
+
 
   const isValid = () => {
-    if (reNewPassword && password && newPassword && !reNewPasswordError && !passwordError && !newPasswordError) {
-      return true;
-    }
-    return false;
+    return reNewPassword && password && newPassword && !reNewPasswordError && !passwordError && !newPasswordError;
   };
 
   const handleChangePass = async () => {
@@ -137,7 +130,7 @@ const AccountScreen = () => {
         <View style={{ flexDirection: 'row', }}>
           <TouchableOpacity style={{ marginLeft: 10 }}
             onPress={() => { navigation.goBack() }}>
-            <BackIcon />
+            <BackIcon stroke={stroke} />
           </TouchableOpacity>
           <Text
             text={'account'}
@@ -148,7 +141,7 @@ const AccountScreen = () => {
           onPress={isValid() ? handleChangePass : () => { }}>
           <Text
             text={'save'}
-            style={[styles.textSave, { color: isValid() ? COLOR.buttonColorActive : COLOR.buttonColorInactive }]}
+            style={[styles.textSave, { color: isValid() ? COLOR_MODE(mode).textActive : COLOR_MODE(mode).textInActive }]}
           />
         </TouchableOpacity>
       </View>
@@ -168,6 +161,7 @@ const AccountScreen = () => {
                   flex: 1,
                   borderBottomColor: COLOR.buttonColorInactive,
                   marginLeft: 20,
+                  color : COLOR_MODE(mode).textNewsColor,
                 }}
               />
             </View>
@@ -178,57 +172,74 @@ const AccountScreen = () => {
               <View style={{
                 flexDirection: 'row'
               }}>
-                <LockIcon />
+                <LockIcon stroke={stroke}/>
                 <Text
                   style={styles.textChangePass}
                   text={'changePass'}
                 />
               </View>
-              <RightChvron />
+              <RightChvron stroke={stroke}/>
             </TouchableOpacity>
           </View>
           :
           <View>
             <TextField
+              mode={mode}
               value={password}
               onChangeText={onChangePass}
               containerStyle={styles.textField}
-              style={{
-                paddingTop: 25
-              }}
+              style={styles.inputStyle}
               label={'currentPassword'}
               placeholder={'currentPassword'}
               secureTextEntry={!isShowPassword}
-              RightIcon={<Righticon password={password} handleShowPass={() => { setIsShowPassword(!isShowPassword) }} isShowPassword={isShowPassword} paddingRight={16} />}
+              RightIcon={
+                <Righticon
+                  password={password}
+                  handleShowPass={() => { setIsShowPassword(!isShowPassword) }}
+                  isShowPassword={isShowPassword}
+                  paddingRight={16}
+                  mode={mode}
+                />
+              }
               helper={passwordError}
             />
             <TextField
+              mode={mode}
               value={newPassword}
               onChangeText={onChangeNewPass}
               containerStyle={styles.textField}
-              style={{
-                paddingTop: 25
-              }}
+              style={styles.inputStyle}
               label={'newPassword'}
               placeholder={'newPassword'}
               secureTextEntry={!isShowNewPassword}
               RightIcon={
-                <Righticon password={newPassword} handleShowPass={() => { setIsShownewPassword(!isShowNewPassword) }} isShowPassword={isShowNewPassword} paddingRight={16} />
+                <Righticon
+                  password={newPassword}
+                  handleShowPass={() => { setIsShownewPassword(!isShowNewPassword) }}
+                  isShowPassword={isShowNewPassword}
+                  paddingRight={16}
+                  mode={mode}
+                />
               }
               helper={newPasswordError}
             />
             <TextField
+              mode={mode}
               value={reNewPassword}
               onChangeText={onChangeReNewPass}
               containerStyle={[styles.textField, { marginTop: 50 }]}
-              style={{
-                paddingTop: 15,
-              }}
+              style={styles.inputStyle}
               label={'confirmNewPassword'}
               placeholder={'confirmNewPassword'}
               secureTextEntry={!isShowConfirmPassword}
               RightIcon={
-                <Righticon password={reNewPassword} handleShowPass={() => { setIsShowConfirmPassword(!isShowConfirmPassword) }} isShowPassword={isShowConfirmPassword} paddingRight={16} />
+                <Righticon
+                  password={reNewPassword}
+                  handleShowPass={() => { setIsShowConfirmPassword(!isShowConfirmPassword) }}
+                  isShowPassword={isShowConfirmPassword}
+                  paddingRight={16}
+                  mode={mode}
+                />
               }
               helper={reNewPasswordError}
             />
@@ -239,57 +250,80 @@ const AccountScreen = () => {
 }
 export default AccountScreen
 
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: COLOR.backgroundColor,
-  },
-  headerText: {
-    fontWeight: '700',
-    fontSize: 18,
-    color: COLOR.darkBlack,
-    marginLeft: 16,
-  },
-  button: {
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 49,
-    alignSelf: 'center',
-    marginTop: 79
-  },
-  content: {
-    marginTop: 20,
-    marginHorizontal: 16
-  },
-  mailText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLOR.darkBlack,
-    alignSelf: 'center'
-    // marginTop : 20
-  },
-  textField: {
-    marginLeft: 16,
-    marginTop: 40
-  },
-  textChangePass: {
-    color: COLOR.darkBlack,
-    marginLeft: 10,
-    fontWeight: '500'
-  },
-  viewChangePass: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30
-  },
-  textSave: {
-    fontWeight: '700',
-    fontSize: 15,
-    marginRight: 16
-  }
-});
+const useAccountStyles = (mode: boolean) => {
+  const styles = StyleSheet.create({
+    body: {
+      flex: 1,
+      backgroundColor: COLOR_MODE(mode).backgroundColor
+    },
+    logo: {
+      alignItems: 'center',
+    },
+    image: {
+      tintColor: COLOR_MODE(mode).logoColor
+    },
+    content: {
+      marginTop: 20,
+      marginHorizontal: 16
+    },
+    headerText: {
+      fontWeight: '700',
+      fontSize: 18,
+      color: COLOR_MODE(mode).textNewsColor,
+      marginLeft: 16,
+
+    },
+    contentText: {
+      fontWeight: '500',
+      fontSize: 14,
+      marginTop: 20,
+      color: COLOR_MODE(mode).textNewsColor,
+      marginHorizontal: 46
+    },
+    button: {
+      borderRadius: 30,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 49,
+      alignSelf: 'center',
+      marginTop: 79
+    },
+    inputStyle: {
+      paddingTop: 25,
+      color: COLOR_MODE(mode).textNewsColor,
+    },
+    mailText: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: COLOR_MODE(mode).textNewsColor,
+      alignSelf: 'center'
+      // marginTop : 20
+    },
+    textField: {
+      marginLeft: 16,
+      marginTop: 40
+    },
+    textChangePass: {
+      color: COLOR_MODE(mode).textNewsColor,
+      marginLeft: 10,
+      fontWeight: '500'
+    },
+    viewChangePass: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 30
+    },
+    textSave: {
+      fontWeight: '700',
+      fontSize: 15,
+      marginRight: 16
+    }
+  });
+  return styles;
+}
+
+
 
 
 

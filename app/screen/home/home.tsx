@@ -6,13 +6,12 @@ import { CategoryManagementModel } from '../../database';
 import { changeNews, changeNewsBookmark } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
-import { COLOR } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS, tuoiTreDomain, vnExpressDomain } from '../../utils/const';
 import { Category, getDataRssByTitle } from '../../utils/homeAction';
 import { getEmailApp, getNews, setNews } from '../../utils/storage';
 import { Header } from './component/header';
 import NewsList from './component/news-list';
-import { useHomeStyles } from './styles';
 const HomeScreen = () => {
     const [titleNews, setTitleNews] = useState('forYou')
     const [feedItems, setFeedItems] = useState<NewsType[]>([])
@@ -195,98 +194,22 @@ const HomeScreen = () => {
     )
 }
 export default HomeScreen
-// const styles = StyleSheet.create({
-//     body: {
-//         flex: 1,
-//         backgroundColor: COLOR.backgroundColor,
-//     },
-//     headerText: {
-//         fontWeight: '700',
-//         fontSize: 18,
-//         marginTop: 20,
-//         color: COLOR.darkBlack,
-//         marginLeft: 16,
-//         marginBottom: 41
-//     },
-//     button: {
-//         marginTop: 30,
-//         justifyContent: 'center',
-//         paddingVertical: 4,
-//         paddingHorizontal: 15,
-//         borderRadius: 30,
-//         alignSelf: 'flex-start',
-//         marginRight: 10,
-//     },
-//     viewItem: {
-//         paddingHorizontal: 16,
-//         marginTop: 15,
-//     },
-//     imageItem: {
-//         width: 137,
-//         height: 140
-//     },
-//     viewContent: {
-//         flex: 1,
-//         marginLeft: 10,
-//     },
-//     textTitle: {
-//         flex: 3,
-//         fontWeight: '700',
-//         fontFamily: 'SF Pro',
-//         color: COLOR.focusColor
-//     },
-//     textAuthor: {
-//         flex: 2,
-//         fontWeight: '500',
-//         fontFamily: 'SF Pro',
-//         color: COLOR.authorColor
-//     },
-//     rowContent: {
-//         flexDirection: 'row',
-//         paddingBottom: 5
-//     },
-//     viewRowContent: {
-//         flex: 1,
-//         flexDirection: 'row',
-//     },
-//     titleNews: {
-//         fontWeight: '700',
-//         fontFamily: 'SF Pro',
-//         color: COLOR.textTypeColor
-//     },
-//     bigDot: {
-//         fontSize: 10,
-//         color: '#909090',
-//         alignSelf: 'flex-start',
-//         marginTop: 3,
-//         marginHorizontal: 10
-//     },
-//     lineHorizotal: {
-//         height: 1,
-//         backgroundColor: COLOR.buttonColorInactive,
-//         marginTop: 30,
-//         marginBottom: 20
-//     },
-//     viewPopOver: {
-//         backgroundColor: COLOR.backgroundColor,
-//         width: 121,
-//         height: 78,
-//         shadowColor: COLOR.black,
-//         shadowOffset: { width: -2, height: 4 },
-//         shadowOpacity: 10,
-//         shadowRadius: 30,
-//         elevation: 5,
-//         borderRadius: 10,
-//         position: 'absolute',
-//         // bottom: -25,
-//         // top:245.09091186523438,
-//         zIndex: 10,
-//         right: 15,
-//     },
-//     popOverLine: {
-//         height: 1,
-//         backgroundColor: COLOR.buttonColorInactive,
-//         marginLeft: 10,
-//         marginTop: 7,
-//     }
-// });
+
+const useHomeStyles = (mode : boolean) => {
+    const styles = StyleSheet.create({
+        body: {
+            flex: 1,
+            backgroundColor: COLOR_MODE(mode).backgroundColor
+        },
+        button: {
+            marginTop: 30,
+            justifyContent: 'center',
+            paddingVertical: 4,
+            paddingHorizontal: 15,
+            borderRadius: 30,
+            alignSelf: 'flex-start',
+            marginRight: 10,
+        },
+    });
+    return styles;
+}

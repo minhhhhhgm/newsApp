@@ -12,7 +12,7 @@ import LogOutIcon from '../../icons/svg-component/logout';
 import Noti from '../../icons/svg-component/noti';
 import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
-import { COLOR } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { removeAccessToken, removeDarkMode, setDarkMode, setLanguage } from '../../utils/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
@@ -25,10 +25,8 @@ const SettingScreen = () => {
     const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
-
     const dispatch = useDispatch()
     const styles = useSettingStyles(mode)
-
     const data = [
         {
             index: 1,
@@ -53,12 +51,12 @@ const SettingScreen = () => {
             icon: SettingIconProfile({ darkMode: mode })
         },
         {
-            index: 3,
+            index: 4,
             name: 'Dark Mode',
             onPress: async () => {
                 dispatch(changeDarkMode(!mode))
                 await setDarkMode('dark')
-                if(mode){
+                if (mode) {
                     await removeDarkMode()
                 }
             },
@@ -66,7 +64,7 @@ const SettingScreen = () => {
         },
 
         {
-            index: 7,
+            index: 5,
             name: 'logOut',
             onPress: async () => {
                 await removeAccessToken()
@@ -89,13 +87,10 @@ const SettingScreen = () => {
                     <View style={{
                         flexDirection: 'row'
                     }}>
-                        {
-                            <View style={{ alignSelf: "center" }}>{item.icon}</View>
-                        }
+                        <View style={{ alignSelf: "center" }}>{item.icon}</View>
                         <TouchableOpacity onPress={item.onPress}>
                             <Text text={item.name} style={styles.textAction} />
                         </TouchableOpacity>
-
                     </View>
                     <RightChvron />
                 </View>
@@ -110,76 +105,46 @@ const SettingScreen = () => {
                 text={'settings'}
                 style={styles.textHeader}
             />
-            <View style={{
-                marginTop: 30,
-                // marginHorizontal: 16
-            }}>
+            <View style={{ marginTop: 30, }}>
                 <ScrollView>
                     {
                         data.map((item, index) => rederItem({ item, index }))
                     }
                     <Modal
                         visible={isChoosLanguage}
-                        transparent={true}
-                    >
+                        transparent={true}>
                         <View style={styles.main}>
                             <View style={styles.content}>
                                 <View style={styles.modalView}>
-
                                     <TextRN style={styles.modalText} />
-                                    <TextRN style={{
-                                        fontWeight: '700',
-                                        color: COLOR.darkBlack,
-                                        fontSize: 20,
-                                        fontFamily: '',
-                                        alignSelf: 'center',
-                                        marginTop: 20,
-                                        marginBottom: 10
-                                    }}>Choose Language</TextRN>
+                                    <Text text='Choose Language' style={styles.textChooseLanguage} />
                                     <TouchableOpacity
                                         onPress={async () => {
                                             setIsChoosLanguage(!isChoosLanguage)
                                             i18n.changeLanguage('vi')
                                             await setLanguage('vi')
                                         }}>
-                                        <TextRN style={{
-                                            fontWeight: '700',
-                                            color: COLOR.darkBlack,
-                                            fontSize: 15,
-                                            fontFamily: '',
-                                            marginLeft: 15
-                                        }}>Việt Nam </TextRN>
+                                        <Text text='Việt Nam' style={styles.vnText} />
                                     </TouchableOpacity>
-
                                     <View style={{
                                         height: 1,
                                         backgroundColor: COLOR.buttonColorInactive,
                                         marginVertical: 20
                                     }}>
-
                                     </View>
                                     <TouchableOpacity onPress={async () => {
                                         setIsChoosLanguage(!isChoosLanguage);
                                         i18n.changeLanguage('en')
                                         await setLanguage('en')
                                     }}>
-                                        <TextRN style={{
-                                            fontWeight: '700',
-                                            color: COLOR.darkBlack,
-                                            fontSize: 15,
-                                            fontFamily: '',
-                                            marginLeft: 15,
-                                            marginBottom: 20
-                                        }}>English</TextRN>
+                                        <Text text='English' style={styles.enText} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
-
                     </Modal>
                 </ScrollView>
             </View>
-
         </View>
     );
 };
@@ -188,24 +153,24 @@ const useSettingStyles = (mode: boolean) => {
     const styles = StyleSheet.create({
         body: {
             flex: 1,
-            backgroundColor: !mode ? COLOR.backgroundColor : COLOR.black,
+            backgroundColor: COLOR_MODE(mode).backgroundColor,
         },
         textHeader: {
             marginTop: 60,
             fontSize: 15,
             fontWeight: '700',
-            color: mode ? COLOR.white : COLOR.buttonColorActive,
+            color: COLOR_MODE(mode).textColor,
             marginLeft: 16
         },
         textAction: {
             fontSize: 14,
             fontWeight: '500',
-            color: mode ? COLOR.white : COLOR.darkBlack,
+            color: COLOR_MODE(mode).textColor,
             marginLeft: 10
         },
         line: {
             height: 1,
-            backgroundColor: mode ? COLOR.authorColor : COLOR.buttonColorInactive,
+            backgroundColor: COLOR_MODE(mode).divider,
             marginLeft: 32,
             marginVertical: 20
         },
@@ -237,7 +202,6 @@ const useSettingStyles = (mode: boolean) => {
         },
         modalView: {
             width: width - 32,
-            // height: 279,
             backgroundColor: 'white',
             borderRadius: 8,
             marginHorizontal: 16,
@@ -272,6 +236,28 @@ const useSettingStyles = (mode: boolean) => {
             borderRadius: 8,
             alignSelf: 'center'
         },
+        textChooseLanguage: {
+            fontWeight: '700',
+            color: COLOR.darkBlack,
+            fontSize: 20,
+            alignSelf: 'center',
+            marginTop: 20,
+            marginBottom: 10
+        },
+        vnText: {
+            fontWeight: '700',
+            color: COLOR.darkBlack,
+            fontSize: 15,
+            marginLeft: 15
+        },
+        enText: {
+            fontWeight: '700',
+            color: COLOR.darkBlack,
+            fontSize: 15,
+            fontFamily: '',
+            marginLeft: 15,
+            marginBottom: 20
+        }
     });
     return styles;
 }

@@ -1,21 +1,19 @@
-import axios from "axios";
-import Share from "react-native-share";
-import Toast from 'react-native-simple-toast';
-import { Bookmark, Category, ItemCategory, Viewed } from "../database";
-import { extractImageUrl, extractString } from "./validate";
-import { auth } from "../../App";
-import moment from "moment";
-import { store } from "../store/store";
-import { addBookmarkApp, addMail } from "../store/newsSlice";
 import { nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
+import moment from "moment";
+import Share from "react-native-share";
+import { auth } from "../../App";
+import { Bookmark, Viewed } from "../database";
+import { addBookmarkApp } from "../store/newsSlice";
+import { store } from "../store/store";
+import { extractImageUrl, extractString } from "./validate";
 
 
 export const handleSaveBookMark = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
     console.log('OK');
-    const item1 = Bookmark.get({ title: title, email: email });
-    if (item1) {
-
-        Toast.show('The post has been saved', Toast.LONG);
+    const item = Bookmark.get({ title: title, email: email });
+    if (item) {
+        // Toast.show('The post has been saved', Toast.LONG);
         return;
     }
     const params = {
@@ -31,7 +29,7 @@ export const handleSaveBookMark = (type: string, title: string, author: string, 
     if(isInsert){
         store.dispatch(addBookmarkApp(nanoid()))
     }
-    Toast.show('Saved to bookmark', Toast.SHORT);
+    // Toast.show('Saved to bookmark', Toast.SHORT);
     return isInsert
 
 }
@@ -40,28 +38,28 @@ export type Category = {
     endpoint: string; text: string; mail: string; isShow: boolean | number;
 }
 
-export const handleSaveCategory = (email: string, data: Category[]) => {
-    console.log('OK');
+// export const handleSaveCategory = (email: string, data: Category[]) => {
+//     console.log('OK');
 
-    const item1 = Category.get({ email: email });
-    if (item1) {
-        return;
-    }
-    const insertItems = ItemCategory.insert(data);
+//     const item1 = Category.get({ email: email });
+//     if (item1) {
+//         return;
+//     }
+//     const insertItems = ItemCategory.insert(data);
 
-    const params = {
-        listCategory: insertItems,
-        email: email
-    }
-    Category.insert(params)
-}
+//     const params = {
+//         listCategory: insertItems,
+//         email: email
+//     }
+//     Category.insert(params)
+// }
 
-export const handleGetCategory = async (email: string) => {
-    const item1 = await Category.get({ email: email });
-    if (item1) {
-        return item1;
-    }
-}
+// export const handleGetCategory = async (email: string) => {
+//     const item1 = await Category.get({ email: email });
+//     if (item1) {
+//         return item1;
+//     }
+// }
 
 
 export const handleSaveHistory = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
@@ -87,21 +85,21 @@ export const handleSaveHistory = (type: string, title: string, author: string, t
 
 
 
-export const saveCate = async (dataC: any, mail: string) => {
-    console.log("SAVE data category", dataC);
+// export const saveCate = async (dataC: any, mail: string) => {
+//     console.log("SAVE data category", dataC);
 
-    const item1 = await ItemCategory.get({ mail: mail });
-    if (item1) {
-        return;
-    }
-    const filteredData = dataC.map((item: any) => {
-        const { id, ...rest } = item;
-        return rest;
-    });
-    const isInsert = ItemCategory.insert(dataC);
-    return isInsert
+//     const item1 = await ItemCategory.get({ mail: mail });
+//     if (item1) {
+//         return;
+//     }
+//     const filteredData = dataC.map((item: any) => {
+//         const { id, ...rest } = item;
+//         return rest;
+//     });
+//     const isInsert = ItemCategory.insert(dataC);
+//     return isInsert
 
-}
+// }
 
 
 

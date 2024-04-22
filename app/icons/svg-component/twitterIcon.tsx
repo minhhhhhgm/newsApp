@@ -18,13 +18,13 @@ const TwitterIcon = (props:any) => (
       width={43}
       height={40}
       rx={5}
-      stroke="#180E19"
+       stroke={props.stroke ? props.stroke : "#180E19"}
       strokeWidth={1.5}
     />
     <G clipPath="url(#clip0_87_4196)">
       <Path
         d="M23.25 17.25C23.25 15.1875 24.9844 13.4719 27.0469 13.5C27.7692 13.5083 28.4737 13.7251 29.0757 14.1243C29.6778 14.5234 30.1517 15.0879 30.4406 15.75H33.75L30.7219 18.7781C30.5265 21.8199 29.18 24.6731 26.9561 26.7576C24.7323 28.8421 21.7981 30.0015 18.75 30C15.75 30 15 28.875 15 28.875C15 28.875 18 27.75 19.5 25.5C19.5 25.5 13.5 22.5 15 14.25C15 14.25 18.75 18 23.25 18.75V17.25Z"
-        stroke="#180E19"
+         stroke={props.stroke ? props.stroke : "#180E19"}
         strokeWidth={1.3}
         strokeLinecap="round"
         strokeLinejoin="round"

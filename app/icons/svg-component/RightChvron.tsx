@@ -13,7 +13,7 @@ const RightChvron = (props :any) => (
             <Path
                 id="Vector"
                 d="M7.5 15L12.5 10L7.5 5"
-                stroke="#919191"
+                stroke={props.stroke ? props.stroke : "#919191"}
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"

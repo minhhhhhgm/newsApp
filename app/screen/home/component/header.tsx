@@ -3,7 +3,7 @@ import { Dimensions, Image, Modal, StyleSheet, Text as TextRn, TouchableOpacity,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import BellIcon from '../../../icons/svg-component/BellIcon';
-import { COLOR } from '../../../utils/color';
+import { COLOR, COLOR_MODE } from '../../../utils/color';
 import { TUOITRE, VNEXPRESS, logoLogin } from '../../../utils/const';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
@@ -73,7 +73,7 @@ export const Header = (props: IHeader) => {
                         <View style={styles.viewPopOver}>
                             <TouchableOpacity onPress={handleVnE} style={styles.btnVnE}>
                                 <Text
-                                    style={[styles.textVnE, { fontWeight: newsName === VNEXPRESS ? '700' : 'normal' }]}
+                                    style={[styles.textVnE, { fontWeight: newsName === VNEXPRESS ? '700' : '100' }]}
                                     text='VnExpress'
                                 />
                             </TouchableOpacity>
@@ -149,108 +149,14 @@ const useHeaderStyles = (mode: boolean) => {
         logo: {
             width: 24,
             height: 24,
-            tintColor: mode ? COLOR.white : COLOR.black
+            tintColor: COLOR_MODE(mode).logoColor
         },
         textNews: {
             fontWeight: '700',
             fontSize: 15,
-            color: mode ? COLOR.white : COLOR.focusColor,
+            color: COLOR_MODE(mode).textNewsColor,
             marginLeft: 10
         }
     });
     return styles;
 }
-
-
-// interface IPopoverBell {
-//     onChangeVnE: () => void
-//     onChangeTt: () => void
-// }
-// const PopoverBell = (props: IPopoverBell) => {
-//     const { onChangeTt, onChangeVnE } = props
-//     return (
-//         <Popover
-//             animationConfig={{ duration: 0 }}
-
-//             verticalOffset={-30}
-//             popoverStyle={{
-//                 width: 129,
-//                 height: 88,
-//                 justifyContent: 'center',
-//                 alignItems: 'center',
-//                 backgroundColor: 'white'
-//             }}
-//             backgroundStyle={{
-//                 backgroundColor: 'transparent'
-//             }}
-//             arrowSize={{
-//                 width: 10,
-//                 height: 10
-//             }}
-//             from={(
-//                 <TouchableOpacity
-//                     style={{
-//                         paddingRight: 16,
-//                         justifyContent: 'center',
-//                     }}>
-//                     <BellIcon />
-
-//                 </TouchableOpacity>
-//             )}>
-//             <View
-//                 style={{
-//                     backgroundColor: 'white',
-//                     width: 121,
-//                     height: 78,
-//                     shadowColor: 'black',
-//                     shadowOffset: { width: -2, height: 4 },
-//                     shadowOpacity: 10,
-//                     shadowRadius: 30,
-//                     elevation: 5,
-//                     borderRadius: 10
-//                 }}
-//             >
-//                 <View>
-//                     <TouchableOpacity
-//                         onPress={onChangeVnE}
-//                         style={{
-//                             paddingLeft: 10,
-//                             marginTop: 15,
-//                         }}>
-//                         <TextRn
-//                             style={{
-//                                 color: '#000000',
-//                                 fontSize: 12
-//                             }}
-//                         >VnExpress</TextRn>
-//                     </TouchableOpacity>
-//                     <View style={{
-//                         height: 1,
-//                         backgroundColor: '#EEEEEE',
-//                         width: 151,
-//                         marginTop: 7,
-//                         marginBottom: 0
-//                     }}>
-//                     </View>
-//                     <View>
-//                         <TouchableOpacity
-//                             onPress={onChangeTt}
-//                             style={{
-//                                 marginTop: 10,
-//                                 marginLeft: 8
-//                             }}>
-//                             <TextRn
-//                                 style={{
-//                                     color: '#000000',
-//                                     marginLeft: 5,
-//                                     fontSize: 12
-//                                 }}
-//                             >Tuổi Trẻ </TextRn>
-//                         </TouchableOpacity>
-
-//                     </View>
-//                 </View>
-//             </View>
-//         </Popover>
-//     )
-// }

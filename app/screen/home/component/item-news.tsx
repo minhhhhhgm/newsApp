@@ -7,7 +7,7 @@ import { Text } from '../../../components/Text';
 import { Bookmark } from '../../../database';
 import ShareIcon from '../../../icons/svg-component/ShareIcon';
 import BookMarkIcon from '../../../icons/svg-component/bookMarkIcon';
-import { COLOR } from '../../../utils/color';
+import { COLOR, COLOR_MODE } from '../../../utils/color';
 import { defaultImage } from '../../../utils/const';
 import { handleSaveBookMark, shareImage } from '../../../utils/homeAction';
 const { width, height } = Dimensions.get('window');
@@ -122,7 +122,7 @@ export const ItemNews = (props: IItemNews) => {
                     <TextRn numberOfLines={3} style={styles.textTitle}>{title}</TextRn>
                     <View style={styles.viewAuthor}>
                         <TextRn style={styles.textAuthor}>{author}</TextRn>
-                        {(isExistItem) && <BookMarkIcon width={15} height={15} fill={'#180E19'} />}
+                        {(isExistItem) && <BookMarkIcon width={15} height={15} fill={mode ? COLOR.white : '#180E19'} />}
                     </View>
                     <View style={styles.rowContent}>
                         <View style={styles.viewRowContent}>
@@ -157,14 +157,14 @@ export const ItemNews = (props: IItemNews) => {
                                 <View style={{ justifyContent: 'center' }}>
                                     <TouchableOpacity onPress={() => shareImage(link)} style={styles.shareButton}>
                                         <ShareIcon />
-                                        <TextRn style={styles.textShare}>Share</TextRn>
+                                        <Text text='share' style={styles.textShare}/>
                                     </TouchableOpacity>
                                     <View style={styles.popOverLine} />
                                     <TouchableOpacity onPress={bookmarkPress} style={styles.bookmarkButton}>
                                         <View style={{ justifyContent: 'center' }}>
                                             {<BookMarkIcon fill={isBookmark ? '#180E19' : 'none'} />}
                                         </View>
-                                        <TextRn style={styles.textBookmark}>{isBookmark ? 'Remove bookmark' : 'Bookmark'}</TextRn>
+                                        <Text text={isBookmark ? 'removeBookmark' : 'bookmark'} style={styles.textBookmark}/>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -199,7 +199,7 @@ export const useItemNewsStyles = (mode: boolean) => {
             flex: 3,
             fontWeight: '700',
             fontFamily: 'SF Pro',
-            color: mode ? COLOR.white : COLOR.focusColor
+            color: COLOR_MODE(mode).titleText
         },
         textAuthor: {
 
@@ -230,7 +230,7 @@ export const useItemNewsStyles = (mode: boolean) => {
         },
         lineHorizotal: {
             height: 1,
-            backgroundColor: mode ? COLOR.authorColor : COLOR.buttonColorInactive,
+            backgroundColor: COLOR_MODE(mode).divider,
             marginTop: 30,
             marginBottom: 20
         },
@@ -297,7 +297,7 @@ export const useItemNewsStyles = (mode: boolean) => {
         },
         threeDot: {
             fontSize: 5,
-            color: mode ? COLOR.white : COLOR.focusColor,
+            color: COLOR_MODE(mode).dotColor,
             marginTop: 7
         },
         shareButton: {

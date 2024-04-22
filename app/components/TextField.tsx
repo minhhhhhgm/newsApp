@@ -8,7 +8,6 @@ import {
     View,
     ViewStyle,
 } from "react-native"
-
 import { useTranslation } from "react-i18next"
 import { COLOR } from "../utils/color"
 import { Text, TextProps } from "./Text"
@@ -25,6 +24,7 @@ export interface TextFieldProps extends TextInputProps {
     inputWrapperStyle?: StyleProp<ViewStyle>
     RightIcon?: ReactElement
     LeftIcon?: ReactElement
+    mode?: boolean
 }
 
 export const TextField = (props: TextFieldProps) => {
@@ -38,6 +38,7 @@ export const TextField = (props: TextFieldProps) => {
         containerStyle,
         inputWrapperStyle,
         value,
+        mode,
         ...TextInputProps
     } = props
     const { t } = useTranslation();
@@ -55,7 +56,7 @@ export const TextField = (props: TextFieldProps) => {
             {(label && value) && (
                 <Text
                     text={label}
-                    style={labelStyle}
+                    style={[labelStyle, { color: mode ? COLOR.white : COLOR.black }]}
                 />
             )}
             <View style={[

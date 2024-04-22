@@ -30,7 +30,6 @@ const ProfileScreen = () => {
     const email = useSelector((state: RootState) => state.newsReducer.mail)
 
     const handleChangeAvatar = async () => {
-        console.log('asjdi');
         const metadata = {
             contentType: 'image/jpeg'
         };
@@ -77,16 +76,6 @@ const ProfileScreen = () => {
           
     //     });
     //   }, []);
-     const extractString = (text: string, startTag: string, endTag: string) => {
-        const startIndex = text.indexOf(startTag) + startTag.length;
-        const endIndex = text.indexOf(endTag, startIndex);
-        console.log(startIndex, endIndex);
-        
-        return text.substring(startIndex, endIndex);
-    };
-
-    console.log('ok123456'.indexOf("5"));
-    
 
     return (
         <View style={[styles.body, { paddingTop: 22 + insets.top }]}>

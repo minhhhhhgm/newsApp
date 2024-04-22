@@ -4,9 +4,7 @@ import HomeSelectedIcon from '../icons/svg-component/homeSelectedIcon';
 import SearchIcons from '../icons/svg-component/searchIcon';
 import SettingIcon from '../icons/svg-component/settingIcon';
 import HomeScreen from '../screen/home/home';
-import SearchScreen from '../screen/search/search-screen';
 import BookMarkScreen from '../screen/bookmark/book-mark-screen';
-import SettingScreen from '../screen/setting/setting-screen';
 import { COLOR } from '../utils/color';
 import ViewedScreen from '../screen/viewed/viewed-screen';
 import { SettingStack } from '../../App';
@@ -26,7 +24,6 @@ export default function BottomNavigation() {
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
     const color = mode ? COLOR.white : COLOR.focusColor
     const stroke = mode ? COLOR.white : null
-
     const styles = useBottomStyles(mode)
     return (
         <Tab.Navigator
@@ -77,7 +74,6 @@ export default function BottomNavigation() {
 }
 
 const useBottomStyles = (mode : boolean) => {
-    
     const styles = StyleSheet.create({
         tabBarStyle: {
             borderColor: 'transparent',
