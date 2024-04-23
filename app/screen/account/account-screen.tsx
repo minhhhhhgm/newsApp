@@ -43,7 +43,7 @@ const AccountScreen = () => {
   useEffect(() => {
     if (newPassword && password) {
       if (newPassword === password) {
-        setNewPasswordError('The new password matches the current password')
+        setNewPasswordError('theNewPasswordMatchesTheCurrentPassword')
       } else if (newPassword.length >= 6) {
         setNewPasswordError('')
       }
@@ -54,7 +54,7 @@ const AccountScreen = () => {
   useEffect(() => {
     if (reNewPassword && newPassword) {
       if (reNewPassword !== newPassword) {
-        setReNewPasswordError('The confirm password not matches the new password')
+        setReNewPasswordError('theConfirmPasswordNotMatchesTheNewPassword')
       } else if (reNewPassword.length >= 6) {
         setReNewPasswordError('')
       }
@@ -73,7 +73,7 @@ const AccountScreen = () => {
     const passValidate = handleValidatePass(value);
     setNewPasswordError(passValidate || '');
     if (value === password) {
-      setNewPasswordError('The new password matches the current password');
+      setNewPasswordError('theNewPasswordMatchesTheCurrentPassword');
     }
     setNewPassword(value);
   };
@@ -81,7 +81,7 @@ const AccountScreen = () => {
 
   const onChangeReNewPass = (value: string) => {
     if (!value) {
-      setReNewPasswordError('Password is required');
+      setReNewPasswordError('passwordIsRequired');
     }
     setReNewPassword(value);
   };
@@ -90,6 +90,8 @@ const AccountScreen = () => {
   const isValid = () => {
     return reNewPassword && password && newPassword && !reNewPasswordError && !passwordError && !newPasswordError;
   };
+
+  
 
   const handleChangePass = async () => {
     setIsLoading(true)
@@ -138,6 +140,7 @@ const AccountScreen = () => {
           />
         </View>
         <TouchableOpacity
+          activeOpacity={1}
           onPress={isValid() ? handleChangePass : () => { }}>
           <Text
             text={'save'}

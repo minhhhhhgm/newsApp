@@ -56,23 +56,23 @@ export const extractContentTuoiTre = (inputString: string): string  => {
 export const handleValidateEmail = (input: string) => {
   const isEmty = input.length == 0 ? true : false
   if (isEmty) {
-    return `Email is required`
+    return `emailIsRequired`
   }
   const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const isValid = emailPattern.test(input);
   if (isValid) {
     return null
   }
-  return 'Invalid Email'
+  return 'invalidEmail'
 }
 
 export const handleValidatePass = (input: string) => {
   const isEmty = input.length == 0 ? true : false
   if (isEmty) {
-    return `Password is required`
+    return `passwordIsRequired`
   }
   if (input.length < 6) {
-    return 'Password to short'
+    return 'passwordToShort'
   }
   return ''
 }

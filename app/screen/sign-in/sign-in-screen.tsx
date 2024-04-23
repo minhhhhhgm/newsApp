@@ -14,13 +14,13 @@ import FbIcon from '../../icons/svg-component/fbIcon';
 import GoogleIcon from '../../icons/svg-component/googleIcon';
 import TwitterIcon from '../../icons/svg-component/twitterIcon';
 import { COLOR, COLOR_MODE, headBlackColor } from '../../utils/color';
-import { logoLogin } from '../../utils/const';
+import { VNEXPRESS, logoLogin } from '../../utils/const';
 import { setAccessToken, setEmailApp, setNews } from '../../utils/storage';
 import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
 import Loading from '../../components/loading';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMail, changeStatusLogin } from '../../store/newsSlice';
+import { addMail, changeNews, changeStatusLogin } from '../../store/newsSlice';
 import { dataCategoryTuoiTre, dataCategoryVnEpress, handleSaveCategory } from '../../utils/categoryManagement';
 import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -34,6 +34,8 @@ const SignInScreen = () => {
   const [passwordError, setPasswordError] = useState('')
   const navigation = useNavigation<NavigationProps>()
   const [isLoading, setIsLoading] = useState(false)
+  const dataVnE = JSON.stringify(dataCategoryVnEpress())
+  const dataTt = JSON.stringify(dataCategoryTuoiTre())
   const dispatch = useDispatch()
   const { t } = useTranslation();
   const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
@@ -60,16 +62,15 @@ const SignInScreen = () => {
 
   const handleSignIn = async () => {
     setIsLoading(true)
-    const dataVnE = JSON.stringify(dataCategoryVnEpress())
-    const dataTt = JSON.stringify(dataCategoryTuoiTre())
     try {
       const responseSignIn = await signInWithEmailAndPassword(auth, email, password)
       if (responseSignIn) {
         console.log(responseSignIn);
         await setAccessToken(await responseSignIn.user.getIdToken())
         await setEmailApp(email)
-        await setNews('VnExpress')
+        await setNews(VNEXPRESS)
         dispatch(addMail(email))
+        dispatch(changeNews(VNEXPRESS))
         handleSaveCategory(dataVnE, dataTt, email)
         dispatch(changeStatusLogin(true))
         setIsLoading(false)

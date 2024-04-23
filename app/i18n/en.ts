@@ -112,5 +112,7 @@ export const enTrsl = {
   giathat:'Fake-Real',
 
   bookmark :'Bookmark',
-  share:'Share'
+  share:'Share',
+  theNewPasswordMatchesTheCurrentPassword:'The new password matches the current password',
+  theConfirmPasswordNotMatchesTheNewPassword :'The confirm password not matches the new password'
 }

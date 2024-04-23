@@ -8,7 +8,7 @@ import { Text } from '../../components/Text';
 import { TextField } from '../../components/TextField';
 import { FirebaseAuth } from '../../firebase/config';
 import BackIcon from '../../icons/svg-component/backIcon';
-import { COLOR, COLOR_MODE, headBlackColor } from '../../utils/color';
+import { COLOR, COLOR_MODE } from '../../utils/color';
 import { logoLogin } from '../../utils/const';
 import { handleValidateEmail } from '../../utils/validate';
 import Loading from '../../components/loading';
@@ -30,6 +30,7 @@ const ForgotPasswordScreen = () => {
         setEmailError(handleValidateEmail(value) ?? '')
         setEmail(value)
     }
+    
     const isValid = () => email && !emailError 
 
     

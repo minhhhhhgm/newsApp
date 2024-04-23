@@ -81,58 +81,6 @@ export const Header = (props: IHeader) => {
 
 const useHeaderStyles = (mode: boolean) => {
     const styles = StyleSheet.create({
-        viewPopOver: {
-            backgroundColor: COLOR.backgroundColor,
-            width: 121,
-            height: 78,
-            shadowColor: COLOR.black,
-            shadowOffset: { width: -2, height: 4 },
-            shadowOpacity: 10,
-            shadowRadius: 30,
-            elevation: 5,
-            borderRadius: 10,
-            position: 'absolute',
-            zIndex: 10,
-            right: 15,
-        },
-        popOverLine: {
-            height: 1,
-            backgroundColor: COLOR.buttonColorInactive,
-            marginTop: 7,
-        },
-        main: {
-            backgroundColor: 'transparent',
-            width: width,
-            height: height,
-            flex: 1
-        },
-        content: {
-            position: 'absolute',
-            bottom: 22,
-            alignSelf: 'center',
-        },
-        btnVnE: {
-            flexDirection: 'row',
-            paddingLeft: 10,
-            marginTop: 15,
-        },
-        textVnE: {
-            color: COLOR.focusColor,
-            marginLeft: 5,
-            fontSize: 12
-        },
-        btnTt: {
-            flexDirection: 'row',
-            marginTop: 10,
-            marginLeft: 8,
-        },
-        textTt: {
-            flex: 1,
-            color: COLOR.focusColor,
-            marginLeft: 5,
-            fontSize: 12,
-            alignSelf: 'center',
-        },
         logo: {
             width: 24,
             height: 24,

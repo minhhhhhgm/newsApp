@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View } from 'react-native';
 import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
 import RightChvron from '../../icons/svg-component/RightChvron';
@@ -13,10 +13,11 @@ import Noti from '../../icons/svg-component/noti';
 import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR, COLOR_MODE } from '../../utils/color';
-import { removeAccessToken, removeDarkMode, setDarkMode, setLanguage } from '../../utils/storage';
+import { removeAccessToken, removeDarkMode, removeNews, setDarkMode, setLanguage } from '../../utils/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
+import { VNEXPRESS } from '../../utils/const';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
@@ -60,21 +61,38 @@ const SettingScreen = () => {
                     await removeDarkMode()
                 }
             },
-            icon: SettingIconProfile({ darkMode: mode })
+            icon: DarkModeicon({ darkMode: mode })
         },
 
         {
             index: 5,
             name: 'logOut',
-            onPress: async () => {
-                await removeAccessToken()
-                dispatch(changeNews('VnExpress'))
-                dispatch(changeStatusLogin(false))
-            },
+            onPress: () => logOutAlert(),
             icon: LogOutIcon({ darkMode: mode })
         },
 
     ]
+
+    const logOutAlert = () => {
+        Alert.alert('Log Out', 'Do you want to log out ?', [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Log out',
+                onPress: async () => {
+                    await removeAccessToken()
+                    // await removeNews()
+                    dispatch(changeNews(VNEXPRESS))
+                    dispatch(changeStatusLogin(false))
+                },
+
+            },
+        ]);
+    }
+
+
     const rederItem = ({ item, index }: { item: any, index: number }) => {
         return (
             <View key={index}>

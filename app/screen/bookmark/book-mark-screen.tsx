@@ -15,6 +15,7 @@ import { CHANGE_BOOKMARK_TUOITRE, CHANGE_BOOKMARK_VN_EXPRESS, TUOITRE, VNEXPRESS
 import { handleSaveHistory } from '../../utils/homeAction';
 import { ItemNews } from '../home/component/item-news';
 import DialogChangeNews from './component/dialog-change-news';
+import { getNews } from '../../utils/storage';
 const { width, height } = Dimensions.get('screen');
 
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -55,10 +56,13 @@ const BookMarkScreen = () => {
         });
     };
 
-    const getBookmarkData = () => {
+    const getBookmarkData =() => {
         if (email) {
             const author = news === TUOITRE ? TUOITRE : VNEXPRESS;
             const data = Bookmark.filter((item: IBookmark) => item.author === author && item.email === email).data();
+            // const news2 = await getNews()
+            // console.log(data,author,email,news, news2);
+            
             setData(data);
         }
     };

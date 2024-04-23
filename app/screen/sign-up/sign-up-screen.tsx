@@ -41,7 +41,7 @@ const SignUpScreen = () => {
 
   const onChangeUserName = (value: string) => {
     setUserName(value);
-    setUserNameError(value ? '' : 'Username is required');
+    setUserNameError(value ? '' : 'usernameIsRequired');
   };
 
 
@@ -73,6 +73,7 @@ const SignUpScreen = () => {
       if (responseSignUp) {
         await updateProfile(responseSignUp.user, update);
         Toast.show('Create account success', Toast.LONG);
+        navigation.goBack()
         setIsLoading(false)
       }
     } catch (err) {

@@ -22,7 +22,7 @@ const HomeScreen = () => {
     const [dataCategory, setDataCategory] = useState<Category[]>([])
     const textRef = useRef<string>('')
     const dispatch = useDispatch()
-    const cate = useSelector((state: RootState) => state.newsReducer.changeCategory)
+    const category = useSelector((state: RootState) => state.newsReducer.changeCategory)
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
     const nameNewsChange = useSelector((state: RootState) => state.newsReducer.nameNewsChange)
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
@@ -33,7 +33,7 @@ const HomeScreen = () => {
     // GET CATEGORY AND NEWS DATA
     useEffect(() => {
         handleGetDataWhenCategoryChange()
-    }, [cate, domain])
+    }, [category, domain])
 
 
     // GET NEWS WHEN OPEN APP

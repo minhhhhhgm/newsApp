@@ -4,18 +4,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Share from "react-native-share";
-import Toast from 'react-native-simple-toast';
 import WebView from 'react-native-webview';
+import { useSelector } from 'react-redux';
 import { ParamsList } from '../../../App';
 import { Bookmark, Viewed } from '../../database';
 import ShareIcon from '../../icons/svg-component/ShareIcon';
 import BackIcon from '../../icons/svg-component/backIcon';
 import BookMarkIcon from '../../icons/svg-component/bookMarkIcon';
+import { RootState } from '../../store/store';
 import { COLOR, COLOR_MODE } from '../../utils/color';
 import { handleSaveBookMark, shareImage } from '../../utils/homeAction';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Detail'>
 
 
@@ -76,9 +74,7 @@ const DetailScreen = () => {
                     <TouchableOpacity
                         activeOpacity={1}
                         onPress={!isSaveBookMark ? onSave : onRemove}
-                        style={{
-                            marginRight: 15
-                        }}>
+                        style={{ marginRight: 15 }}>
                         <BookMarkIcon fill={isSaveBookMark ? saveColor : 'none'} stroke={stroke} />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -86,7 +82,6 @@ const DetailScreen = () => {
                         onPress={() => shareImage(link)}>
                         <ShareIcon width={24} height={24} stroke={stroke} />
                     </TouchableOpacity>
-
                 </View>
             </View>
         )

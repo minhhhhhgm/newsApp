@@ -29,23 +29,11 @@ interface IItemNews {
 }
 
 export const ItemNews = (props: IItemNews) => {
+    const { index, handleNavigateDetailNews, imgSrc, title, relativeTime, link, titleNews, author, time, onRemove, mode } = props
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const newRef = useRef<TouchableOpacity>(null);
     const [isVisible, setIsVisible] = useState({ id: 0, visible: false })
     const [isBookmark, setIsBookmark] = useState(false)
-    const {
-        index,
-        handleNavigateDetailNews,
-        imgSrc,
-        title,
-        relativeTime,
-        link,
-        titleNews,
-        author,
-        time,
-        onRemove,
-        mode
-    } = props
     const email = auth.currentUser?.email
     const visible = isVisible.visible && index === isVisible.id
     const isFocused = useIsFocused()
@@ -157,14 +145,14 @@ export const ItemNews = (props: IItemNews) => {
                                 <View style={{ justifyContent: 'center' }}>
                                     <TouchableOpacity onPress={() => shareImage(link)} style={styles.shareButton}>
                                         <ShareIcon />
-                                        <Text text='share' style={styles.textShare}/>
+                                        <Text text='share' style={styles.textShare} />
                                     </TouchableOpacity>
                                     <View style={styles.popOverLine} />
                                     <TouchableOpacity onPress={bookmarkPress} style={styles.bookmarkButton}>
                                         <View style={{ justifyContent: 'center' }}>
                                             {<BookMarkIcon fill={isBookmark ? '#180E19' : 'none'} />}
                                         </View>
-                                        <Text text={isBookmark ? 'removeBookmark' : 'bookmark'} style={styles.textBookmark}/>
+                                        <Text text={isBookmark ? 'removeBookmark' : 'bookmark'} style={styles.textBookmark} />
                                     </TouchableOpacity>
                                 </View>
                             </View>

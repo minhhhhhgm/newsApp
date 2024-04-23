@@ -58,7 +58,6 @@ export type ParamsList = {
 const Stack = createNativeStackNavigator<ParamsList>()
 
 export const auth = FirebaseAuth
-LogBox.ignoreAllLogs();
 // Bookmark.data()
 VasernDB
 
@@ -112,16 +111,11 @@ const AppStacks = () => {
         <Stack.Navigator initialRouteName='BottomNavigation' screenOptions={{
           headerShown: false
         }}>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
-          <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
           <Stack.Screen name="BookMark" component={BookMarkScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Viewed" component={ViewedScreen} />
-          <Stack.Screen name="Category" component={CategoryManagementScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
@@ -173,6 +167,8 @@ function App(): React.JSX.Element {
     const news = await getNews()
     const darkmode = await getDarkMode()
     if (news) {
+      console.log('NEWS===', news);
+      
       const selectedNews = news === VNEXPRESS ? VNEXPRESS : TUOITRE;
       store.dispatch(changeNews(selectedNews));
     }

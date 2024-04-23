@@ -113,5 +113,7 @@ export const viTrsl = {
   giathat: 'Giả thật',
 
   bookmark: 'Đánh dấu',
-  share: 'Chia sẻ'
+  share: 'Chia sẻ',
+  theNewPasswordMatchesTheCurrentPassword:'Không được trùng mật khẩu hiện tại',
+  theConfirmPasswordNotMatchesTheNewPassword :'Không khớp mật khẩu mới'
 }

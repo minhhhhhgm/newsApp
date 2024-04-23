@@ -9,12 +9,7 @@ import EyeIcon from '../../../icons/svg-component/eyeIcon';
 export const rightSwipeActions = (item: DataInterests, index: number) => {
     return (
         <View
-            style={{
-                backgroundColor: COLOR.authorColor,
-                justifyContent: 'center',
-                alignItems: 'flex-end',
-                paddingHorizontal: 30
-            }}>
+            style={{ backgroundColor: COLOR.authorColor, justifyContent: 'center',alignItems: 'flex-end',paddingHorizontal: 30}}>
             <TouchableOpacity activeOpacity={1}>
                 <EyeOffIcon />
             </TouchableOpacity>

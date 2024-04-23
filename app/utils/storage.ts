@@ -84,6 +84,15 @@ export async function getNews() {
         return null;
     }
 }
+
+export async function removeNews() {
+    try {
+        await AsyncStorage.removeItem(UserStatus.News);
+    } catch (err) {
+        return false;
+    }
+}
+
 export async function setEmailApp(token: string) {
     try {
         await AsyncStorage.setItem(

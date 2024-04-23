@@ -38,7 +38,7 @@ const CategoryManagementScreen = () => {
     const styles = useCategoryStyles(mode)
 
     console.log('news', news);
-    
+
     useEffect(() => {
         getDataCategory()
     }, [news])
@@ -46,12 +46,17 @@ const CategoryManagementScreen = () => {
     //GET CATEGORY
     const getDataCategory = () => {
         const getData = CategoryManagementModel.get({ email: mail })
-        if (news == VNEXPRESS) {
+        if (news) {
+            if (news == VNEXPRESS) {
+                const data = JSON.parse(getData.vnExpress)
+                setData(data)
+            }
+            else {
+                const data = JSON.parse(getData.tuoiTre)
+                setData(data)
+            }
+        } else {
             const data = JSON.parse(getData.vnExpress)
-            setData(data)
-        }
-        else {
-            const data = JSON.parse(getData.tuoiTre)
             setData(data)
         }
     }
@@ -66,7 +71,7 @@ const CategoryManagementScreen = () => {
             return indexs === index ? { ...item, isShow } : item;
         });
         const stringData = JSON.stringify(updatedArray);
-        const updateData = news === 'VnExpress' ? { vnExpress: stringData } : { tuoiTre: stringData };
+        const updateData = news === VNEXPRESS ? { vnExpress: stringData } : { tuoiTre: stringData };
         const isUpdate = await CategoryManagementModel.update(getData, updateData);
         if (isUpdate) {
             swipeableRef.current?.[index].close();
@@ -80,7 +85,7 @@ const CategoryManagementScreen = () => {
     const handleUpdatePositionCategory = async (data: DataInterests[]) => {
         const getData = CategoryManagementModel.get({ email: mail });
         const stringData = JSON.stringify(data);
-        const updateData = news === 'VnExpress' ? { vnExpress: stringData } : { tuoiTre: stringData };
+        const updateData = news === VNEXPRESS ? { vnExpress: stringData } : { tuoiTre: stringData };
         const isUpdate = await CategoryManagementModel.update(getData, updateData);
         if (isUpdate) {
             dispatch(changeCate(nanoid()));
@@ -130,7 +135,7 @@ const CategoryManagementScreen = () => {
                 <TouchableOpacity
                     style={{ marginTop: 20, marginLeft: 10 }}
                     onPress={() => navigation.goBack()}>
-                    <BackIcon stroke={stroke}/>
+                    <BackIcon stroke={stroke} />
                 </TouchableOpacity>
                 <Text
                     text='category'
