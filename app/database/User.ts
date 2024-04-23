@@ -1,7 +1,7 @@
-export class UserModel {
-    name = "Users"
+export class UserSettingModel {
+    name = "UserSetting"
     props = {
-        id: "string",
-        email: "?string"
+        darkMode: "boolean",
+        email: "string"
     }
 }

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View } from 'react-native';
 import { ParamsList } from '../../../App';
@@ -18,16 +18,26 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { VNEXPRESS } from '../../utils/const';
+import { UserSetting } from '../../database';
 const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const SettingScreen = () => {
+    const [darkModeSetting, setDarkModeSetting] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
     const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
+    const email = useSelector((state: RootState) => state.newsReducer.mail);
     const dispatch = useDispatch()
     const styles = useSettingStyles(mode)
+
+    // useEffect(() => {
+    //     const isExistDarkMode = UserSetting.get({ email: email, darkMode: true })
+    //     isExistDarkMode && setDarkModeSetting(true)
+    // }, [])
+
+
     const data = [
         {
             index: 1,
@@ -55,11 +65,11 @@ const SettingScreen = () => {
             index: 4,
             name: 'Dark Mode',
             onPress: async () => {
-                dispatch(changeDarkMode(!mode))
-                await setDarkMode('dark')
-                if (mode) {
-                    await removeDarkMode()
-                }
+                // dispatch(changeDarkMode(!mode))
+                // await setDarkMode('dark')
+                // if (mode) {
+                //     await removeDarkMode()
+                // }
             },
             icon: DarkModeicon({ darkMode: mode })
         },
@@ -92,6 +102,42 @@ const SettingScreen = () => {
         ]);
     }
 
+    console.log("isExist", UserSetting.data());
+    const handleSwitchDarkMode = async () => {
+        const isExist = UserSetting.get({ email: email })
+        if (!isExist) {
+            const isInsert = UserSetting.insert({
+                email: email,
+                darkMode: true
+            })
+            dispatch(changeDarkMode(true))
+            // isInsert && setDarkModeSetting(true)
+        } else {
+            const isDarkModeOn = UserSetting.get({ email: email, darkMode: true || 1 })
+            if (isDarkModeOn) {
+
+                const isUpdate = UserSetting.update(isExist, { darkMode: false })
+                if (isUpdate) {
+                    dispatch(changeDarkMode(false))
+                }
+            } else {
+                const isUpdate = UserSetting.update(isExist, { darkMode: true })
+                if (isUpdate) {
+                    dispatch(changeDarkMode(true))
+                }
+
+            }
+        }
+
+
+        console.log("isExist", UserSetting.data());
+
+        // dispatch(changeDarkMode(!mode))
+        // await setDarkMode('dark')
+        // if (mode) {
+        //     await removeDarkMode()
+        // }
+    }
 
     const rederItem = ({ item, index }: { item: any, index: number }) => {
         return (
@@ -110,7 +156,19 @@ const SettingScreen = () => {
                             <Text text={item.name} style={styles.textAction} />
                         </TouchableOpacity>
                     </View>
-                    <RightChvron />
+                    {
+                        index == 3 ?
+                            <View style={styles.switch}>
+                                <Switch
+                                    trackColor={{ false: COLOR.colorSwitchOff, true: COLOR.colorSwitchOn }}
+                                    onValueChange={handleSwitchDarkMode}
+                                    value={mode}
+                                />
+                            </View>
+                            :
+                            <RightChvron />
+
+                    }
                 </View>
                 <View style={styles.line}></View>
             </View>
@@ -275,6 +333,9 @@ const useSettingStyles = (mode: boolean) => {
             fontFamily: '',
             marginLeft: 15,
             marginBottom: 20
+        },
+        switch: {
+            marginBottom: -10
         }
     });
     return styles;

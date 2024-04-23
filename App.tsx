@@ -26,6 +26,7 @@ import Loading from "./app/components/loading";
 import SettingScreen from "./app/screen/setting/setting-screen";
 import VasernDB from './app/database/db';
 import { TUOITRE, VNEXPRESS } from "./app/utils/const";
+import { UserSetting } from "./app/database";
 
 export type ParamsList = {
   Detail: {
@@ -165,16 +166,17 @@ function App(): React.JSX.Element {
     const mail = await getEmailApp()
     const lang = await getLanguage()
     const news = await getNews()
+    const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true || 1})
     const darkmode = await getDarkMode()
     if (news) {
       console.log('NEWS===', news);
-      
+
       const selectedNews = news === VNEXPRESS ? VNEXPRESS : TUOITRE;
       store.dispatch(changeNews(selectedNews));
     }
     mail && store.dispatch(addMail(mail));
     lang && i18n.changeLanguage(lang);
-    darkmode && store.dispatch(changeDarkMode(true));
+    isExistDarkMode && store.dispatch(changeDarkMode(true));
   }
   useEffect(() => {
     handleGetEmailAndSetLanguage()

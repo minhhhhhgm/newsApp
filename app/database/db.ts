@@ -7,7 +7,7 @@ import Vasern from 'vasern';
  */
 import { BookmarkModel } from './Bookmark';
 import { TodoModel } from './Todo';
-import { UserModel } from './User';
+import { UserSettingModel } from './User';
 import { ViewedModel } from './Viewed';
 import { CategoryModel } from './Category';
 import { ItemCategory } from './Category';
@@ -20,7 +20,7 @@ import { CategoryManagementModel } from './Category';
 export default new Vasern({
     schemas: [
         TodoModel,
-        UserModel,
+        UserSettingModel,
         BookmarkModel,
         ViewedModel,
         CategoryModel,
