@@ -1,9 +1,9 @@
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text as TextRn, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-simple-toast';
 import { ParamsList, auth } from '../../../App';
@@ -20,7 +20,7 @@ import { handleValidateEmail, handleValidatePass } from '../../utils/validate';
 import { Righticon } from './component/eye-icon';
 import Loading from '../../components/loading';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMail, changeNews, changeStatusLogin } from '../../store/newsSlice';
+import { addMail, changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
 import { dataCategoryTuoiTre, dataCategoryVnEpress, handleSaveCategory } from '../../utils/categoryManagement';
 import { RootState } from '../../store/store';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BookMark'>
@@ -41,8 +41,18 @@ const SignInScreen = () => {
   const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
   const stroke = mode ? COLOR.white : null
   const styles = useSignInStyles(mode)
+  const colorScheme = useColorScheme();
 
-  
+  useEffect(() => {
+    console.log('colorScheme', colorScheme);
+
+    if (colorScheme === 'light') {
+      dispatch(changeDarkMode(false))
+    } else {
+      dispatch(changeDarkMode(true))
+    }
+  }, [colorScheme])
+
   const onChangeEmail = (value: string) => {
     const mailValidate = handleValidateEmail(value);
     setEmailError(mailValidate ?? '');

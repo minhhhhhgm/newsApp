@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Text } from '../../components/Text';
-import { CategoryManagementModel } from '../../database';
-import { changeNews, changeNewsBookmark } from '../../store/newsSlice';
+import { CategoryManagementModel, UserSetting } from '../../database';
+import { changeDarkMode, changeNews, changeNewsBookmark } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
 import { NewsType } from '../../type/NewsType';
 import { COLOR, COLOR_MODE } from '../../utils/color';
@@ -26,7 +26,6 @@ const HomeScreen = () => {
     const news = useSelector((state: RootState) => state.newsReducer.newsName)
     const nameNewsChange = useSelector((state: RootState) => state.newsReducer.nameNewsChange)
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
-
     const styles = useHomeStyles(mode)
 
 
@@ -60,6 +59,20 @@ const HomeScreen = () => {
         handleListenNewsChangeFromBookmark()
 
     }, [nameNewsChange])
+
+    // LISTEN THEME WHEN USER LOGIN
+    useEffect(() => {
+        const handleListenThemeUser = async () => {
+            const mail = await getEmailApp()
+            const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true }) || UserSetting.get({ email: mail, darkMode: 1 });                       
+            if(isExistDarkMode){
+                dispatch(changeDarkMode(true))
+            }else{
+                dispatch(changeDarkMode(false))
+            }
+        }
+        handleListenThemeUser()
+    }, [])
 
 
     const handleGetDataWhenCategoryChange = async () => {
@@ -195,7 +208,7 @@ const HomeScreen = () => {
 }
 export default HomeScreen
 
-const useHomeStyles = (mode : boolean) => {
+const useHomeStyles = (mode: boolean) => {
     const styles = StyleSheet.create({
         body: {
             flex: 1,

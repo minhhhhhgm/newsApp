@@ -63,7 +63,7 @@ export type Category = {
 
 
 export const handleSaveHistory = (type: string, title: string, author: string, time: string, url: string, image: string, email: string) => {
-    console.log('SAVE-HISTORY');
+    
     const item1 = Viewed.get({ title: title, email: email });
     if (item1) {
         const now = moment();
@@ -81,6 +81,7 @@ export const handleSaveHistory = (type: string, title: string, author: string, t
         email: email
     }
     Viewed.insert(params)
+    console.log('SAVE-HISTORY');
 }
 
 

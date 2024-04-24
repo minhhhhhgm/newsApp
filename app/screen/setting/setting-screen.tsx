@@ -1,19 +1,18 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Modal, ScrollView, StyleSheet, Switch, Text as TextRN, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { ParamsList } from '../../../App';
 import { Text } from '../../components/Text';
 import RightChvron from '../../icons/svg-component/RightChvron';
 import DarkModeicon from '../../icons/svg-component/darkmodeicon';
 import InterRestIcon from '../../icons/svg-component/interser';
 import LogOutIcon from '../../icons/svg-component/logout';
-import Noti from '../../icons/svg-component/noti';
 import ProfileIcon from '../../icons/svg-component/profile';
 import SettingIconProfile from '../../icons/svg-component/setting';
 import { COLOR, COLOR_MODE } from '../../utils/color';
-import { removeAccessToken, removeDarkMode, removeNews, setDarkMode, setLanguage } from '../../utils/storage';
+import { removeAccessToken, removeDarkMode, removeEmailApp, removeNews, setDarkMode, setLanguage } from '../../utils/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeDarkMode, changeNews, changeStatusLogin } from '../../store/newsSlice';
 import { RootState } from '../../store/store';
@@ -23,7 +22,6 @@ const { width, height } = Dimensions.get('screen');
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'BottomNavigation'>
 
 const SettingScreen = () => {
-    const [darkModeSetting, setDarkModeSetting] = React.useState(false);
     const [isChoosLanguage, setIsChoosLanguage] = React.useState(false);
     const { i18n } = useTranslation();
     const navigation = useNavigation<NavigationProps>()
@@ -31,13 +29,7 @@ const SettingScreen = () => {
     const email = useSelector((state: RootState) => state.newsReducer.mail);
     const dispatch = useDispatch()
     const styles = useSettingStyles(mode)
-
-    // useEffect(() => {
-    //     const isExistDarkMode = UserSetting.get({ email: email, darkMode: true })
-    //     isExistDarkMode && setDarkModeSetting(true)
-    // }, [])
-
-
+    const colorScheme = useColorScheme();
     const data = [
         {
             index: 1,
@@ -94,15 +86,21 @@ const SettingScreen = () => {
                 onPress: async () => {
                     await removeAccessToken()
                     // await removeNews()
+                    await removeEmailApp()
                     dispatch(changeNews(VNEXPRESS))
                     dispatch(changeStatusLogin(false))
+                    if (colorScheme === 'light') {
+                        dispatch(changeDarkMode(false))
+                    } else {
+                        dispatch(changeDarkMode(true))
+                    }
                 },
 
             },
         ]);
     }
 
-    console.log("isExist", UserSetting.data());
+
     const handleSwitchDarkMode = async () => {
         const isExist = UserSetting.get({ email: email })
         if (!isExist) {
@@ -110,12 +108,10 @@ const SettingScreen = () => {
                 email: email,
                 darkMode: true
             })
-            dispatch(changeDarkMode(true))
-            // isInsert && setDarkModeSetting(true)
+            isInsert && dispatch(changeDarkMode(true))
         } else {
             const isDarkModeOn = UserSetting.get({ email: email, darkMode: true || 1 })
             if (isDarkModeOn) {
-
                 const isUpdate = UserSetting.update(isExist, { darkMode: false })
                 if (isUpdate) {
                     dispatch(changeDarkMode(false))
@@ -125,13 +121,8 @@ const SettingScreen = () => {
                 if (isUpdate) {
                     dispatch(changeDarkMode(true))
                 }
-
             }
         }
-
-
-        console.log("isExist", UserSetting.data());
-
         // dispatch(changeDarkMode(!mode))
         // await setDarkMode('dark')
         // if (mode) {

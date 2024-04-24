@@ -117,6 +117,14 @@ export async function getEmailApp() {
     }
 }
 
+export async function removeEmailApp() {
+    try {
+        await AsyncStorage.removeItem(UserStatus.Email);
+    } catch (err) {
+        return false;
+    }
+}
+
 
 
 export async function setDarkMode(mode: string) {

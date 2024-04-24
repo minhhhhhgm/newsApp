@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EmailAuthProvider, User, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-simple-toast';
 import { ParamsList, auth } from '../../../App';
@@ -15,8 +15,11 @@ import { COLOR, COLOR_MODE } from '../../utils/color';
 import { handleValidatePass } from '../../utils/validate';
 import { Righticon } from '../sign-in/component/eye-icon';
 import Loading from '../../components/loading';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { changeNews, changeStatusLogin, changeDarkMode } from '../../store/newsSlice';
+import { VNEXPRESS } from '../../utils/const';
+import { removeAccessToken, removeEmailApp } from '../../utils/storage';
 type NavigationProps = NativeStackNavigationProp<ParamsList, 'Account'>
 
 
@@ -38,6 +41,8 @@ const AccountScreen = () => {
   const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
   const styles = useAccountStyles(mode)
   const stroke = mode ? COLOR.white : null
+  const dispatch = useDispatch()
+  const colorScheme = useColorScheme();
 
 
   useEffect(() => {
@@ -91,7 +96,20 @@ const AccountScreen = () => {
     return reNewPassword && password && newPassword && !reNewPasswordError && !passwordError && !newPasswordError;
   };
 
-  
+
+  const logOut = async () => {
+    await removeAccessToken()
+    // await removeNews()
+    await removeEmailApp()
+    dispatch(changeNews(VNEXPRESS))
+    dispatch(changeStatusLogin(false))
+    if (colorScheme === 'light') {
+      dispatch(changeDarkMode(false))
+    } else {
+      dispatch(changeDarkMode(true))
+    }
+  }
+
 
   const handleChangePass = async () => {
     setIsLoading(true)
@@ -102,14 +120,15 @@ const AccountScreen = () => {
     reauthenticateWithCredential(auth.currentUser as User, credential)
       .then((result) => {
         updatePassword(auth.currentUser as User, reNewPassword)
-          .then((value) => {
+          .then(async (value) => {
             console.log(value);
             Toast.show('Change password successfully !', Toast.LONG);
-            setPassword('')
-            setNewPassword('')
-            setReNewPassword('')
-            setIsChangPass(false)
-            setIsLoading(false)
+            await logOut()
+            // setPassword('')
+            // setNewPassword('')
+            // setReNewPassword('')
+            // setIsChangPass(false)
+            // setIsLoading(false)
           })
           .catch((error) => {
             console.log(error);
@@ -164,7 +183,7 @@ const AccountScreen = () => {
                   flex: 1,
                   borderBottomColor: COLOR.buttonColorInactive,
                   marginLeft: 20,
-                  color : COLOR_MODE(mode).textNewsColor,
+                  color: COLOR_MODE(mode).textNewsColor,
                 }}
               />
             </View>
@@ -175,78 +194,83 @@ const AccountScreen = () => {
               <View style={{
                 flexDirection: 'row'
               }}>
-                <LockIcon stroke={stroke}/>
+                <LockIcon stroke={stroke} />
                 <Text
                   style={styles.textChangePass}
                   text={'changePass'}
                 />
               </View>
-              <RightChvron stroke={stroke}/>
+              <RightChvron stroke={stroke} />
             </TouchableOpacity>
           </View>
           :
-          <View>
-            <TextField
-              mode={mode}
-              value={password}
-              onChangeText={onChangePass}
-              containerStyle={styles.textField}
-              style={styles.inputStyle}
-              label={'currentPassword'}
-              placeholder={'currentPassword'}
-              secureTextEntry={!isShowPassword}
-              RightIcon={
-                <Righticon
-                  password={password}
-                  handleShowPass={() => { setIsShowPassword(!isShowPassword) }}
-                  isShowPassword={isShowPassword}
-                  paddingRight={16}
-                  mode={mode}
-                />
-              }
-              helper={passwordError}
-            />
-            <TextField
-              mode={mode}
-              value={newPassword}
-              onChangeText={onChangeNewPass}
-              containerStyle={styles.textField}
-              style={styles.inputStyle}
-              label={'newPassword'}
-              placeholder={'newPassword'}
-              secureTextEntry={!isShowNewPassword}
-              RightIcon={
-                <Righticon
-                  password={newPassword}
-                  handleShowPass={() => { setIsShownewPassword(!isShowNewPassword) }}
-                  isShowPassword={isShowNewPassword}
-                  paddingRight={16}
-                  mode={mode}
-                />
-              }
-              helper={newPasswordError}
-            />
-            <TextField
-              mode={mode}
-              value={reNewPassword}
-              onChangeText={onChangeReNewPass}
-              containerStyle={[styles.textField, { marginTop: 50 }]}
-              style={styles.inputStyle}
-              label={'confirmNewPassword'}
-              placeholder={'confirmNewPassword'}
-              secureTextEntry={!isShowConfirmPassword}
-              RightIcon={
-                <Righticon
-                  password={reNewPassword}
-                  handleShowPass={() => { setIsShowConfirmPassword(!isShowConfirmPassword) }}
-                  isShowPassword={isShowConfirmPassword}
-                  paddingRight={16}
-                  mode={mode}
-                />
-              }
-              helper={reNewPasswordError}
-            />
+          <View style={{ flex: 1 }}>
+            <ScrollView>
+              <TextField
+                mode={mode}
+                value={password}
+                onChangeText={onChangePass}
+                containerStyle={styles.textField}
+                style={styles.inputStyle}
+                label={'currentPassword'}
+                placeholder={'currentPassword'}
+                secureTextEntry={!isShowPassword}
+                RightIcon={
+                  <Righticon
+                    password={password}
+                    handleShowPass={() => { setIsShowPassword(!isShowPassword) }}
+                    isShowPassword={isShowPassword}
+                    paddingRight={16}
+                    mode={mode}
+                  />
+                }
+                helper={passwordError}
+              />
+              <TextField
+                mode={mode}
+                value={newPassword}
+                onChangeText={onChangeNewPass}
+                containerStyle={styles.textField}
+                style={styles.inputStyle}
+                label={'newPassword'}
+                placeholder={'newPassword'}
+                secureTextEntry={!isShowNewPassword}
+                RightIcon={
+                  <Righticon
+                    password={newPassword}
+                    handleShowPass={() => { setIsShownewPassword(!isShowNewPassword) }}
+                    isShowPassword={isShowNewPassword}
+                    paddingRight={16}
+                    mode={mode}
+                  />
+                }
+                helper={newPasswordError}
+              />
+              <TextField
+                mode={mode}
+                value={reNewPassword}
+                onChangeText={onChangeReNewPass}
+                containerStyle={[styles.textField, { marginVertical: 50 }]}
+                style={styles.inputStyle}
+                label={'confirmNewPassword'}
+                placeholder={'confirmNewPassword'}
+                secureTextEntry={!isShowConfirmPassword}
+                RightIcon={
+                  <Righticon
+                    password={reNewPassword}
+                    handleShowPass={() => { setIsShowConfirmPassword(!isShowConfirmPassword) }}
+                    isShowPassword={isShowConfirmPassword}
+                    paddingRight={16}
+                    mode={mode}
+                  />
+                }
+                helper={reNewPasswordError}
+              />
+
+            </ScrollView>
+
           </View>
+
       }
     </View>
   )

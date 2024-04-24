@@ -2,7 +2,7 @@ import "react-native-gesture-handler";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { LogBox, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { FirebaseAuth } from './app/firebase/config';
@@ -13,14 +13,13 @@ import BookMarkScreen from './app/screen/bookmark/book-mark-screen';
 import CategoryManagementScreen from './app/screen/category-management/category-management';
 import DetailScreen from './app/screen/detail-news/detail-news-screen';
 import ForgotPasswordScreen from './app/screen/forgot-password/forgot-password-screen';
-import HomeScreen from './app/screen/home/home';
 import ProfileScreen from './app/screen/profile/profile-screen';
 import SignInScreen from './app/screen/sign-in/sign-in-screen';
 import SignUpScreen from './app/screen/sign-up/sign-up-screen';
 import ViewedScreen from './app/screen/viewed/viewed-screen';
 import { addMail, changeDarkMode, changeNews, changeStatusLogin } from './app/store/newsSlice';
 import { RootState, store } from './app/store/store';
-import { getAccessToken, getDarkMode, getEmailApp, getLanguage, getNews } from './app/utils/storage';
+import { getAccessToken, getEmailApp, getLanguage, getNews } from './app/utils/storage';
 import { useTranslation } from 'react-i18next';
 import Loading from "./app/components/loading";
 import SettingScreen from "./app/screen/setting/setting-screen";
@@ -166,8 +165,9 @@ function App(): React.JSX.Element {
     const mail = await getEmailApp()
     const lang = await getLanguage()
     const news = await getNews()
-    const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true || 1})
-    const darkmode = await getDarkMode()
+    const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true || 1 })
+    console.log('isExistDarkModes',isExistDarkMode);
+    // const darkmode = await getDarkMode()
     if (news) {
       console.log('NEWS===', news);
 
