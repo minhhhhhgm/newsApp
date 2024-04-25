@@ -6,12 +6,18 @@ import { COLOR } from '../../../utils/color';
 import { DataInterests } from '../category-management';
 import EyeIcon from '../../../icons/svg-component/eyeIcon';
 
-export const rightSwipeActions = (item: DataInterests, index: number) => {
+interface IRightSwipeActions {
+    isShow: boolean,
+    action: () => void
+}
+
+export const rightSwipeActions = (props: IRightSwipeActions) => {
+    const { isShow, action } = props
     return (
         <View
-            style={{ backgroundColor: COLOR.authorColor, justifyContent: 'center',alignItems: 'flex-end',paddingHorizontal: 30}}>
-            <TouchableOpacity activeOpacity={1}>
-                <EyeOffIcon />
+            style={{ backgroundColor: COLOR.authorColor, justifyContent: 'center', alignItems: 'flex-end', paddingHorizontal: 30 }}>
+            <TouchableOpacity activeOpacity={1} onPress={action} style={{padding: 10}}>
+                {isShow ? <EyeOffIcon /> : <EyeIcon width={20} height={20} />}
             </TouchableOpacity>
         </View>
     );

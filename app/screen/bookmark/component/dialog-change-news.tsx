@@ -23,23 +23,23 @@ const DialogChangeNews = (props: IDialogChangeNews) => {
             <View style={[styles.content, { top: top, left: left }]}>
                 <View
                     style={[styles.viewPopOver]}>
-                    <View style={{
-                        justifyContent: 'center'
-                    }}>
-                        <TouchableOpacity onPress={onPressVnExpress} style={styles.btnVnE}>
-                            <Text
-                                style={[styles.textVnE, { fontWeight: news === VNEXPRESS ? '700' : 'normal' }]}
-                                text='VnExpress'
-                            />
-                        </TouchableOpacity>
-                        <View style={styles.popOverLine} />
-                        <TouchableOpacity onPress={onPressTuoiTre} style={styles.btnTt}>
-                            <Text
-                                style={[styles.textTt, { fontWeight: news === TUOITRE ? '700' : '100' }]}
-                                text='Tuổi Trẻ'
-                            />
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity onPress={onPressVnExpress} style={[styles.btnStyle, {
+                        backgroundColor: news === VNEXPRESS ? COLOR.buttonColorInactive : COLOR.white,
+                    }]}>
+                        <Text
+                            style={[styles.textVnE, { fontWeight: news === VNEXPRESS ? '700' : '100' }]}
+                            text='VnExpress'
+                        />
+                    </TouchableOpacity>
+                    {/* <View style={styles.popOverLine} /> */}
+                    <TouchableOpacity onPress={onPressTuoiTre} style={[styles.btnStyleTT, {
+                        backgroundColor: news === TUOITRE ? COLOR.buttonColorInactive : COLOR.white,
+                    }]}>
+                        <Text
+                            style={[styles.textVnE, { fontWeight: news === TUOITRE ? '700' : '100' }]}
+                            text='Tuổi Trẻ'
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
@@ -50,7 +50,7 @@ export default DialogChangeNews
 
 const useDialogStyles = () => {
     const styles = StyleSheet.create({
-       main: {
+        main: {
             backgroundColor: 'transparent',
             width: width,
             height: height,
@@ -61,32 +61,10 @@ const useDialogStyles = () => {
             bottom: 22,
             alignSelf: 'center',
         },
-        btnVnE: {
-            flexDirection: 'row',
-            paddingLeft: 10,
-            marginTop: 15,
-        },
         textVnE: {
             color: COLOR.focusColor,
-            marginLeft: 5,
+            // marginLeft: 5,
             fontSize: 12
-        },
-        btnTt: {
-            flexDirection: 'row',
-            marginTop: 10,
-            marginLeft: 8,
-        },
-        textTt: {
-            flex: 1,
-            color: COLOR.focusColor,
-            marginLeft: 5,
-            fontSize: 12,
-            alignSelf: 'center',
-        },
-        popOverLine: {
-            height: 1,
-            backgroundColor: COLOR.buttonColorInactive,
-            marginTop: 7,
         },
         viewPopOver: {
             backgroundColor: COLOR.backgroundColor,
@@ -102,6 +80,19 @@ const useDialogStyles = () => {
             zIndex: 10,
             right: 15,
         },
+        btnStyle: {
+            paddingVertical: 10,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            paddingLeft: 10
+        },
+        btnStyleTT: {
+            paddingVertical: 10,
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+            paddingLeft: 10,
+            marginTop: 4
+        }
     });
     return styles;
 }

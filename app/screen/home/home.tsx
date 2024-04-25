@@ -27,7 +27,10 @@ const HomeScreen = () => {
     const nameNewsChange = useSelector((state: RootState) => state.newsReducer.nameNewsChange)
     const mode = useSelector((state: RootState) => state.newsReducer.darkMode)
     const styles = useHomeStyles(mode)
-
+    const colorBackgroundFocus = mode ? COLOR.white : COLOR.focusColor
+    const colorBackgroundUnFocus = mode ? COLOR.authorColor : COLOR.buttonColorInactive
+    const colorTextFocus = mode ? COLOR.focusColor : COLOR.white
+    const colorTextUnFocus = mode ? COLOR.buttonColorInactive : COLOR.authorColor
 
     // GET CATEGORY AND NEWS DATA
     useEffect(() => {
@@ -64,10 +67,10 @@ const HomeScreen = () => {
     useEffect(() => {
         const handleListenThemeUser = async () => {
             const mail = await getEmailApp()
-            const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true }) || UserSetting.get({ email: mail, darkMode: 1 });                       
-            if(isExistDarkMode){
+            const isExistDarkMode = UserSetting.get({ email: mail, darkMode: true }) || UserSetting.get({ email: mail, darkMode: 1 });
+            if (isExistDarkMode) {
                 dispatch(changeDarkMode(true))
-            }else{
+            } else {
                 dispatch(changeDarkMode(false))
             }
         }
@@ -181,13 +184,13 @@ const HomeScreen = () => {
                                 key={index}
                                 onPress={() => { onClickCategory(item.text, item.endpoint) }}
                                 style={[styles.button, {
-                                    backgroundColor: isFocus ? mode ? COLOR.white : COLOR.focusColor : COLOR.buttonColorInactive,
+                                    backgroundColor: isFocus ? colorBackgroundFocus : colorBackgroundUnFocus,
                                     marginLeft: index === 0 ? 16 : 0,
                                 }]}>
                                 <Text
                                     text={item.text}
                                     style={{
-                                        color: isFocus ? mode ? COLOR.focusColor : COLOR.white : COLOR.authorColor
+                                        color: isFocus ? colorTextFocus : colorTextUnFocus
                                     }} />
                             </TouchableOpacity>
                             : null

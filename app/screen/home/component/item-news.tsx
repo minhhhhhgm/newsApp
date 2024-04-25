@@ -110,7 +110,7 @@ export const ItemNews = (props: IItemNews) => {
                     <TextRn numberOfLines={3} style={styles.textTitle}>{title}</TextRn>
                     <View style={styles.viewAuthor}>
                         <TextRn style={styles.textAuthor}>{author}</TextRn>
-                        {(isExistItem) && <BookMarkIcon width={15} height={15} fill={mode ? COLOR.white : '#180E19'} />}
+                        {(isExistItem) && <BookMarkIcon width={18} height={18} fill={mode ? COLOR.white : '#180E19'} />}
                     </View>
                     <View style={styles.rowContent}>
                         <View style={styles.viewRowContent}>

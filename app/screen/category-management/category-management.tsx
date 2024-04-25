@@ -64,10 +64,28 @@ const CategoryManagementScreen = () => {
 
     // SHOW - HIDE CATEGORY
     const swipeFromSideOpen = async (direction: string, index: number) => {
-        const getData = CategoryManagementModel.get({ email: mail });
+        // const getData = CategoryManagementModel.get({ email: mail });
         console.log(direction, index);
+        // const updatedArray = data.map((item, indexs) => {
+        //     const isShow = direction === 'left' ? true : false;
+        //     return indexs === index ? { ...item, isShow } : item;
+        // });
+        // const stringData = JSON.stringify(updatedArray);
+        // const updateData = news === VNEXPRESS ? { vnExpress: stringData } : { tuoiTre: stringData };
+        // const isUpdate = await CategoryManagementModel.update(getData, updateData);
+        // if (isUpdate) {
+        //     swipeableRef.current?.[index].close();
+        //     dispatch(changeCate(nanoid()));
+        // }
+        // getDataCategory();
+        // swipeableRef.current?.[index].close();
+    };
+
+    // SHOW - HIDE CATEGORY
+    const handleShowHidecategory = async (isShowIcon: boolean, index: number) => {
+        const getData = CategoryManagementModel.get({ email: mail });
         const updatedArray = data.map((item, indexs) => {
-            const isShow = direction === 'left' ? true : false;
+            const isShow = !isShowIcon ? true : false;
             return indexs === index ? { ...item, isShow } : item;
         });
         const stringData = JSON.stringify(updatedArray);
@@ -78,7 +96,7 @@ const CategoryManagementScreen = () => {
             dispatch(changeCate(nanoid()));
         }
         getDataCategory();
-    };
+    }
 
 
     // UPDATE POSITION CATEGORY
@@ -104,9 +122,10 @@ const CategoryManagementScreen = () => {
                             swipeableRef.current.push(ref)
                         }
                     }}
-                    renderLeftActions={() => LeftSwipeActions(item, getIndex() as number)}
-                    renderRightActions={() => rightSwipeActions(item, getIndex() as number)}
-                    onSwipeableOpen={(direction) => { swipeFromSideOpen(direction, getIndex() as number) }}>
+                    // renderLeftActions={() => LeftSwipeActions(item, getIndex() as number)}
+                    renderRightActions={() => rightSwipeActions({isShow : item.isShow as boolean, action : ()=>handleShowHidecategory(item.isShow as boolean , getIndex() as number)})}
+                    // onSwipeableOpen={(direction) => { swipeFromSideOpen(direction, getIndex() as number) }}
+                    >
                     <TouchableOpacity
                         activeOpacity={1}
                         style={{ backgroundColor: !item.isShow ? '#EEEEEE' : COLOR_MODE(mode).backgroundColor, marginHorizontal: 5 }}

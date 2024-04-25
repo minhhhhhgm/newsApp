@@ -129,11 +129,12 @@ const SettingScreen = () => {
         //     await removeDarkMode()
         // }
     }
-
     const rederItem = ({ item, index }: { item: any, index: number }) => {
         return (
             <View key={index}>
-                <View
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={item.onPress}
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
@@ -143,15 +144,15 @@ const SettingScreen = () => {
                         flexDirection: 'row'
                     }}>
                         <View style={{ alignSelf: "center" }}>{item.icon}</View>
-                        <TouchableOpacity onPress={item.onPress}>
+                        <View>
                             <Text text={item.name} style={styles.textAction} />
-                        </TouchableOpacity>
+                        </View>
                     </View>
                     {
                         index == 3 ?
                             <View style={styles.switch}>
                                 <Switch
-                                    trackColor={{ false: COLOR.colorSwitchOff, true: COLOR.colorSwitchOn }}
+                                    trackColor={{ false: COLOR.colorSwitchOff, true: COLOR.white }}
                                     onValueChange={handleSwitchDarkMode}
                                     value={mode}
                                 />
@@ -160,7 +161,7 @@ const SettingScreen = () => {
                             <RightChvron />
 
                     }
-                </View>
+                </TouchableOpacity>
                 <View style={styles.line}></View>
             </View>
 
@@ -238,7 +239,7 @@ const useSettingStyles = (mode: boolean) => {
         line: {
             height: 1,
             backgroundColor: COLOR_MODE(mode).divider,
-            marginLeft: 32,
+            marginLeft: 36,
             marginVertical: 20
         },
         logo: {
