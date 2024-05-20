@@ -27,6 +27,7 @@ import VasernDB from './app/database/db';
 import { TUOITRE, VNEXPRESS } from "./app/utils/const";
 import { UserSetting } from "./app/database";
 import TestCalendarScreen from "./app/screen/test_calendar/test-calendar";
+import TestCalendarSecond from "./app/screen/test_calendar/test-calendar-second";
 
 export type ParamsList = {
   Detail: {
@@ -158,7 +159,8 @@ const AppNavigator = () => {
   }
   return (
     // getStack()
-    <TestCalendarScreen/>
+    // <TestCalendarScreen/>
+    <TestCalendarSecond/>
   )
 }
 function App(): React.JSX.Element {
