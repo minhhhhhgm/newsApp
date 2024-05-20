@@ -133,6 +133,7 @@ export const getDataRss = async (domain: string) => {
 
 export const getDataRssByTitle = async (domain: string, endpoint: string) => {
     const res = await axios.get(`https://${domain}/rss/${endpoint}.rss`)
+    
     const items = res.data.match(/<item>(.*?)<\/item>/gs);
     const parsedItems = items?.map((item: string) => ({
         title: extractString(item, '<title>', '</title>'),
