@@ -28,6 +28,7 @@ import { TUOITRE, VNEXPRESS } from "./app/utils/const";
 import { UserSetting } from "./app/database";
 import TestCalendarScreen from "./app/screen/test_calendar/test-calendar";
 import TestCalendarSecond from "./app/screen/test_calendar/test-calendar-second";
+import CustomCalendar from "./app/screen/test_calendar/custom-calendar";
 
 export type ParamsList = {
   Detail: {
@@ -160,7 +161,8 @@ const AppNavigator = () => {
   return (
     // getStack()
     // <TestCalendarScreen/>
-    <TestCalendarSecond/>
+    // <TestCalendarSecond/>
+    <CustomCalendar/>
   )
 }
 function App(): React.JSX.Element {
