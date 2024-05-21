@@ -68,7 +68,7 @@ const TestCalendarSecond = () => {
 
     const YourComponent = ({ style, item, daysTotal }: any) => {
         console.log('daysTotal', daysTotal);
-        
+
         const columnStyle = item.title === "予約" ? styles.smallColumn : styles.largeColumn;
         return (
             <View style={{
@@ -94,7 +94,7 @@ const TestCalendarSecond = () => {
         <SafeAreaView style={{
             backgroundColor: 'gray',
             flex: 1,
-            flexDirection:'row'
+            flexDirection: 'row'
         }}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -231,5 +231,3 @@ const styles = StyleSheet.create({
 
 
 export default TestCalendarSecond;
-
-
