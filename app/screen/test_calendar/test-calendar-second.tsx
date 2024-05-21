@@ -47,22 +47,32 @@ const TestCalendarSecond = () => {
         },
     ]);
 
-    const YourComponent = ({ style, item, index }: any) => {
-        console.log(item);
-
+    const YourComponent = ({ style, item }: any) => {
         const columnStyle = item.title === "予約" ? styles.smallColumn : styles.largeColumn;
         return (
-            <View style={{ ...style, ...columnStyle, backgroundColor: item.color, borderRadius: 10, padding: 10 , justifyContent:'space-between' }}>
-                <Text>{item.title}</Text>
+            <View style={{
+                ...style,
+                ...columnStyle,
+                backgroundColor: item.color,
+                borderRadius: 8,
+                padding: 10,
+                justifyContent: 'space-between'
+            }}>
+                <Text style={[]}>{item.title}</Text>
                 {item.subtitle && <Text>{item.subtitle}</Text>}
             </View>
         );
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
+        <SafeAreaView >
+            <View style={{
+                // padding : 10,
+                // backgroundColor : 'red'
+            }}>
+            <ScrollView style={{
                 
+            }}>
                 <Timetable
                     items={items}
                     renderItem={(props) => <YourComponent {...props} />}
@@ -74,45 +84,72 @@ const TestCalendarSecond = () => {
                             <Text style={styles.hourText}>{`${hour}:00`}</Text>
                         </View>
                     )}
+                    // enableSnapping
+                    // hideNowLine
+                    // columnHorizontalPadding={0}
+                    // itemMinHeightInMinutes={999}
+                    
+                    // khoảng cách giữa các giờ
+                    hourHeight={40}
+
+
+                    // width={350}
+                    // timeWidth={50}
+
+                    // columnWidth={width - 50}
+                    // columnHeaderHeight={999}
+                    // linesTopOffset={10}
+                    // linesLeftInset={99}
                     style={{
                         container: styles.container,
                         contentContainer: styles.contentContainer,
-                        headerContainer: styles.headerContainer,
-                        headerText: styles.headerText,
-                        headersContainer: styles.headersContainer,
+                        headerContainer:{
+                            backgroundColor: 'black',
+
+                        },
+                        // headerContainer: styles.headerContainer,
+                        // headerText: styles.headerText,
+                        // headersContainer: styles.headersContainer,
                         timeContainer: styles.timeContainer,
-                        time: styles.time,
+                        // time: styles.time,
                         lines: styles.lines,
                         nowLine: {
                             dot: styles.nowLineDot,
                             line: styles.nowLineLine,
                         },
+                        
                     }}
-               
+
                 />
             </ScrollView>
+            </View>
+          
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     smallColumn: {
-        // Thêm các style tùy chỉnh cho cột đầu tiên ở đây
-        width: '15%', // Ví dụ: Thiết lập chiều rộng của cột đầu tiên là 30%
+        width: '15%', 
     },
-    // Style cho cột thứ hai (lớn hơn)
     largeColumn: {
-        // Thêm các style tùy chỉnh cho cột thứ hai ở đây
-        width: '50%', // Ví dụ: Thiết lập chiều rộng của cột thứ hai là 70%
+        width: '60%', 
         position: 'absolute',
-        left: 150
+        left: '35%'
     },
     container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
+        marginVertical : 100,
+        marginBottom:100,
+        // paddingBottom : 50,
+        // borderBottomColor:'red',
+        // borderBottomWidth : 1
+        // borderRadius : 10
     },
     contentContainer: {
-        // padding: 10,
+        backgroundColor:'red',
+        width: width - 8,
+        borderRadius :  10,
+        paddingBottom : 15
     },
     headerContainer: {
         height: 50,
@@ -120,46 +157,46 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
-        fontSize: 16,
-        fontWeight: 'bold',
+    
     },
     headersContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
+        // paddingVertical: 10,
     },
     timeContainer: {
-        width: 50,
-        alignItems: 'center',
+        // width: 50,
+        // alignItems: 'center',
+        // backgroundColor
     },
     time: {
         fontSize: 12,
         color: '#555',
     },
     lines: {
-        // height:'100%',
-        backgroundColor: 'white',
+        // backgroundColor: 'red',
+        // marginVertical:10,
+        borderColor:'#EDEDED',
     },
     nowLineDot: {
         width: 10,
         height: 10,
         backgroundColor: 'transparent',
         borderRadius: 5,
-        // position: 'absolute',
-        // top: 0,
     },
     nowLineLine: {
         height: 2,
         backgroundColor: 'transparent',
     },
     hourContainer: {
-        height: 60,
-        // justifyContent: 'center',
-        // alignItems: 'center',
+        height: 50,
+        backgroundColor:'transparent',
+        alignSelf:'center'
+        
     },
     hourText: {
         fontSize: 12,
-        color: '#555',
+        color: '#606163',
     },
 });
 
